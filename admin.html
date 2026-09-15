@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>لوحة تحكم الإدارة والمخازن</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #004d34;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); padding-bottom: 30px; }
+
+    .top-header { background-color: var(--primary); color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .top-header h1 { font-size: 17px; font-weight: 600; }
+
+    .scanner-container { display: none; margin: 12px; background: #000; border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); }
+    #reader { width: 100%; }
+    .close-cam-btn { width: 100%; background: #dc2626; color: white; border: none; padding: 8px; font-weight: bold; cursor: pointer; }
+
+    .screen-content { padding: 14px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
+    .form-control { width: 100%; border: 1px solid #cbd5e1; border-radius: 25px; padding: 10px 16px; outline: none; font-size: 14px; background: white; }
+
+    .search-box-wrapper { display: flex; align-items: center; background: white; border: 1px solid #cbd5e1; border-radius: 25px; padding: 4px 12px; gap: 8px; }
+    .search-box-wrapper input { border: none; outline: none; flex: 1; padding: 8px; font-size: 14px; }
+    .search-btn-icon { color: var(--primary); font-size: 18px; cursor: pointer; }
+
+    .btn-submit { width: 100%; background: var(--primary); color: white; border: none; border-radius: 25px; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+    /* شاشة تسجيل الدخول المقفولة */
+    #lock-screen { position: fixed; inset: 0; background: #004d34; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; padding: 20px; color: white; }
+    .lock-box { background: white; color: #1e293b; padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 320px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة القفل بكلمة سر لمنع البائع من الدخول -->
+  <div id="lock-screen">
+    <div class="lock-box">
+      <i class="fa-solid fa-lock" style="font-size: 36px; color: #004d34; margin-bottom: 12px;"></i>
+      <h3 style="margin-bottom: 8px;">لوحة الإدارة والمخزن</h3>
+      <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">أدخل الرقم السري للمتابعة</p>
+      <input type="password" id="pinCodeInput" class="form-control" placeholder="رمز PIN" style="text-align: center; font-size: 18px; margin-bottom: 14px;">
+      <button type="button" class="btn-submit" onclick="verifyPin()">دخول</button>
+    </div>
+  </div>
+
+  <div class="top-header">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <h1>إدارة المخزون والمنتجات</h1>
+    <div></div>
+  </div>
+
+  <div class="scanner-container" id="scannerWrapper">
+    <div id="reader"></div>
+    <button type="button" class="close-cam-btn" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
+  </div>
+
+  <div class="screen-content">
+    <div class="form-group">
+      <label>اسم المنتج *</label>
+      <input type="text" id="addName" class="form-control" placeholder="اسم الصنف">
+    </div>
+
+    <div class="form-group">
+      <label>الباركود *</label>
+      <div class="search-box-wrapper">
+        <input type="text" id="addBarcode" placeholder="امسح أو اكتب الباركود">
+        <i class="fa-solid fa-barcode search-btn-icon" title="امسح باركود المنتج" onclick="startCamera()"></i>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>الفئة / الصنف</label>
+      <input type="text" id="addCategory" class="form-control" placeholder="مثال: مشروبات / ملابس">
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+      <div class="form-group" style="flex: 1;">
+        <label>سعر البيع (جنيه) *</label>
+        <input type="number" id="addPrice" class="form-control" placeholder="0.00">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>الرصيد المضاف (قطع) *</label>
+        <input type="number" id="addStock" class="form-control" value="1">
+      </div>
+    </div>
+
+    <button type="button" class="btn-submit" id="saveProdBtn" onclick="submitProductToSheet()">
+      <i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل
+    </button>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec";
+    const ADMIN_PIN = "1234"; // يمكنك تغيير الرمز السري من هنا
+
+    function verifyPin() {
+      const entered = document.getElementById('pinCodeInput').value;
+      if (entered === ADMIN_PIN) {
+        document.getElementById('lock-screen').style.display = 'none';
+      } else {
+        alert("رمز المرور غير صحيح!");
+      }
+    }
+
+    let html5QrCode = null;
+    let isScanning = false;
+
+    function startCamera() {
+      document.getElementById('scannerWrapper').style.display = 'block';
+      if (isScanning) return;
+
+      html5QrCode = new Html5Qrcode("reader");
+      const config = {
+        fps: 20,
+        qrbox: { width: 260, height: 130 },
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E
+        ]
+      };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          document.getElementById('addBarcode').value = decodedText;
+          stopCamera();
+        }
+      ).catch(err => {
+        alert("تأكد من إذن الكاميرا: " + err);
+        stopCamera();
+      });
+
+      isScanning = true;
+    }
+
+    function stopCamera() {
+      if (html5QrCode && isScanning) {
+        html5QrCode.stop().then(() => {
+          document.getElementById('scannerWrapper').style.display = 'none';
+          isScanning = false;
+        }).catch(() => {
+          document.getElementById('scannerWrapper').style.display = 'none';
+          isScanning = false;
+        });
+      } else {
+        document.getElementById('scannerWrapper').style.display = 'none';
+        isScanning = false;
+      }
+    }
+
+    function submitProductToSheet() {
+      const barcode = document.getElementById('addBarcode').value.trim();
+      const name = document.getElementById('addName').value.trim();
+      const category = document.getElementById('addCategory').value.trim();
+      const price = document.getElementById('addPrice').value.trim();
+      const stock = document.getElementById('addStock').value.trim();
+
+      if (!barcode || !name || !price) return alert("أدخل اسم الصنف والباركود والسعر!");
+
+      const btn = document.getElementById('saveProdBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الإضافة للشيت...';
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "addNewProduct",
+          payload: { barcode, name, category, price, stock }
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
+        alert(res.message);
+        if (res.success) {
+          document.getElementById('addBarcode').value = '';
+          document.getElementById('addName').value = '';
+          document.getElementById('addPrice').value = '';
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
+        alert("خطأ: " + err);
+      });
+    }
+  </script>
+</body>
+</html>
