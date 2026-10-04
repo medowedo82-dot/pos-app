@@ -3,281 +3,1176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>نقطة البيع - الكاشير</title>
+
   <script src="https://unpkg.com/html5-qrcode"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
-    body { background-color: #f1f5f9; color: #1e293b; min-height: 100vh; display: flex; justify-content: center; }
-    
-    .app-container { width: 100%; max-width: 480px; background-color: #ffffff; min-height: 100vh; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
 
-    /* الهيدر الأخضر */
-    .top-header { background: #004d34; color: #ffffff; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
-    .top-header h1 { font-size: 18px; font-weight: bold; }
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: #ffffff;
+      min-height: 100vh;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* الهيدر */
+    .top-header {
+      background: #004d34;
+      color: #ffffff;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-header h1 {
+      font-size: 18px;
+      font-weight: bold;
+    }
 
     /* بطاقة الإجمالي */
-    .stats-card { background: #004d34; color: #ffffff; margin: 12px 16px; border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,77,52,0.2); }
-    .stats-card .total-label { font-size: 12px; opacity: 0.85; margin-bottom: 4px; }
-    .stats-card .total-val { font-size: 24px; font-weight: 800; }
-    .stat-badge { background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+    .stats-card {
+      background: #004d34;
+      color: #ffffff;
+      margin: 12px 16px;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,77,52,0.2);
+    }
+
+    .stats-card .total-label {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 4px;
+    }
+
+    .stats-card .total-val {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .stat-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
 
     /* البحث والباركود */
-    .search-area { padding: 0 16px; margin-bottom: 12px; }
-    .search-input-box { display: flex; align-items: center; background: #f8fafc; border: 1.5px solid #004d34; border-radius: 30px; padding: 6px 14px; gap: 8px; }
-    .search-input-box input { border: none; background: transparent; outline: none; flex: 1; padding: 6px; font-size: 14px; color: #0f172a; }
-    .search-input-box i { color: #004d34; font-size: 20px; cursor: pointer; padding: 4px; }
+    .search-area {
+      padding: 0 16px;
+      margin-bottom: 12px;
+    }
 
-    /* نافذة الكاميرا */
-    .scanner-box { display: none; margin: 0 16px 12px; background: #000; border-radius: 14px; overflow: hidden; border: 2px solid #004d34; }
-    #reader { width: 100%; }
-    .cam-close-btn { width: 100%; background: #dc2626; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer; }
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1.5px solid #004d34;
+      border-radius: 30px;
+      padding: 6px 14px;
+      gap: 8px;
+    }
+
+    .search-input-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      flex: 1;
+      padding: 6px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .search-input-box i {
+      color: #004d34;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* الكاميرا */
+    .scanner-box {
+      display: none;
+      margin: 0 16px 12px;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid #004d34;
+    }
+
+    #reader {
+      width: 100%;
+    }
+
+    .cam-close-btn {
+      width: 100%;
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
     /* محتوى الفاتورة */
-    .content-area { padding: 0 16px 20px; flex: 1; }
-    .cart-box { background: #ffffff; border-radius: 14px; padding: 14px; border: 1px solid #e2e8f0; margin-bottom: 14px; }
-    .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 13px; }
-    
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #e2e8f0; }
-    .cart-item:last-child { border-bottom: none; }
-    .item-name { font-weight: 600; font-size: 14px; }
-    .item-calc { font-size: 12px; color: #64748b; margin-top: 2px; }
-    .item-controls { display: flex; align-items: center; gap: 8px; }
-    .control-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #cbd5e1; background: #f8fafc; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .content-area {
+      padding: 0 16px 20px;
+      flex: 1;
+    }
 
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #64748b; }
-    .form-select { width: 100%; border: 1px solid #cbd5e1; border-radius: 25px; padding: 10px 14px; outline: none; font-size: 14px; background: white; }
+    .cart-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 14px;
+    }
 
-    .btn-checkout { width: 100%; background: #004d34; color: white; border: none; border-radius: 25px; padding: 13px; font-size: 15px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .btn-checkout:active { opacity: 0.9; }
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .item-calc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .stock-text {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #64748b;
+    }
+
+    .form-select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 25px;
+      padding: 10px 14px;
+      outline: none;
+      font-size: 14px;
+      background: white;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: #004d34;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-checkout:active {
+      opacity: 0.9;
+    }
+
+    .btn-checkout:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
   </style>
 </head>
+
 <body>
 
-  <div class="app-container">
-    <div class="top-header">
-      <i class="fa-solid fa-cash-register" style="font-size: 20px;"></i>
-      <h1>نقطة البيع - الكاشير</h1>
-      <div></div>
-    </div>
+<div class="app-container">
 
-    <div class="stats-card">
-      <div>
-        <div class="total-label">إجمالي الفاتورة الحالية</div>
-        <div class="total-val" id="totalAmountText">0.00 جنيه</div>
-      </div>
-      <div class="stat-badge" id="totalQtyText">0 قطعة</div>
-    </div>
-
-    <div class="scanner-box" id="scannerWrapper">
-      <div id="reader"></div>
-      <button type="button" class="cam-close-btn" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
-    </div>
-
-    <div class="search-area">
-      <div class="search-input-box">
-        <i class="fa-solid fa-barcode" title="تشغيل ماسح الباركود" onclick="startCamera()"></i>
-        <input type="text" id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." onkeydown="if(event.key==='Enter') searchProduct(this.value)">
-        <i class="fa-solid fa-magnifying-glass" onclick="searchProduct(document.getElementById('barcodeSearchInput').value)"></i>
-      </div>
-    </div>
-
-    <div class="content-area">
-      <div class="cart-box">
-        <div class="cart-header">
-          <span>قائمة الأصناف بالفاتورة</span>
-          <span style="color: #64748b; font-weight: normal;" id="itemsCountText">0 صنف</span>
-        </div>
-        <div id="cartListContainer">
-          <div style="text-align: center; padding: 30px 10px; color: #94a3b8; font-size: 13px;">
-            <i class="fa-solid fa-basket-shopping" style="font-size: 32px; margin-bottom: 10px; display: block; opacity: 0.4;"></i>
-            لم يتم إضافة منتجات في الفاتورة بعد
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>طريقة السداد</label>
-        <select id="payMethod" class="form-select">
-          <option value="كاش">💵 نقدي (كاش)</option>
-          <option value="فيزا">💳 شبكة / فيزا</option>
-          <option value="إنستاباي">⚡ تحويل إنستاباي</option>
-        </select>
-      </div>
-
-      <button type="button" class="btn-checkout" id="saveInvoiceBtn" onclick="checkout()">
-        <i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل
-      </button>
-    </div>
+  <div class="top-header">
+    <i class="fa-solid fa-cash-register" style="font-size:20px;"></i>
+    <h1>نقطة البيع - الكاشير</h1>
+    <div></div>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec";
 
-    let html5QrCode = null;
-    let isScanning = false;
-    let cart = [];
+  <div class="stats-card">
 
-    function startCamera() {
-      document.getElementById('scannerWrapper').style.display = 'block';
-      if (isScanning) return;
+    <div>
+      <div class="total-label">
+        إجمالي الفاتورة الحالية
+      </div>
 
-      html5QrCode = new Html5Qrcode("reader");
-      const config = {
-        fps: 20,
-        qrbox: { width: 250, height: 120 },
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E
-        ]
+      <div class="total-val" id="totalAmountText">
+        0.00 جنيه
+      </div>
+    </div>
+
+    <div class="stat-badge" id="totalQtyText">
+      0 قطعة
+    </div>
+
+  </div>
+
+
+  <!-- الكاميرا -->
+  <div class="scanner-box" id="scannerWrapper">
+
+    <div id="reader"></div>
+
+    <button
+      type="button"
+      class="cam-close-btn"
+      onclick="stopCamera()">
+      إغلاق الكاميرا ✕
+    </button>
+
+  </div>
+
+
+  <!-- البحث -->
+  <div class="search-area">
+
+    <div class="search-input-box">
+
+      <i
+        class="fa-solid fa-barcode"
+        title="تشغيل ماسح الباركود"
+        onclick="startCamera()">
+      </i>
+
+      <input
+        type="text"
+        id="barcodeSearchInput"
+        placeholder="امسح الباركود أو ابحث هنا..."
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') searchProduct(this.value)">
+
+      <i
+        class="fa-solid fa-magnifying-glass"
+        onclick="searchProduct(document.getElementById('barcodeSearchInput').value)">
+      </i>
+
+    </div>
+
+  </div>
+
+
+  <div class="content-area">
+
+    <div class="cart-box">
+
+      <div class="cart-header">
+
+        <span>
+          قائمة الأصناف بالفاتورة
+        </span>
+
+        <span
+          style="color:#64748b;font-weight:normal;"
+          id="itemsCountText">
+          0 صنف
+        </span>
+
+      </div>
+
+
+      <div id="cartListContainer">
+
+        <div style="
+          text-align:center;
+          padding:30px 10px;
+          color:#94a3b8;
+          font-size:13px;
+        ">
+
+          <i
+            class="fa-solid fa-basket-shopping"
+            style="
+              font-size:32px;
+              margin-bottom:10px;
+              display:block;
+              opacity:0.4;
+            ">
+          </i>
+
+          لم يتم إضافة منتجات في الفاتورة بعد
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        طريقة السداد
+      </label>
+
+      <select
+        id="payMethod"
+        class="form-select">
+
+        <option value="كاش">
+          💵 نقدي (كاش)
+        </option>
+
+        <option value="فيزا">
+          💳 شبكة / فيزا
+        </option>
+
+        <option value="إنستاباي">
+          ⚡ تحويل إنستاباي
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn-checkout"
+      id="saveInvoiceBtn"
+      onclick="checkout()">
+
+      <i class="fa-solid fa-circle-check"></i>
+
+      حفظ الفاتورة وتحديث الإكسل
+
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec";
+
+
+let html5QrCode = null;
+let isScanning = false;
+
+let cart = [];
+
+let isSearching = false;
+let isSaving = false;
+
+
+/* =========================
+   تشغيل الكاميرا
+========================= */
+
+function startCamera() {
+
+  document.getElementById("scannerWrapper").style.display = "block";
+
+  if (isScanning) return;
+
+  html5QrCode = new Html5Qrcode("reader");
+
+  const config = {
+
+    fps: 20,
+
+    qrbox: {
+      width: 250,
+      height: 120
+    },
+
+    formatsToSupport: [
+
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39,
+      Html5QrcodeSupportedFormats.UPC_A,
+      Html5QrcodeSupportedFormats.UPC_E
+
+    ]
+
+  };
+
+
+  html5QrCode.start(
+
+    { facingMode: "environment" },
+
+    config,
+
+    function(decodedText) {
+
+      searchProduct(decodedText);
+
+      stopCamera();
+
+    }
+
+  ).catch(function(err) {
+
+    alert(
+      "تأكد من إعطاء المتصفح صلاحية الكاميرا: " + err
+    );
+
+    stopCamera();
+
+  });
+
+
+  isScanning = true;
+
+}
+
+
+/* =========================
+   إيقاف الكاميرا
+========================= */
+
+function stopCamera() {
+
+  if (html5QrCode && isScanning) {
+
+    html5QrCode.stop()
+
+    .then(function() {
+
+      document.getElementById("scannerWrapper").style.display = "none";
+
+      isScanning = false;
+
+    })
+
+    .catch(function() {
+
+      document.getElementById("scannerWrapper").style.display = "none";
+
+      isScanning = false;
+
+    });
+
+  } else {
+
+    document.getElementById("scannerWrapper").style.display = "none";
+
+    isScanning = false;
+
+  }
+
+}
+
+
+/* =========================
+   البحث عن المنتج
+========================= */
+
+function searchProduct(barcode) {
+
+  barcode = String(barcode || "").trim();
+
+  if (!barcode) return;
+
+  if (isSearching) return;
+
+  isSearching = true;
+
+
+  fetch(
+    SCRIPT_URL +
+    "?action=findProduct&barcode=" +
+    encodeURIComponent(barcode)
+  )
+
+  .then(function(res) {
+
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+
+    return res.json();
+
+  })
+
+  .then(function(data) {
+
+    if (data && data.name) {
+
+      addToCart(data);
+
+      document.getElementById("barcodeSearchInput").value = "";
+
+    } else {
+
+      alert(
+        "المنتج ذو الباركود (" +
+        barcode +
+        ") غير موجود في الشيت!"
+      );
+
+    }
+
+  })
+
+  .catch(function(err) {
+
+    alert(
+      "خطأ في الاتصال بالنظام: " +
+      err.message
+    );
+
+  })
+
+  .finally(function() {
+
+    isSearching = false;
+
+  });
+
+}
+
+
+/* =========================
+   إضافة المنتج للسلة
+========================= */
+
+function addToCart(prod) {
+
+  const stock = Number(prod.stock) || 0;
+  const price = Number(prod.price) || 0;
+
+  const barcode = String(prod.barcode || "").trim();
+
+
+  /* منع المنتج المنتهي */
+
+  if (stock <= 0) {
+
+    alert(
+      '🚨 عذراً، منتج "' +
+      prod.name +
+      '" نفد من المخزون بالكامل ولا يمكن بيعه!'
+    );
+
+    return;
+
+  }
+
+
+  const existing = cart.find(function(item) {
+
+    return String(item.barcode) === barcode;
+
+  });
+
+
+  if (existing) {
+
+    /*
+      تحديث آخر رصيد وصل من الشيت
+    */
+
+    existing.stock = stock;
+
+
+    if (existing.qty >= stock) {
+
+      alert(
+        '⚠️ المتاح من "' +
+        prod.name +
+        '" هو ' +
+        stock +
+        " قطعة فقط.\n" +
+        "تمت إضافة الكمية المتاحة بالفعل للسلة."
+      );
+
+      return;
+
+    }
+
+
+    existing.qty += 1;
+
+  } else {
+
+    cart.push({
+
+      barcode: barcode,
+
+      name: prod.name,
+
+      price: price,
+
+      stock: stock,
+
+      qty: 1
+
+    });
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =========================
+   تغيير الكمية
+========================= */
+
+function updateQty(idx, change) {
+
+  const item = cart[idx];
+
+  if (!item) return;
+
+
+  const newQty =
+    Number(item.qty) +
+    Number(change);
+
+
+  if (newQty > Number(item.stock)) {
+
+    alert(
+      '⚠️ لا يمكن إضافة كمية أخرى من "' +
+      item.name +
+      '".\n' +
+      "الرصيد المتاح بالمخزن: " +
+      item.stock +
+      " قطعة."
+    );
+
+    return;
+
+  }
+
+
+  if (newQty <= 0) {
+
+    cart.splice(idx, 1);
+
+  } else {
+
+    item.qty = newQty;
+
+  }
+
+
+  renderCart();
+
+}
+
+
+/* =========================
+   عرض السلة
+========================= */
+
+function renderCart() {
+
+  const container =
+    document.getElementById("cartListContainer");
+
+
+  if (cart.length === 0) {
+
+    container.innerHTML = `
+
+      <div style="
+        text-align:center;
+        padding:30px 10px;
+        color:#94a3b8;
+        font-size:13px;
+      ">
+
+        <i
+          class="fa-solid fa-basket-shopping"
+          style="
+            font-size:32px;
+            margin-bottom:10px;
+            display:block;
+            opacity:0.4;
+          ">
+        </i>
+
+        لم يتم إضافة منتجات في الفاتورة بعد
+
+      </div>
+
+    `;
+
+
+    document.getElementById("totalAmountText").innerText =
+      "0.00 جنيه";
+
+    document.getElementById("totalQtyText").innerText =
+      "0 قطعة";
+
+    document.getElementById("itemsCountText").innerText =
+      "0 صنف";
+
+    return;
+
+  }
+
+
+  let html = "";
+
+  let grandTotal = 0;
+
+  let totalPieces = 0;
+
+
+  cart.forEach(function(item, idx) {
+
+    const total =
+      Number(item.qty) *
+      Number(item.price);
+
+
+    grandTotal += total;
+
+    totalPieces += Number(item.qty);
+
+
+    html += `
+
+      <div class="cart-item">
+
+        <div>
+
+          <div class="item-name">
+            ${escapeHtml(item.name)}
+          </div>
+
+          <div class="item-calc">
+
+            ${Number(item.price).toFixed(2)}
+            جنيه ×
+            ${item.qty}
+
+            =
+
+            <b>
+              ${total.toFixed(2)}
+            </b>
+
+          </div>
+
+          <div class="stock-text">
+
+            المتاح بالمخزن:
+            ${item.stock}
+
+          </div>
+
+        </div>
+
+
+        <div class="item-controls">
+
+          <button
+            type="button"
+            class="control-btn"
+            onclick="updateQty(${idx}, -1)">
+            -
+          </button>
+
+
+          <span style="
+            font-size:13px;
+            font-weight:bold;
+            min-width:20px;
+            text-align:center;
+          ">
+
+            ${item.qty}
+
+          </span>
+
+
+          <button
+            type="button"
+            class="control-btn"
+            onclick="updateQty(${idx}, 1)">
+            +
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+
+  container.innerHTML = html;
+
+
+  document.getElementById("totalAmountText").innerText =
+    grandTotal.toFixed(2) +
+    " جنيه";
+
+
+  document.getElementById("totalQtyText").innerText =
+    totalPieces +
+    " قطعة";
+
+
+  document.getElementById("itemsCountText").innerText =
+    cart.length +
+    " صنف";
+
+}
+
+
+/* =========================
+   حماية عرض أسماء المنتجات
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value || "")
+
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   حفظ الفاتورة
+========================= */
+
+function checkout() {
+
+  if (isSaving) return;
+
+
+  if (cart.length === 0) {
+
+    alert("الفاتورة فارغة!");
+
+    return;
+
+  }
+
+
+  /*
+    فحص محلي قبل الإرسال
+  */
+
+  for (const item of cart) {
+
+    const qty =
+      Number(item.qty);
+
+    const stock =
+      Number(item.stock);
+
+
+    if (!Number.isFinite(qty) || qty <= 0) {
+
+      alert(
+        "خطأ في كمية المنتج: " +
+        item.name
+      );
+
+      return;
+
+    }
+
+
+    if (qty > stock) {
+
+      alert(
+
+        "⚠️ لا يمكن إتمام الفاتورة.\n\n" +
+
+        "المنتج: " +
+        item.name +
+        "\n" +
+
+        "المطلوب: " +
+        qty +
+        "\n" +
+
+        "المتاح حسب آخر قراءة: " +
+        stock
+
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const btn =
+    document.getElementById("saveInvoiceBtn");
+
+
+  isSaving = true;
+
+  btn.disabled = true;
+
+  btn.innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق من المخزون والحفظ...';
+
+
+  /*
+    لا يتم إنشاء رقم الفاتورة هنا.
+
+    Apps Script هو المسؤول عن:
+    1- إعادة فحص المخزون
+    2- إنشاء رقم الفاتورة
+    3- تسجيل الفاتورة
+    4- خصم المخزون
+  */
+
+  const payload = {
+
+    paymentMethod:
+      document.getElementById("payMethod").value,
+
+    items: cart.map(function(item) {
+
+      return {
+
+        barcode:
+          String(item.barcode),
+
+        name:
+          item.name,
+
+        price:
+          Number(item.price),
+
+        qty:
+          Number(item.qty)
+
       };
 
-      html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText) => {
-          searchProduct(decodedText);
-          stopCamera();
-        }
-      ).catch(err => {
-        alert("تأكد من إعطاء المتصفح صلاحية الكاميرا: " + err);
-        stopCamera();
-      });
+    })
 
-      isScanning = true;
+  };
+
+
+  fetch(SCRIPT_URL, {
+
+    method: "POST",
+
+    body: JSON.stringify({
+
+      action: "saveInvoice",
+
+      payload: payload
+
+    })
+
+  })
+
+  .then(function(res) {
+
+    if (!res.ok) {
+
+      throw new Error(
+        "HTTP " +
+        res.status
+      );
+
     }
 
-    function stopCamera() {
-      if (html5QrCode && isScanning) {
-        html5QrCode.stop().then(() => {
-          document.getElementById('scannerWrapper').style.display = 'none';
-          isScanning = false;
-        }).catch(() => {
-          document.getElementById('scannerWrapper').style.display = 'none';
-          isScanning = false;
-        });
-      } else {
-        document.getElementById('scannerWrapper').style.display = 'none';
-        isScanning = false;
+    return res.json();
+
+  })
+
+  .then(function(res) {
+
+    if (res.success) {
+
+      let message =
+        "✅ تم حفظ الفاتورة بنجاح";
+
+
+      if (res.invoiceNumber !== undefined &&
+          res.invoiceNumber !== null &&
+          res.invoiceNumber !== "") {
+
+        message +=
+          "\nرقم الفاتورة: " +
+          res.invoiceNumber;
+
       }
-    }
 
-    function searchProduct(barcode) {
-      if (!barcode || !barcode.trim()) return;
-      fetch(`${SCRIPT_URL}?action=findProduct&barcode=${encodeURIComponent(barcode.trim())}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.name) {
-            addToCart(data);
-          } else {
-            alert("المنتج ذو الباركود (" + barcode + ") غير موجود في الشيت!");
-          }
-        })
-        .catch(err => alert("خطأ في الاتصال: " + err));
-    }
 
-    function addToCart(prod) {
-      const existing = cart.find(item => String(item.barcode) === String(prod.barcode));
-      if (existing) {
-        if (existing.qty + 1 > prod.stock) return alert("الكمية بالمخزن لا تكفي! الرصيد: " + prod.stock);
-        existing.qty += 1;
-      } else {
-        if (prod.stock < 1) return alert("نفد رصيد الصنف بالمخزن تماماً!");
-        cart.push({ barcode: prod.barcode, name: prod.name, price: prod.price, stock: prod.stock, qty: 1 });
+      if (res.message) {
+
+        message +=
+          "\n" +
+          res.message;
+
       }
+
+
+      alert(message);
+
+
+      cart = [];
+
       renderCart();
+
+
+      document.getElementById(
+        "barcodeSearchInput"
+      ).value = "";
+
+
+      document.getElementById(
+        "barcodeSearchInput"
+      ).focus();
+
+    } else {
+
+      alert(
+
+        "⚠️ لم يتم حفظ الفاتورة\n\n" +
+
+        (
+          res.message ||
+          "حدث خطأ غير معروف"
+        )
+
+      );
+
     }
 
-    function updateQty(idx, change) {
-      const item = cart[idx];
-      if (item.qty + change > item.stock) return alert("تجاوزت الرصيد المتاح بالمخزن!");
-      item.qty += change;
-      if (item.qty <= 0) cart.splice(idx, 1);
-      renderCart();
-    }
+  })
 
-    function renderCart() {
-      const container = document.getElementById('cartListContainer');
-      if (cart.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; padding: 30px 10px; color: #94a3b8; font-size: 13px;">
-            <i class="fa-solid fa-basket-shopping" style="font-size: 32px; margin-bottom: 10px; display: block; opacity: 0.4;"></i>
-            لم يتم إضافة منتجات في الفاتورة بعد
-          </div>`;
-        document.getElementById('totalAmountText').innerText = "0.00 جنيه";
-        document.getElementById('totalQtyText').innerText = "0 قطعة";
-        document.getElementById('itemsCountText').innerText = "0 صنف";
-        return;
-      }
+  .catch(function(err) {
 
-      let html = '';
-      let grandTotal = 0;
-      let totalPieces = 0;
+    alert(
 
-      cart.forEach((item, idx) => {
-        const total = item.qty * item.price;
-        grandTotal += total;
-        totalPieces += item.qty;
+      "❌ حدث خطأ أثناء الاتصال بالنظام:\n" +
 
-        html += `
-          <div class="cart-item">
-            <div>
-              <div class="item-name">${item.name}</div>
-              <div class="item-calc">${item.price} جنيه × ${item.qty} = <b>${total.toFixed(2)}</b></div>
-            </div>
-            <div class="item-controls">
-              <button type="button" class="control-btn" onclick="updateQty(${idx}, -1)">-</button>
-              <span style="font-size: 13px; font-weight: bold; min-width: 20px; text-align: center;">${item.qty}</span>
-              <button type="button" class="control-btn" onclick="updateQty(${idx}, 1)">+</button>
-            </div>
-          </div>`;
-      });
+      err.message
 
-      container.innerHTML = html;
-      document.getElementById('totalAmountText').innerText = grandTotal.toFixed(2) + " جنيه";
-      document.getElementById('totalQtyText').innerText = totalPieces + " قطعة";
-      document.getElementById('itemsCountText').innerText = cart.length + " صنف";
-    }
+    );
 
-    function checkout() {
-      if (cart.length === 0) return alert("الفاتورة فارغة!");
-      const btn = document.getElementById('saveInvoiceBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ في الإكسل...';
+  })
 
-      const payload = {
-        invoiceNumber: "INV-" + Math.floor(100000 + Math.random() * 900000),
-        paymentMethod: document.getElementById('payMethod').value,
-        items: cart
-      };
+  .finally(function() {
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "saveInvoice", payload: payload })
-      })
-      .then(res => res.json())
-      .then(res => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';
-        if (res.success) {
-          alert("✅ " + res.message);
-          cart = [];
-          renderCart();
-        } else {
-          alert("⚠️ " + res.message);
-        }
-      })
-      .catch(err => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';
-        alert("خطأ: " + err);
-      });
-    }
-  </script>
+    isSaving = false;
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+      '<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';
+
+  });
+
+}
+
+
+/* وضع المؤشر تلقائياً في خانة الباركود */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    document.getElementById(
+      "barcodeSearchInput"
+    ).focus();
+
+  }
+);
+
+</script>
+
 </body>
 </html>
