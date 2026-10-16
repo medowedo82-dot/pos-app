@@ -1,1133 +1,553 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>لوحة تحكم الإدارة والمخازن</title>
-
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style>
-    :root {
-      --primary: #004d34;
-      --bg: #f8fafc;
-      --border: #e2e8f0;
-      --text-muted: #64748b;
-      --success: #15803d;
-      --success-bg: #f0fdf4;
-      --warning: #b45309;
-      --warning-bg: #fffbeb;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      padding-bottom: 30px;
-    }
-
-    .top-header {
-      background-color: var(--primary);
-      color: white;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .top-header h1 {
-      font-size: 17px;
-      font-weight: 600;
-    }
-
-    .scanner-container {
-      display: none;
-      margin: 12px;
-      background: #000;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 2px solid var(--primary);
-    }
-
-    #reader {
-      width: 100%;
-    }
-
-    .close-cam-btn {
-      width: 100%;
-      background: #dc2626;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .screen-content {
-      padding: 14px;
-      max-width: 520px;
-      margin: auto;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text-muted);
-    }
-
-    .form-control {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 25px;
-      padding: 10px 16px;
-      outline: none;
-      font-size: 14px;
-      background: white;
-    }
-
-    .form-control:focus,
-    .search-box-wrapper:focus-within {
-      border-color: var(--primary);
-    }
-
-    .form-control[readonly] {
-      background: #f1f5f9;
-      color: #475569;
-    }
-
-    .search-box-wrapper {
-      display: flex;
-      align-items: center;
-      background: white;
-      border: 1px solid #cbd5e1;
-      border-radius: 25px;
-      padding: 4px 12px;
-      gap: 8px;
-    }
-
-    .search-box-wrapper input {
-      border: none;
-      outline: none;
-      flex: 1;
-      padding: 8px;
-      font-size: 14px;
-      min-width: 0;
-    }
-
-    .search-btn-icon {
-      color: var(--primary);
-      font-size: 18px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn-submit:disabled {
-      opacity: .65;
-      cursor: not-allowed;
-    }
-
-    .product-status {
-      display: none;
-      border-radius: 14px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .product-status.found {
-      display: block;
-      background: var(--success-bg);
-      border: 1px solid #bbf7d0;
-      color: var(--success);
-    }
-
-    .product-status.new {
-      display: block;
-      background: var(--warning-bg);
-      border: 1px solid #fde68a;
-      color: var(--warning);
-    }
-
-    .product-status.searching {
-      display: block;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
-    }
-
-    .stock-card {
-      display: none;
-      background: var(--primary);
-      color: white;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .stock-card.show {
-      display: flex;
-    }
-
-    .stock-card .label {
-      font-size: 12px;
-      opacity: .85;
-    }
-
-    .stock-card .stock-number {
-      font-size: 28px;
-      font-weight: 800;
-      margin-top: 2px;
-    }
-
-    .stock-card i {
-      font-size: 28px;
-      opacity: .8;
-    }
-
-    #lock-screen {
-      position: fixed;
-      inset: 0;
-      background: #004d34;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      padding: 20px;
-      color: white;
-    }
-
-    .lock-box {
-      background: white;
-      color: #1e293b;
-      padding: 25px 20px;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 320px;
-      text-align: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة تحكم الإدارة والمخازن</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#004d34;--bg:#f8fafc;--border:#e2e8f0;--text-muted:#64748b;--success:#15803d;--success-bg:#f0fdf4;--warning:#b45309;--warning-bg:#fffbeb}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:var(--bg);padding-bottom:30px}
+.top-header{background:var(--primary);color:white;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.top-header h1{font-size:17px;font-weight:600}
+.scanner-container{display:none;margin:12px;background:#000;border-radius:16px;overflow:hidden;border:2px solid var(--primary)}
+#reader{width:100%}
+.close-cam-btn{width:100%;background:#dc2626;color:white;border:0;padding:8px;font-weight:bold;cursor:pointer}
+.screen-content{padding:14px;max-width:520px;margin:auto}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-muted)}
+.form-control{width:100%;border:1px solid #cbd5e1;border-radius:25px;padding:10px 16px;outline:none;font-size:14px;background:white}
+.form-control:focus,.search-box-wrapper:focus-within{border-color:var(--primary)}
+.form-control[readonly]{background:#f1f5f9;color:#475569}
+.search-box-wrapper{display:flex;align-items:center;background:white;border:1px solid #cbd5e1;border-radius:25px;padding:4px 12px;gap:8px}
+.search-box-wrapper input{border:0;outline:0;flex:1;padding:8px;font-size:14px;min-width:0}
+.search-btn-icon{color:var(--primary);font-size:18px;cursor:pointer;padding:4px}
+.btn-submit{width:100%;background:var(--primary);color:white;border:0;border-radius:25px;padding:12px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-submit:disabled{opacity:.65;cursor:not-allowed}
+.product-status{display:none;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.7}
+.product-status.found{display:block;background:var(--success-bg);border:1px solid #bbf7d0;color:var(--success)}
+.product-status.new{display:block;background:var(--warning-bg);border:1px solid #fde68a;color:var(--warning)}
+.product-status.searching{display:block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
+.stock-card{display:none;background:var(--primary);color:white;border-radius:16px;padding:16px;margin-bottom:14px;justify-content:space-between;align-items:center}
+.stock-card.show{display:flex}
+.stock-card .label{font-size:12px;opacity:.85}
+.stock-card .stock-number{font-size:28px;font-weight:800;margin-top:2px}
+.stock-card i{font-size:28px;opacity:.8}
+#lock-screen{position:fixed;inset:0;background:#004d34;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;padding:20px;color:white}
+.lock-box{background:white;color:#1e293b;padding:25px 20px;border-radius:20px;width:100%;max-width:320px;text-align:center}
+.price-row{display:flex;gap:8px}
+.price-row>.form-group{flex:1;min-width:0}
+.profit-card{background:#eaf8ee;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px 15px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.profit-card strong{font-size:19px;direction:ltr}
+.helper{font-size:11px;color:#64748b;margin-top:5px;line-height:1.6}
+@media(max-width:340px){.price-row{flex-direction:column}}
+</style>
 </head>
-
 <body>
 
-  <div id="lock-screen">
-    <div class="lock-box">
-      <i class="fa-solid fa-lock"
-         style="font-size:36px;color:#004d34;margin-bottom:12px;"></i>
+<div id="lock-screen">
+<div class="lock-box">
+<i class="fa-solid fa-lock" style="font-size:36px;color:#004d34;margin-bottom:12px"></i>
+<h3 style="margin-bottom:8px">لوحة الإدارة والمخزن</h3>
+<p style="font-size:12px;color:#64748b;margin-bottom:16px">أدخل الرقم السري للمتابعة</p>
+<input type="password" id="pinCodeInput" class="form-control" placeholder="رمز PIN" style="text-align:center;font-size:18px;margin-bottom:14px" onkeydown="if(event.key==='Enter')verifyPin()">
+<button type="button" class="btn-submit" onclick="verifyPin()">دخول</button>
+</div>
+</div>
 
-      <h3 style="margin-bottom:8px;">لوحة الإدارة والمخزن</h3>
+<div class="top-header">
+<i class="fa-solid fa-boxes-stacked"></i>
+<h1>إدارة المخزون والمنتجات</h1>
+<div></div>
+</div>
 
-      <p style="font-size:12px;color:#64748b;margin-bottom:16px;">
-        أدخل الرقم السري للمتابعة
-      </p>
+<div class="scanner-container" id="scannerWrapper">
+<div id="reader"></div>
+<button type="button" class="close-cam-btn" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
+</div>
 
-      <input
-        type="password"
-        id="pinCodeInput"
-        class="form-control"
-        placeholder="رمز PIN"
-        style="text-align:center;font-size:18px;margin-bottom:14px;"
-        onkeydown="if(event.key==='Enter') verifyPin()"
-      >
+<div class="screen-content">
+<div class="form-group">
+<label>الباركود *</label>
+<div class="search-box-wrapper">
+<input type="text" id="addBarcode" placeholder="امسح أو اكتب الباركود" autocomplete="off" onkeydown="if(event.key==='Enter')searchExistingProduct()">
+<i class="fa-solid fa-magnifying-glass search-btn-icon" title="بحث عن المنتج" onclick="searchExistingProduct()"></i>
+<i class="fa-solid fa-barcode search-btn-icon" title="مسح باركود المنتج" onclick="startCamera()"></i>
+</div>
+</div>
 
-      <button type="button" class="btn-submit" onclick="verifyPin()">
-        دخول
-      </button>
-    </div>
-  </div>
+<div id="productStatus" class="product-status"></div>
 
+<div id="stockCard" class="stock-card">
+<div>
+<div class="label">الرصيد الحالي بالمخزون</div>
+<div class="stock-number" id="currentStockText">0</div>
+<div class="label">قطعة</div>
+</div>
+<i class="fa-solid fa-boxes-stacked"></i>
+</div>
 
-  <div class="top-header">
-    <i class="fa-solid fa-boxes-stacked"></i>
-    <h1>إدارة المخزون والمنتجات</h1>
-    <div></div>
-  </div>
+<div class="form-group">
+<label>اسم المنتج *</label>
+<input type="text" id="addName" class="form-control" placeholder="اسم الصنف">
+</div>
 
+<div class="form-group">
+<label>الفئة / الصنف</label>
+<input type="text" id="addCategory" class="form-control" placeholder="مثال: مشروبات / ملابس">
+</div>
 
-  <div class="scanner-container" id="scannerWrapper">
-    <div id="reader"></div>
+<div class="price-row">
+<div class="form-group">
+<label>سعر البيع (جنيه) *</label>
+<input type="number" id="addPrice" class="form-control" placeholder="0.00" min="0" step="0.01">
+</div>
+<div class="form-group">
+<label id="costLabel">سعر الشراء / الجملة (جنيه) *</label>
+<input type="number" id="addCost" class="form-control" placeholder="0.00" min="0" step="0.01">
+<div class="helper" id="costHelp">تكلفة شراء القطعة من المورد</div>
+</div>
+</div>
 
-    <button
-      type="button"
-      class="close-cam-btn"
-      onclick="stopCamera()">
-      إغلاق الكاميرا ✕
-    </button>
-  </div>
+<div class="profit-card">
+<span id="profitLabel">المكسب المتوقع للقطعة</span>
+<strong id="profitValue">—</strong>
+</div>
 
+<div class="form-group">
+<label id="stockInputLabel">الرصيد المضاف (قطع) *</label>
+<input type="number" id="addStock" class="form-control" value="1" min="1" step="1">
+</div>
 
-  <div class="screen-content">
-
-    <!-- الباركود أولاً -->
-    <div class="form-group">
-      <label>الباركود *</label>
-
-      <div class="search-box-wrapper">
-
-        <input
-          type="text"
-          id="addBarcode"
-          placeholder="امسح أو اكتب الباركود"
-          autocomplete="off"
-          onkeydown="if(event.key==='Enter') searchExistingProduct()"
-        >
-
-        <i
-          class="fa-solid fa-magnifying-glass search-btn-icon"
-          title="بحث عن المنتج"
-          onclick="searchExistingProduct()">
-        </i>
-
-        <i
-          class="fa-solid fa-barcode search-btn-icon"
-          title="مسح باركود المنتج"
-          onclick="startCamera()">
-        </i>
-
-      </div>
-    </div>
-
-
-    <!-- حالة البحث -->
-    <div id="productStatus" class="product-status"></div>
-
-
-    <!-- الرصيد الحالي -->
-    <div id="stockCard" class="stock-card">
-      <div>
-        <div class="label">الرصيد الحالي بالمخزون</div>
-        <div class="stock-number" id="currentStockText">0</div>
-        <div class="label">قطعة</div>
-      </div>
-
-      <i class="fa-solid fa-boxes-stacked"></i>
-    </div>
-
-
-    <div class="form-group">
-      <label>اسم المنتج *</label>
-
-      <input
-        type="text"
-        id="addName"
-        class="form-control"
-        placeholder="اسم الصنف">
-    </div>
-
-
-    <div class="form-group">
-      <label>الفئة / الصنف</label>
-
-      <input
-        type="text"
-        id="addCategory"
-        class="form-control"
-        placeholder="مثال: مشروبات / ملابس">
-    </div>
-
-
-    <div style="display:flex;gap:8px;">
-
-      <div class="form-group" style="flex:1;">
-        <label>سعر البيع (جنيه) *</label>
-
-        <input
-          type="number"
-          id="addPrice"
-          class="form-control"
-          placeholder="0.00"
-          min="0"
-          step="0.01">
-      </div>
-
-
-      <div class="form-group" style="flex:1;">
-        <label id="stockInputLabel">الرصيد المضاف (قطع) *</label>
-
-        <input
-          type="number"
-          id="addStock"
-          class="form-control"
-          value="1"
-          min="1"
-          step="1">
-      </div>
-
-    </div>
-
-
-    <button
-      type="button"
-      class="btn-submit"
-      id="saveProdBtn"
-      onclick="submitProductToSheet()">
-
-      <i class="fa-solid fa-box-archive"></i>
-      حفظ في شيت الإكسل
-
-    </button>
-
-  </div>
-
+<button type="button" class="btn-submit" id="saveProdBtn" onclick="submitProductToSheet()">
+<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل
+</button>
+</div>
 
 <script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec';
+const ADMIN_PIN='1234';
 
-const SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec";
+let html5QrCode=null;
+let isScanning=false;
+let isSearching=false;
+let isSaving=false;
+let productMode=false;
+let currentProduct=null;
 
-const ADMIN_PIN = "1234";
+const el=id=>document.getElementById(id);
 
-
-let html5QrCode = null;
-let isScanning = false;
-let isSearching = false;
-
-/*
-  false = لم يتم البحث بعد
-  existing = المنتج موجود
-  new = منتج جديد
-*/
-let productMode = false;
-let currentProduct = null;
-
-
-/* =========================
-   تسجيل الدخول
-========================= */
-
-function verifyPin() {
-
-  const entered =
-    document.getElementById("pinCodeInput").value;
-
-  if (entered === ADMIN_PIN) {
-
-    document.getElementById("lock-screen").style.display = "none";
-
-    setTimeout(function() {
-      document.getElementById("addBarcode").focus();
-    }, 100);
-
-  } else {
-
-    alert("رمز المرور غير صحيح!");
-
+function verifyPin(){
+  if(el('pinCodeInput').value===ADMIN_PIN){
+    el('lock-screen').style.display='none';
+    setTimeout(()=>el('addBarcode').focus(),100);
+  }else{
+    alert('رمز المرور غير صحيح!');
   }
-
 }
 
+async function startCamera(){
+  el('scannerWrapper').style.display='block';
+  if(isScanning)return;
 
-/* =========================
-   تشغيل الكاميرا
-========================= */
-
-function startCamera() {
-
-  document.getElementById("scannerWrapper").style.display = "block";
-
-  if (isScanning) return;
-
-  html5QrCode = new Html5Qrcode("reader");
-
-  const config = {
-
-    fps: 20,
-
-    qrbox: {
-      width: 260,
-      height: 130
-    },
-
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E
-    ]
-
-  };
-
-
-  html5QrCode.start(
-
-    { facingMode: "environment" },
-
-    config,
-
-    function(decodedText) {
-
-      document.getElementById("addBarcode").value =
-        decodedText;
-
-      stopCamera();
-
-      /*
-        بمجرد قراءة الباركود:
-        ابحث عن المنتج مباشرة
-      */
-      setTimeout(function() {
-        searchExistingProduct();
-      }, 250);
-
-    }
-
-  ).catch(function(err) {
-
-    alert("تأكد من إذن الكاميرا: " + err);
-
-    stopCamera();
-
-  });
-
-
-  isScanning = true;
-
-}
-
-
-/* =========================
-   إيقاف الكاميرا
-========================= */
-
-function stopCamera() {
-
-  if (html5QrCode && isScanning) {
-
-    html5QrCode.stop()
-
-      .then(function() {
-
-        document.getElementById("scannerWrapper").style.display = "none";
-        isScanning = false;
-
-      })
-
-      .catch(function() {
-
-        document.getElementById("scannerWrapper").style.display = "none";
-        isScanning = false;
-
-      });
-
-  } else {
-
-    document.getElementById("scannerWrapper").style.display = "none";
-    isScanning = false;
-
-  }
-
-}
-
-
-/* =========================
-   البحث عن المنتج
-========================= */
-
-function searchExistingProduct() {
-
-  const barcode =
-    document.getElementById("addBarcode").value.trim();
-
-  if (!barcode) {
-
-    alert("اكتب أو امسح الباركود أولاً!");
-
+  if(typeof Html5Qrcode==='undefined'){
+    alert('تعذر تحميل مكتبة الكاميرا');
+    el('scannerWrapper').style.display='none';
     return;
-
   }
 
-  if (isSearching) return;
+  try{
+    html5QrCode=new Html5Qrcode('reader');
+    isScanning=true;
 
-
-  isSearching = true;
-  productMode = false;
-  currentProduct = null;
-
-
-  showStatus(
-    "searching",
-    '<i class="fa-solid fa-spinner fa-spin"></i> جاري البحث عن المنتج...'
-  );
-
-
-  fetch(
-    SCRIPT_URL +
-    "?action=findProduct&barcode=" +
-    encodeURIComponent(barcode)
-  )
-
-  .then(function(res) {
-
-    if (!res.ok) {
-      throw new Error("HTTP " + res.status);
-    }
-
-    return res.json();
-
-  })
-
-  .then(function(data) {
-
-    /*
-      المنتج موجود
-    */
-
-    if (data && data.name) {
-
-      productMode = "existing";
-
-      currentProduct = data;
-
-
-      const stock =
-        Number(data.stock) || 0;
-
-      const price =
-        Number(data.price) || 0;
-
-
-      document.getElementById("addName").value =
-        data.name || "";
-
-      document.getElementById("addCategory").value =
-        data.category || "";
-
-      document.getElementById("addPrice").value =
-        price;
-
-
-      document.getElementById("currentStockText").innerText =
-        stock;
-
-      document.getElementById("stockCard").classList.add("show");
-
-
-      /*
-        في المنتج الموجود:
-        المستخدم يدخل الكمية الجديدة فقط
-      */
-
-      document.getElementById("addStock").value = "1";
-
-      document.getElementById("stockInputLabel").innerText =
-        "الكمية المراد إضافتها للمخزون *";
-
-
-      /*
-        البيانات تظهر، ونقفل الاسم والسعر
-        لتجنب تغيير المنتج بالخطأ أثناء التوريد.
-      */
-
-      document.getElementById("addName").readOnly = true;
-      document.getElementById("addCategory").readOnly = true;
-      document.getElementById("addPrice").readOnly = true;
-
-
-      const btn =
-        document.getElementById("saveProdBtn");
-
-      btn.innerHTML =
-        '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
-
-
-      showStatus(
-        "found",
-        '✅ المنتج موجود بالفعل — أدخل الكمية الجديدة واضغط "إضافة الكمية للمخزون".'
-      );
-
-
-      setTimeout(function() {
-
-        document.getElementById("addStock").focus();
-        document.getElementById("addStock").select();
-
-      }, 100);
-
-    }
-
-    /*
-      المنتج غير موجود
-    */
-
-    else {
-
-      setNewProductMode();
-
-    }
-
-  })
-
-  .catch(function(err) {
-
-    productMode = false;
-    currentProduct = null;
-
-    hideStockCard();
-
-    showStatus(
-      "new",
-      "❌ حدث خطأ أثناء البحث: " + err.message
+    await html5QrCode.start(
+      {facingMode:'environment'},
+      {
+        fps:20,
+        qrbox:{width:260,height:130},
+        formatsToSupport:[
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E
+        ]
+      },
+      decodedText=>{
+        el('addBarcode').value=decodedText;
+        invalidateProduct();
+        stopCamera();
+        setTimeout(searchExistingProduct,250);
+      }
     );
-
-  })
-
-  .finally(function() {
-
-    isSearching = false;
-
-  });
-
+  }catch(err){
+    isScanning=false;
+    el('scannerWrapper').style.display='none';
+    alert('تأكد من إذن الكاميرا: '+err);
+  }
 }
 
+async function stopCamera(){
+  el('scannerWrapper').style.display='none';
 
-/* =========================
-   وضع منتج جديد
-========================= */
+  if(html5QrCode&&isScanning){
+    try{await html5QrCode.stop()}catch(e){}
+    try{html5QrCode.clear()}catch(e){}
+  }
 
-function setNewProductMode() {
+  isScanning=false;
+  html5QrCode=null;
+}
 
-  productMode = "new";
-  currentProduct = null;
+function showStatus(type,message){
+  el('productStatus').className='product-status '+type;
+  el('productStatus').textContent=message;
+}
 
+function hideStockCard(){
+  el('stockCard').classList.remove('show');
+  el('currentStockText').textContent='0';
+}
+
+function updateProfit(){
+  const p=el('addPrice').value;
+  const c=el('addCost').value;
+
+  if(p===''||c===''||
+     !Number.isFinite(Number(p))||
+     !Number.isFinite(Number(c))){
+    el('profitValue').textContent='—';
+    return;
+  }
+
+  const difference=Number(p)-Number(c);
+  el('profitValue').textContent=difference.toFixed(2)+' ج';
+  el('profitValue').style.color=
+    difference<0?'#b91c1c':'#166534';
+}
+
+function setCostMode(){
+  if(productMode==='existing'){
+    el('costLabel').textContent=
+      'سعر شراء الدفعة الجديدة (جنيه) *';
+
+    el('costHelp').textContent=
+      currentProduct&&currentProduct.cost!==null
+      ?'متوسط تكلفة المخزون الحالي: '+
+        Number(currentProduct.cost).toFixed(2)+
+        ' ج — أدخل سعر شراء الدفعة الجديدة'
+      :'تكلفة المخزون القديم غير مسجلة؛ أدخلها أولًا في العمود F بالشيت إذا كان الرصيد أكبر من صفر';
+
+    el('profitLabel').textContent=
+      'مكسب القطعة بسعر شراء الدفعة الجديدة';
+  }else{
+    el('costLabel').textContent=
+      'سعر الشراء / الجملة (جنيه) *';
+    el('costHelp').textContent=
+      'تكلفة شراء القطعة من المورد';
+    el('profitLabel').textContent=
+      'المكسب المتوقع للقطعة';
+  }
+
+  updateProfit();
+}
+
+function invalidateProduct(){
+  productMode=false;
+  currentProduct=null;
   hideStockCard();
 
+  el('productStatus').className='product-status';
+  el('productStatus').textContent='';
 
-  document.getElementById("addName").value = "";
-  document.getElementById("addCategory").value = "";
-  document.getElementById("addPrice").value = "";
-  document.getElementById("addStock").value = "1";
-
-
-  document.getElementById("addName").readOnly = false;
-  document.getElementById("addCategory").readOnly = false;
-  document.getElementById("addPrice").readOnly = false;
-
-
-  document.getElementById("stockInputLabel").innerText =
-    "الرصيد الافتتاحي (قطع) *";
-
-
-  document.getElementById("saveProdBtn").innerHTML =
-    '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
-
-
-  showStatus(
-    "new",
-    "ℹ️ الباركود غير مسجل — أدخل بيانات المنتج لإنشائه لأول مرة."
+  ['addName','addCategory','addPrice'].forEach(
+    id=>el(id).readOnly=false
   );
 
-
-  setTimeout(function() {
-    document.getElementById("addName").focus();
-  }, 100);
-
-}
-
-
-/* =========================
-   حالة البحث
-========================= */
-
-function showStatus(type, message) {
-
-  const box =
-    document.getElementById("productStatus");
-
-  box.className =
-    "product-status " + type;
-
-  box.innerHTML =
-    message;
-
-}
-
-
-function hideStockCard() {
-
-  document.getElementById("stockCard").classList.remove("show");
-
-  document.getElementById("currentStockText").innerText =
-    "0";
-
-}
-
-
-/* =========================
-   حفظ / إضافة المخزون
-========================= */
-
-function submitProductToSheet() {
-
-  const barcode =
-    document.getElementById("addBarcode").value.trim();
-
-  const name =
-    document.getElementById("addName").value.trim();
-
-  const category =
-    document.getElementById("addCategory").value.trim();
-
-  const price =
-    Number(document.getElementById("addPrice").value);
-
-  const stock =
-    Number(document.getElementById("addStock").value);
-
-
-  if (!barcode) {
-
-    alert("أدخل الباركود!");
-
-    return;
-
-  }
-
-
-  /*
-    مهم:
-    لو المستخدم كتب الباركود ولم يبحث عنه،
-    نجبره يبحث أولاً لمنع إنشاء منتج مكرر.
-  */
-
-  if (!productMode) {
-
-    alert("ابحث عن الباركود أولاً للتأكد من حالة المنتج.");
-
-    searchExistingProduct();
-
-    return;
-
-  }
-
-
-  if (!Number.isFinite(stock) || stock <= 0) {
-
-    alert("أدخل كمية صحيحة أكبر من صفر!");
-
-    return;
-
-  }
-
-
-  const btn =
-    document.getElementById("saveProdBtn");
-
-  btn.disabled = true;
-
-
-  /*
-    ==========================
-    المنتج موجود
-    ==========================
-  */
-
-  if (productMode === "existing") {
-
-    btn.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i> جاري تحديث المخزون...';
-
-
-    fetch(SCRIPT_URL, {
-
-      method: "POST",
-
-      body: JSON.stringify({
-
-        action: "addStock",
-
-        payload: {
-
-          barcode: barcode,
-
-          stockToAdd: stock
-
-        }
-
-      })
-
-    })
-
-    .then(function(res) {
-
-      if (!res.ok) {
-        throw new Error("HTTP " + res.status);
-      }
-
-      return res.json();
-
-    })
-
-    .then(function(res) {
-
-      if (res.success) {
-
-        alert(
-          "✅ " +
-          (res.message || "تم تحديث المخزون بنجاح")
-        );
-
-
-        /*
-          نبحث مرة أخرى حتى يظهر
-          الرصيد الجديد مباشرة.
-        */
-
-        return searchExistingProduct();
-
-      } else {
-
-        alert(
-          "⚠️ " +
-          (res.message || "تعذر تحديث المخزون")
-        );
-
-      }
-
-    })
-
-    .catch(function(err) {
-
-      alert(
-        "خطأ أثناء تحديث المخزون: " +
-        err.message
-      );
-
-    })
-
-    .finally(function() {
-
-      btn.disabled = false;
-
-      if (productMode === "existing") {
-
-        btn.innerHTML =
-          '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
-
-      }
-
-    });
-
-
-    return;
-
-  }
-
-
-  /*
-    ==========================
-    منتج جديد
-    ==========================
-  */
-
-  if (!name || !Number.isFinite(price) || price < 0) {
-
-    btn.disabled = false;
-
-    alert("أدخل اسم الصنف وسعر البيع!");
-
-    return;
-
-  }
-
-
-  btn.innerHTML =
-    '<i class="fa-solid fa-spinner fa-spin"></i> جاري إضافة المنتج...';
-
-
-  fetch(SCRIPT_URL, {
-
-    method: "POST",
-
-    body: JSON.stringify({
-
-      action: "addNewProduct",
-
-      payload: {
-
-        barcode: barcode,
-        name: name,
-        category: category,
-        price: price,
-        stock: stock
-
-      }
-
-    })
-
-  })
-
-  .then(function(res) {
-
-    if (!res.ok) {
-      throw new Error("HTTP " + res.status);
-    }
-
-    return res.json();
-
-  })
-
-  .then(function(res) {
-
-    if (res.success) {
-
-      alert(
-        "✅ " +
-        (res.message || "تم إضافة المنتج بنجاح")
-      );
-
-      resetForm();
-
-    } else {
-
-      alert(
-        "⚠️ " +
-        (res.message || "تعذر إضافة المنتج")
-      );
-
-    }
-
-  })
-
-  .catch(function(err) {
-
-    alert(
-      "خطأ أثناء إضافة المنتج: " +
-      err.message
-    );
-
-  })
-
-  .finally(function() {
-
-    btn.disabled = false;
-
-    if (productMode === "new") {
-
-      btn.innerHTML =
-        '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
-
-    }
-
-  });
-
-}
-
-
-/* =========================
-   إعادة ضبط الصفحة
-========================= */
-
-function resetForm() {
-
-  productMode = false;
-  currentProduct = null;
-
-
-  document.getElementById("addBarcode").value = "";
-  document.getElementById("addName").value = "";
-  document.getElementById("addCategory").value = "";
-  document.getElementById("addPrice").value = "";
-  document.getElementById("addStock").value = "1";
-
-
-  document.getElementById("addName").readOnly = false;
-  document.getElementById("addCategory").readOnly = false;
-  document.getElementById("addPrice").readOnly = false;
-
-
-  document.getElementById("stockInputLabel").innerText =
-    "الرصيد المضاف (قطع) *";
-
-
-  document.getElementById("saveProdBtn").innerHTML =
+  el('addName').value='';
+  el('addCategory').value='';
+  el('addPrice').value='';
+  el('addCost').value='';
+  el('addStock').value='1';
+
+  el('stockInputLabel').textContent=
+    'الرصيد المضاف (قطع) *';
+
+  el('saveProdBtn').innerHTML=
     '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
 
-
-  document.getElementById("productStatus").className =
-    "product-status";
-
-  document.getElementById("productStatus").innerHTML =
-    "";
-
-
-  hideStockCard();
-
-
-  setTimeout(function() {
-
-    document.getElementById("addBarcode").focus();
-
-  }, 100);
-
+  setCostMode();
 }
 
+async function searchExistingProduct(){
+  if(isSearching||isSaving)return;
 
-/*
-  لو المستخدم غيّر الباركود بعد البحث،
-  نلغي حالة المنتج السابقة.
-*/
+  const barcode=el('addBarcode').value.trim();
 
-document.getElementById("addBarcode").addEventListener(
-  "input",
-  function() {
+  if(!barcode){
+    alert('اكتب أو امسح الباركود أولاً!');
+    return;
+  }
 
-    if (productMode) {
+  isSearching=true;
+  invalidateProduct();
+  showStatus('searching','جاري البحث عن المنتج...');
 
-      productMode = false;
-      currentProduct = null;
+  try{
+    const res=await fetch(
+      SCRIPT_URL+
+      '?action=findProduct&barcode='+
+      encodeURIComponent(barcode)
+    );
 
-      document.getElementById("addName").readOnly = false;
-      document.getElementById("addCategory").readOnly = false;
-      document.getElementById("addPrice").readOnly = false;
+    if(!res.ok)throw new Error('HTTP '+res.status);
 
-      hideStockCard();
+    const data=await res.json();
 
-      document.getElementById("productStatus").className =
-        "product-status";
+    if(el('addBarcode').value.trim()!==barcode)return;
 
-      document.getElementById("productStatus").innerHTML =
-        "";
-
-      document.getElementById("saveProdBtn").innerHTML =
-        '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
-
+    if(data&&data.success===false){
+      throw new Error(data.message||'فشل البحث');
     }
 
+    if(data&&data.name){
+      productMode='existing';
+      currentProduct=data;
+
+      el('addName').value=data.name||'';
+      el('addCategory').value=data.category||'';
+      el('addPrice').value=Number(data.price)||0;
+      el('addCost').value='';
+
+      el('currentStockText').textContent=
+        Number(data.stock)||0;
+
+      el('stockCard').classList.add('show');
+      el('addStock').value='1';
+
+      el('stockInputLabel').textContent=
+        'الكمية المراد إضافتها للمخزون *';
+
+      ['addName','addCategory','addPrice'].forEach(
+        id=>el(id).readOnly=true
+      );
+
+      el('saveProdBtn').innerHTML=
+        '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
+
+      showStatus(
+        'found',
+        '✅ المنتج موجود بالفعل — أدخل سعر شراء الدفعة الجديدة والكمية.'
+      );
+
+      setCostMode();
+
+      setTimeout(()=>el('addCost').focus(),100);
+    }else{
+      setNewProductMode();
+    }
+  }catch(err){
+    invalidateProduct();
+    showStatus(
+      'new',
+      '❌ حدث خطأ أثناء البحث: '+err.message
+    );
+  }finally{
+    isSearching=false;
   }
-);
+}
 
+function setNewProductMode(){
+  productMode='new';
+  currentProduct=null;
+  hideStockCard();
+
+  ['addName','addCategory','addPrice','addCost'].forEach(
+    id=>el(id).value=''
+  );
+
+  el('addStock').value='1';
+
+  ['addName','addCategory','addPrice'].forEach(
+    id=>el(id).readOnly=false
+  );
+
+  el('stockInputLabel').textContent=
+    'الرصيد الافتتاحي (قطع) *';
+
+  el('saveProdBtn').innerHTML=
+    '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
+
+  showStatus(
+    'new',
+    'ℹ️ الباركود غير مسجل — أدخل بيانات المنتج وسعر الشراء والبيع.'
+  );
+
+  setCostMode();
+
+  setTimeout(()=>el('addName').focus(),100);
+}
+
+async function submitProductToSheet(){
+  if(isSaving||isSearching)return;
+
+  const barcode=el('addBarcode').value.trim();
+  const name=el('addName').value.trim();
+  const category=el('addCategory').value.trim();
+  const priceText=el('addPrice').value;
+  const costText=el('addCost').value;
+  const stockText=el('addStock').value;
+
+  const price=Number(priceText);
+  const cost=Number(costText);
+  const stock=Number(stockText);
+
+  if(!barcode){
+    alert('أدخل الباركود!');
+    return;
+  }
+
+  if(!productMode){
+    alert('ابحث عن الباركود أولاً للتأكد من حالة المنتج.');
+    searchExistingProduct();
+    return;
+  }
+
+  if(!Number.isSafeInteger(stock)||stock<=0){
+    alert('أدخل كمية صحيحة أكبر من صفر!');
+    return;
+  }
+
+  if(costText===''||!Number.isFinite(cost)||cost<0){
+    alert('أدخل سعر شراء صحيح!');
+    return;
+  }
+
+  if(productMode==='new'&&(
+    !name||priceText===''||
+    !Number.isFinite(price)||price<0
+  )){
+    alert('أدخل اسم الصنف وسعر البيع!');
+    return;
+  }
+
+  if(
+    productMode==='existing'&&
+    currentProduct&&
+    Number(currentProduct.stock)>0&&
+    (
+      currentProduct.cost===null||
+      currentProduct.cost===undefined||
+      currentProduct.cost===''
+    )
+  ){
+    alert(
+      'لازم تسجل تكلفة المخزون القديم في العمود F بالشيت أولًا، وبعدها ابحث عن المنتج مرة أخرى.'
+    );
+    return;
+  }
+
+  const btn=el('saveProdBtn');
+  btn.disabled=true;
+  isSaving=true;
+
+  const mode=productMode;
+
+  btn.innerHTML=
+    '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+
+  const payload=mode==='existing'
+    ?{
+      barcode:barcode,
+      stockToAdd:stock,
+      cost:cost
+    }
+    :{
+      barcode:barcode,
+      name:name,
+      category:category,
+      price:price,
+      cost:cost,
+      stock:stock
+    };
+
+  try{
+    const res=await fetch(SCRIPT_URL,{
+      method:'POST',
+      body:JSON.stringify({
+        action:mode==='existing'
+          ?'addStock'
+          :'addNewProduct',
+        payload:payload
+      })
+    });
+
+    if(!res.ok){
+      throw new Error('HTTP '+res.status);
+    }
+
+    const result=await res.json();
+
+    if(!result.success){
+      throw new Error(
+        result.message||'تعذر الحفظ'
+      );
+    }
+
+    alert(
+      '✅ '+(result.message||'تم الحفظ بنجاح')
+    );
+
+    if(mode==='existing'){
+      await searchAfterSave(barcode);
+    }else{
+      resetForm();
+    }
+  }catch(err){
+    alert(
+      '⚠️ '+err.message+
+      '\nإذا انقطع الاتصال، راجع الشيت قبل إعادة الحفظ لتجنب التكرار.'
+    );
+  }finally{
+    isSaving=false;
+    btn.disabled=false;
+
+    if(productMode==='existing'){
+      btn.innerHTML=
+        '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
+    }else if(productMode==='new'){
+      btn.innerHTML=
+        '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
+    }else{
+      btn.innerHTML=
+        '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
+    }
+  }
+}
+
+async function searchAfterSave(barcode){
+  invalidateProduct();
+  el('addBarcode').value=barcode;
+  isSaving=false;
+  await searchExistingProduct();
+  isSaving=true;
+}
+
+function resetForm(){
+  invalidateProduct();
+  el('addBarcode').value='';
+  setTimeout(()=>el('addBarcode').focus(),100);
+}
+
+el('addBarcode').addEventListener('input',()=>{
+  if(!isSaving)invalidateProduct();
+});
+
+el('addPrice').addEventListener('input',updateProfit);
+el('addCost').addEventListener('input',updateProfit);
 </script>
-
 </body>
 </html>
