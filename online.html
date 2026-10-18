@@ -1,0 +1,1312 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MG | مبيعات الأونلاين</title>
+
+<style>
+:root{
+  --green:#004d34;
+  --light:#eaf5ef;
+  --line:#dce6e0;
+  --muted:#66766d
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#f3f7f4;
+  color:#19382a;
+  font:15px system-ui,sans-serif
+}
+button,input,select,textarea{font:inherit}
+button,a,input,select,textarea{touch-action:manipulation}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+header{
+  background:var(--green);
+  color:white;
+  padding:22px max(20px,calc((100% - 1200px)/2));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px
+}
+header small{color:#badcca}
+h1{font-size:23px;margin:4px 0}
+h2{font-size:19px;margin:0 0 18px}
+a{color:inherit}
+nav{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  font-size:13px
+}
+main{max-width:1200px;margin:auto;padding:24px 18px}
+#stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+  margin-bottom:20px
+}
+.stat,.card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px
+}
+.stat span{font-size:12px;color:var(--muted)}
+.stat strong{display:block;font-size:24px;margin-top:8px}
+.layout{
+  display:grid;
+  grid-template-columns:400px minmax(0,1fr);
+  gap:20px;
+  align-items:start
+}
+.card{margin-bottom:18px;min-width:0}
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:12px
+}
+.wide{grid-column:1/-1}
+label{
+  display:block;
+  font-size:12px;
+  font-weight:650;
+  color:var(--muted);
+  margin-bottom:5px
+}
+input,select,textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #cbd9d0;
+  border-radius:10px;
+  background:white;
+  color:#173d2a;
+  min-width:0
+}
+input:focus,select:focus,textarea:focus{
+  outline:2px solid #4aa77b;
+  outline-offset:1px
+}
+textarea{resize:vertical}
+button{
+  padding:11px 15px;
+  border:0;
+  border-radius:10px;
+  background:var(--green);
+  color:white;
+  font-weight:650
+}
+.secondary{background:var(--light);color:var(--green)}
+.danger{background:#fff0ee;color:#a22a1b}
+.row{display:flex;gap:8px;align-items:center}
+.row input{flex:1}
+.muted{font-size:12px;color:var(--muted);line-height:1.8}
+.summary{
+  background:var(--light);
+  border-radius:12px;
+  padding:15px;
+  margin:16px 0
+}
+.summary>div{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 0
+}
+.summary .total{
+  border-top:1px solid #bbd7c5;
+  font-size:19px;
+  font-weight:bold;
+  margin-top:8px;
+  padding-top:10px
+}
+.full{width:100%}
+.product,.cartline{
+  border-bottom:1px solid var(--line);
+  padding:12px 0;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center
+}
+.product>div,.cartline>div{min-width:0}
+.product b,.cartline b{
+  display:block;
+  font-size:13px;
+  overflow-wrap:anywhere
+}
+.product small,.cartline small{
+  font-size:11px;
+  color:var(--muted);
+  overflow-wrap:anywhere
+}
+.qty{width:65px;padding:7px}
+.cartline .row{flex-shrink:0}
+.filters{display:flex;gap:10px;margin-bottom:16px}
+.filters input{flex:1}
+.filters select{width:160px}
+.order{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:12px;
+  overflow-wrap:anywhere
+}
+.order-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px
+}
+.order h3{font-size:16px;margin:9px 0}
+.badge{
+  background:var(--light);
+  color:var(--green);
+  border-radius:20px;
+  padding:5px 9px;
+  font-size:11px;
+  flex-shrink:0
+}
+.order p{font-size:13px;margin:7px 0}
+.order code{font-size:10px;word-break:break-all}
+.order button{padding:8px 12px}
+.empty{text-align:center;padding:28px 10px;color:var(--muted)}
+#notice{
+  position:sticky;
+  top:8px;
+  z-index:5;
+  padding:12px 16px;
+  border-radius:10px;
+  background:#fff4d9;
+  color:#674800;
+  border:1px solid #ead491;
+  margin-bottom:18px;
+  white-space:pre-line;
+  overflow-wrap:anywhere
+}
+#notice[hidden]{display:none}
+#login{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:#edf5ef;
+  z-index:20;
+  padding:20px
+}
+.login-card{
+  max-width:380px;
+  width:100%;
+  padding:32px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:22px
+}
+.login-card h1{color:var(--green)}
+.login-card button{margin-top:14px}
+dialog{
+  width:min(560px,94%);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  max-height:90vh;
+  overflow:auto;
+  overflow-wrap:anywhere
+}
+dialog::backdrop{background:#102b2166}
+dialog label{margin-top:12px}
+.details{
+  background:#f6f9f6;
+  padding:12px;
+  border-radius:10px;
+  margin:15px 0
+}
+.detail-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:13px;
+  padding:6px 0
+}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+#loginError{color:#a22a1b;font-size:13px}
+#searchResults{max-height:250px;overflow:auto}
+button:focus-visible,a:focus-visible{
+  outline:3px solid #e3a91a;
+  outline-offset:3px
+}
+@media(max-width:1000px){
+  .layout{grid-template-columns:350px minmax(0,1fr)}
+  #stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:760px){
+  header{align-items:start;flex-direction:column}
+  .layout{grid-template-columns:minmax(0,1fr)}
+  #stats{grid-template-columns:1fr 1fr}
+  .stat{padding:15px}
+  .stat:last-child{grid-column:1/-1}
+  .filters{flex-wrap:wrap}
+  .filters select{width:100%}
+  h1{font-size:21px}
+  .card{padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<section id="login">
+  <form id="loginForm" class="login-card">
+    <small>MG ALL IN ONE</small>
+    <h1>مبيعات الأونلاين</h1>
+
+    <p class="muted">
+      تسجيل الطلبات ومتابعة التوصيل والمخزون
+    </p>
+
+    <label for="pin">رمز الدخول</label>
+
+    <input
+      id="pin"
+      type="password"
+      autocomplete="current-password"
+      required
+    >
+
+    <button id="loginBtn" class="full">دخول</button>
+    <p id="loginError" role="alert"></p>
+  </form>
+</section>
+
+<header>
+  <div>
+    <small>MG ALL IN ONE / إدارة المبيعات</small>
+    <h1>طلبات الأونلاين</h1>
+  </div>
+
+  <nav>
+    <a href="index.html">الكاشير</a>
+    <a href="admin.html">المخزون</a>
+
+    <button
+      type="button"
+      class="secondary"
+      id="logout"
+    >
+      خروج
+    </button>
+  </nav>
+</header>
+
+<main>
+  <div id="notice" role="status" hidden></div>
+
+  <section id="stats" aria-label="ملخص الطلبات"></section>
+
+  <div class="layout">
+
+    <section class="card">
+      <h2>＋ أوردر جديد</h2>
+
+      <p class="muted">
+        الكمية تتحجز عند الحفظ، وتُخصم فعليًا عند التسليم.
+        الإلغاء يفك الحجز.
+      </p>
+
+      <form id="orderForm">
+        <fieldset id="orderFields">
+
+          <div class="grid">
+
+            <div class="wide">
+              <label for="customer">اسم العميل *</label>
+              <input
+                id="customer"
+                required
+                maxlength="150"
+                autocomplete="name"
+              >
+            </div>
+
+            <div class="wide">
+              <label for="phone">رقم الهاتف *</label>
+              <input
+                id="phone"
+                type="tel"
+                required
+                maxlength="30"
+                dir="ltr"
+                autocomplete="tel"
+              >
+            </div>
+
+            <div class="wide">
+              <label for="address">عنوان التوصيل *</label>
+              <textarea
+                id="address"
+                rows="2"
+                required
+                maxlength="500"
+                autocomplete="street-address"
+              ></textarea>
+            </div>
+
+            <div class="wide">
+              <label for="courier">المندوب</label>
+              <input
+                id="courier"
+                maxlength="150"
+                placeholder="يمكن تحديده لاحقًا"
+              >
+            </div>
+
+          </div>
+
+          <h3 style="font-size:15px;margin-top:24px">
+            أصناف الطلب
+          </h3>
+
+          <label for="productQuery">
+            اسم المنتج أو الباركود
+          </label>
+
+          <div class="row">
+            <input
+              id="productQuery"
+              autocomplete="off"
+              placeholder="ابحث في مخزون MG"
+            >
+
+            <button type="button" id="searchBtn">
+              بحث
+            </button>
+          </div>
+
+          <div id="searchResults" aria-live="polite"></div>
+          <div id="cart"></div>
+
+          <div class="grid" style="margin-top:18px">
+
+            <div>
+              <label for="shipping">
+                رسوم التوصيل (جنيه) *
+              </label>
+
+              <input
+                id="shipping"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="payment">طريقة الدفع</label>
+
+              <select id="payment">
+                <option>كاش عند الاستلام</option>
+                <option>إنستاباي</option>
+                <option>فودافون كاش</option>
+                <option>فيزا</option>
+              </select>
+            </div>
+
+            <div class="wide">
+              <label for="notes">ملاحظات</label>
+
+              <textarea
+                id="notes"
+                rows="2"
+                maxlength="2000"
+              ></textarea>
+            </div>
+
+          </div>
+
+        </fieldset>
+
+        <div class="summary">
+
+          <div>
+            <span>قيمة المنتجات</span>
+            <b id="subtotal">0.00 ج</b>
+          </div>
+
+          <div>
+            <span>التوصيل</span>
+            <b id="shippingTotal">0.00 ج</b>
+          </div>
+
+          <div class="total">
+            <span>الإجمالي</span>
+            <b id="grandTotal">0.00 ج</b>
+          </div>
+
+        </div>
+
+        <button id="saveBtn" class="full">
+          حفظ الأوردر وحجز الكمية
+        </button>
+
+        <p id="saveHelp" class="muted">
+          يُراجع المخزون والسعر من الشيت قبل الحفظ.
+        </p>
+      </form>
+    </section>
+
+    <section class="card">
+
+      <div
+        class="row"
+        style="justify-content:space-between;margin-bottom:18px"
+      >
+        <h2 style="margin:0">متابعة الطلبات</h2>
+
+        <button id="refresh" class="secondary">
+          تحديث
+        </button>
+      </div>
+
+      <div class="filters">
+
+        <input
+          id="filterQuery"
+          placeholder="بحث بالاسم أو الموبايل أو رقم الطلب"
+          aria-label="بحث الطلبات"
+        >
+
+        <select
+          id="filterStatus"
+          aria-label="حالة الطلب"
+        >
+          <option value="">كل الحالات</option>
+        </select>
+
+      </div>
+
+      <p id="listCaption" class="muted"></p>
+      <div id="orders"></div>
+
+    </section>
+
+  </div>
+</main>
+
+<dialog id="editDialog">
+  <form id="editForm">
+
+    <h2>تفاصيل الأوردر</h2>
+
+    <div id="editInfo"></div>
+    <div id="editItems" class="details"></div>
+
+    <label for="editStatus">حالة الطلب</label>
+    <select id="editStatus"></select>
+
+    <label for="editCourier">المندوب</label>
+    <input id="editCourier" maxlength="150">
+
+    <label for="editNotes">ملاحظات</label>
+
+    <textarea
+      id="editNotes"
+      rows="3"
+      maxlength="2000"
+    ></textarea>
+
+    <p id="editHint" class="muted"></p>
+
+    <div class="row" style="margin-top:18px">
+
+      <button id="updateBtn">حفظ التعديل</button>
+
+      <button
+        type="button"
+        id="closeEdit"
+        class="secondary"
+      >
+        إغلاق
+      </button>
+
+    </div>
+
+  </form>
+</dialog>
+
+<script>
+'use strict';
+
+const SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec';
+
+const $ = id => document.getElementById(id);
+
+const esc = value => String(value ?? '').replace(
+  /[&<>"']/g,
+  character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[character])
+);
+
+let pin = '';
+let orders = [];
+let cart = [];
+let products = [];
+let statuses = [];
+let editing = null;
+let busy = false;
+let pending = null;
+let searching = false;
+
+const fmt = value => Number(value || 0).toFixed(2) + ' ج';
+
+function notice(message) {
+  $('notice').textContent = message;
+  $('notice').hidden = !message;
+}
+
+function storePending() {
+  try {
+    if (pending) {
+      sessionStorage.setItem(
+        'mgOnlinePending',
+        JSON.stringify({
+          payload: pending,
+          cart: cart
+        })
+      );
+    } else {
+      sessionStorage.removeItem('mgOnlinePending');
+    }
+  } catch (error) {
+    // يظل الطلب محفوظًا في الذاكرة إذا تعذر التخزين.
+  }
+}
+
+function restorePending() {
+  try {
+    const saved = JSON.parse(
+      sessionStorage.getItem('mgOnlinePending') || 'null'
+    );
+
+    if (!saved?.payload?.requestId) return;
+
+    pending = saved.payload;
+    cart = saved.cart || [];
+
+    const fields = {
+      name: 'customer',
+      phone: 'phone',
+      address: 'address',
+      courier: 'courier',
+      shipping: 'shipping',
+      payment: 'payment',
+      notes: 'notes'
+    };
+
+    Object.keys(fields).forEach(key => {
+      $(fields[key]).value = pending[key] ?? '';
+    });
+
+    $('orderFields').disabled = true;
+
+    $('saveBtn').textContent =
+      'التحقق من الطلب السابق وإعادة المحاولة';
+
+    notice(
+      'يوجد طلب لم يتم تأكيد نتيجته. اضغط التحقق لإكمال نفس الطلب بدون تكرار.'
+    );
+  } catch (error) {
+    // تجاهل البيانات المحلية غير الصالحة.
+  }
+}
+
+async function api(action, payload) {
+  const response = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: action,
+      pin: pin,
+      payload: payload
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('تعذر الاتصال: ' + response.status);
+  }
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error(
+      'رد غير صالح. تأكد من نشر نسخة Apps Script الجديدة وصلاحية الوصول'
+    );
+  }
+
+  if (!data || data.success !== true) {
+    const error = new Error(
+      data?.message || 'لم يتم تأكيد العملية'
+    );
+
+    error.rejected = Boolean(data?.rejected);
+    throw error;
+  }
+
+  return data;
+}
+
+function setStatusOptions(select, includeAll) {
+  select.innerHTML =
+    (includeAll
+      ? '<option value="">كل الحالات</option>'
+      : '') +
+    statuses.map(status =>
+      '<option value="' + esc(status) + '">' +
+      esc(status) +
+      '</option>'
+    ).join('');
+}
+
+function applyList(data) {
+  orders = data.orders || [];
+  statuses = data.statuses || [];
+
+  const selected = $('filterStatus').value;
+
+  setStatusOptions($('filterStatus'), true);
+  $('filterStatus').value = selected;
+
+  setStatusOptions($('editStatus'), false);
+
+  $('listCaption').textContent =
+    'مرتبط بورقة: ' + data.sheetName +
+    ' • آخر تحديث: ' +
+    new Date().toLocaleTimeString('ar-EG');
+
+  renderOrders();
+  renderStats();
+}
+
+async function refreshOrders() {
+  const data = await api('onlineList');
+  applyList(data);
+}
+
+function renderStats() {
+  const counts = [
+    ['إجمالي الطلبات', orders.length],
+
+    [
+      'قيد التجهيز',
+      orders.filter(order =>
+        order.status === 'جديد' ||
+        order.status === 'قيد التجهيز'
+      ).length
+    ],
+
+    [
+      'مع المندوب',
+      orders.filter(order =>
+        order.status === 'مع المندوب للتوصيل'
+      ).length
+    ],
+
+    [
+      'تم التسليم',
+      orders.filter(order =>
+        order.status === 'تم التسليم'
+      ).length
+    ],
+
+    [
+      'طلبات ملغاة',
+      orders.filter(order =>
+        order.status === 'ملغي'
+      ).length
+    ]
+  ];
+
+  $('stats').innerHTML = counts.map(item => `
+    <div class="stat">
+      <span>${item[0]}</span>
+      <strong>${item[1]}</strong>
+    </div>
+  `).join('');
+}
+
+function renderOrders() {
+  const query = $('filterQuery').value.trim().toLowerCase();
+  const status = $('filterStatus').value;
+
+  const filtered = orders.filter(order =>
+    (!status || order.status === status) &&
+    (
+      !query ||
+      [order.id, order.name, order.phone].some(value =>
+        String(value).toLowerCase().includes(query)
+      )
+    )
+  );
+
+  $('orders').innerHTML = filtered.length
+    ? filtered.map(order => `
+      <article class="order">
+
+        <div class="order-top">
+          <code>${esc(order.id)}</code>
+          <span class="badge">${esc(order.status)}</span>
+        </div>
+
+        <h3>${esc(order.name)}</h3>
+
+        <p dir="ltr" style="text-align:right">
+          ${esc(order.phone)}
+        </p>
+
+        <p>${esc(order.address)}</p>
+
+        <p class="muted">
+          ${esc(order.date)} • المندوب:
+          ${esc(order.courier || 'لم يحدد')}
+        </p>
+
+        <div class="order-top">
+          <b>${esc(order.total)} ج</b>
+
+          <button
+            type="button"
+            data-order="${esc(order.id)}"
+            class="secondary"
+          >
+            تفاصيل${order.managed ? ' وتعديل' : ''}
+          </button>
+        </div>
+
+        ${
+          !order.managed
+            ? '<p class="muted">طلب سابق • للعرض فقط، بدون حجز مخزون</p>'
+            : ''
+        }
+
+      </article>
+    `).join('')
+    : '<div class="empty">لا توجد طلبات مطابقة</div>';
+}
+
+function renderCart() {
+  $('cart').innerHTML = cart.length
+    ? cart.map((item, index) => `
+      <div class="cartline">
+
+        <div>
+          <b>${esc(item.name)}</b>
+
+          <small>
+            ${fmt(item.price)} / قطعة •
+            المتاح وقت البحث: ${item.stock}
+          </small>
+        </div>
+
+        <div class="row">
+
+          <input
+            class="qty"
+            data-qty="${index}"
+            type="number"
+            min="1"
+            max="${item.stock}"
+            step="1"
+            value="${item.qty}"
+            aria-label="كمية ${esc(item.name)}"
+          >
+
+          <button
+            type="button"
+            class="danger"
+            data-remove="${index}"
+            aria-label="حذف ${esc(item.name)}"
+          >
+            ×
+          </button>
+
+        </div>
+
+      </div>
+    `).join('')
+    : '<div class="empty">ابحث عن منتج لإضافته للأوردر</div>';
+
+  updateTotals();
+}
+
+function updateTotals() {
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.qty,
+    0
+  );
+
+  const shipping = Number($('shipping').value) || 0;
+
+  $('subtotal').textContent = fmt(subtotal);
+  $('shippingTotal').textContent = fmt(shipping);
+  $('grandTotal').textContent = fmt(subtotal + shipping);
+}
+
+async function searchProducts() {
+  if (searching || busy || pending) return;
+
+  const query = $('productQuery').value.trim();
+  if (!query) return;
+
+  searching = true;
+  $('searchBtn').disabled = true;
+  $('searchResults').textContent = 'جاري البحث…';
+
+  try {
+    const data = await api('onlineSearch', {
+      query: query
+    });
+
+    products = data.products || [];
+
+    $('searchResults').innerHTML = products.length
+      ? products.map((product, index) => `
+        <div class="product">
+
+          <div>
+            <b>${esc(product.name)}</b>
+
+            <small>
+              ${esc(product.barcode)} • ${fmt(product.price)}
+              <br>
+              متاح ${product.stock} •
+              محجوز ${product.reservedStock} •
+              رصيد فعلي ${product.physicalStock}
+            </small>
+          </div>
+
+          <button
+            type="button"
+            data-product="${index}"
+            ${product.stock < 1 ? 'disabled' : ''}
+          >
+            ${product.stock < 1 ? 'غير متاح' : 'إضافة'}
+          </button>
+
+        </div>
+      `).join('')
+      : '<div class="empty">لم يتم العثور على منتج</div>';
+
+  } catch (error) {
+    $('searchResults').textContent = error.message;
+
+  } finally {
+    searching = false;
+    $('searchBtn').disabled = false;
+  }
+}
+
+function addProduct(index) {
+  if (busy || pending) return;
+
+  const product = products[index];
+
+  if (!product || product.stock < 1) return;
+
+  const existing = cart.find(item =>
+    item.barcode === product.barcode
+  );
+
+  if (existing) {
+    existing.stock = product.stock;
+    existing.price = product.price;
+
+    if (existing.qty >= product.stock) {
+      renderCart();
+      notice('لا توجد كمية إضافية متاحة');
+      return;
+    }
+
+    existing.qty += 1;
+
+  } else {
+    cart.push({
+      ...product,
+      qty: 1
+    });
+  }
+
+  renderCart();
+  notice('');
+}
+
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  pin = $('pin').value;
+  $('loginBtn').disabled = true;
+  $('loginError').textContent = '';
+
+  try {
+    await refreshOrders();
+
+    $('login').style.display = 'none';
+    $('pin').value = '';
+
+    renderCart();
+
+  } catch (error) {
+    $('loginError').textContent = error.message;
+    pin = '';
+
+  } finally {
+    $('loginBtn').disabled = false;
+  }
+});
+
+$('logout').onclick = () => {
+  pin = '';
+  orders = [];
+
+  $('orders').textContent = '';
+  $('stats').textContent = '';
+
+  $('editDialog').close();
+  $('login').style.display = 'grid';
+};
+
+$('searchBtn').onclick = searchProducts;
+
+$('productQuery').addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    searchProducts();
+  }
+});
+
+$('searchResults').onclick = event => {
+  const button = event.target.closest('[data-product]');
+
+  if (button) {
+    addProduct(Number(button.dataset.product));
+  }
+};
+
+$('cart').onclick = event => {
+  const button = event.target.closest('[data-remove]');
+
+  if (button && !busy && !pending) {
+    cart.splice(Number(button.dataset.remove), 1);
+    renderCart();
+  }
+};
+
+$('cart').addEventListener('change', event => {
+  if (!event.target.matches('[data-qty]')) return;
+
+  const item = cart[Number(event.target.dataset.qty)];
+
+  if (!item) return;
+
+  const quantity = Number(event.target.value);
+
+  if (
+    !Number.isSafeInteger(quantity) ||
+    quantity < 1 ||
+    quantity > item.stock
+  ) {
+    event.target.value = item.qty;
+
+    notice(
+      'الكمية يجب أن تكون من 1 إلى ' + item.stock
+    );
+
+    return;
+  }
+
+  item.qty = quantity;
+  updateTotals();
+});
+
+$('shipping').oninput = updateTotals;
+$('filterQuery').oninput = renderOrders;
+$('filterStatus').onchange = renderOrders;
+
+$('refresh').onclick = async () => {
+  if (busy) return;
+
+  $('refresh').disabled = true;
+
+  try {
+    await refreshOrders();
+    notice('تم تحديث الطلبات');
+
+  } catch (error) {
+    notice(error.message);
+
+  } finally {
+    $('refresh').disabled = false;
+  }
+};
+
+$('orderForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (busy) return;
+
+  if (!pending) {
+    if (!cart.length) {
+      notice('أضف أصناف الطلب أولًا');
+      return;
+    }
+
+    for (const item of cart) {
+      if (
+        !Number.isSafeInteger(item.qty) ||
+        item.qty < 1 ||
+        item.qty > item.stock
+      ) {
+        notice('راجع كمية المنتج: ' + item.name);
+        return;
+      }
+    }
+
+    pending = {
+      requestId: crypto.randomUUID(),
+      name: $('customer').value,
+      phone: $('phone').value,
+      address: $('address').value,
+      courier: $('courier').value,
+      shipping: $('shipping').value,
+      payment: $('payment').value,
+      notes: $('notes').value,
+
+      items: cart.map(item => ({
+        barcode: item.barcode,
+        qty: item.qty
+      }))
+    };
+
+    storePending();
+  }
+
+  busy = true;
+
+  $('orderFields').disabled = true;
+  $('saveBtn').disabled = true;
+
+  $('saveBtn').textContent =
+    'جاري مراجعة المخزون وحجز الطلب…';
+
+  try {
+    const data = await api('onlineCreate', pending);
+
+    pending = null;
+    storePending();
+
+    cart = [];
+    products = [];
+
+    $('orderForm').reset();
+    $('searchResults').textContent = '';
+
+    $('saveHelp').textContent =
+      'يُراجع المخزون والسعر من الشيت قبل الحفظ.';
+
+    renderCart();
+
+    notice(
+      'تم حفظ الطلب وحجز الكمية: ' + data.order.id
+    );
+
+    $('orderFields').disabled = false;
+
+    $('saveBtn').textContent =
+      'حفظ الأوردر وحجز الكمية';
+
+    try {
+      await refreshOrders();
+
+    } catch (error) {
+      notice(
+        'الطلب محفوظ: ' + data.order.id +
+        '، لكن تحديث القائمة تعذر. اضغط تحديث.'
+      );
+    }
+
+  } catch (error) {
+    if (error.rejected) {
+      pending = null;
+      storePending();
+
+      $('orderFields').disabled = false;
+
+      $('saveBtn').textContent =
+        'حفظ الأوردر وحجز الكمية';
+
+      notice(error.message);
+      return;
+    }
+
+    notice(
+      error.message +
+      '\nلو الاتصال انقطع، اضغط إعادة المحاولة لنفس الأوردر. معرف الطلب يمنع تكرار الحجز.'
+    );
+
+    $('saveBtn').textContent =
+      'إعادة المحاولة لنفس الأوردر';
+
+    $('saveHelp').textContent =
+      'البيانات ثابتة لحين تأكيد النتيجة. أعد المحاولة لنفس الأوردر.';
+
+  } finally {
+    busy = false;
+    $('saveBtn').disabled = false;
+  }
+});
+
+$('orders').onclick = event => {
+  const button = event.target.closest('[data-order]');
+
+  if (!button) return;
+
+  editing = orders.find(order =>
+    order.id === button.dataset.order
+  );
+
+  if (!editing) return;
+
+  const order = editing;
+
+  $('editInfo').innerHTML = `
+    <b>${esc(order.name)}</b>
+
+    <p>${esc(order.id)}</p>
+
+    <p>
+      ${esc(order.phone)} • ${esc(order.address)}
+    </p>
+
+    <p>
+      الإجمالي: ${esc(order.total)} ج •
+      ${esc(order.payment)}
+    </p>
+
+    <p class="muted">
+      التسليم: ${esc(order.delivered || '—')}
+      ${
+        order.invoice
+          ? ' • الفاتورة: ' + esc(order.invoice)
+          : ''
+      }
+    </p>
+  `;
+
+  const items = order.items || [];
+
+  $('editItems').innerHTML = items.length
+    ? items.map(item => `
+      <div class="detail-line">
+        <span>
+          ${esc(item.name)} × ${item.qty}
+        </span>
+
+        <b>${fmt(item.qty * item.price)}</b>
+      </div>
+    `).join('')
+    : 'لا توجد أصناف مسجلة لهذا الطلب القديم';
+
+  $('editStatus').value = order.status;
+
+  $('editStatus').disabled =
+    !order.managed ||
+    order.inventoryState !== 'reserved';
+
+  $('editCourier').value = order.courier;
+  $('editNotes').value = order.notes;
+
+  $('editCourier').disabled = !order.managed;
+  $('editNotes').disabled = !order.managed;
+
+  $('updateBtn').hidden = !order.managed;
+
+  $('editHint').textContent = order.managed
+    ? 'تم التسليم: تسجيل فاتورة وخصم المخزون. ملغي: فك الحجز. الطلب المكتمل أو الملغي لا يعاد فتحه.'
+    : 'هذا طلب سابق للربط، ويظهر للعرض فقط.';
+
+  $('editDialog').showModal();
+};
+
+$('closeEdit').onclick = () => {
+  $('editDialog').close();
+};
+
+$('editForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  if (busy || !editing?.managed) return;
+
+  const status = $('editStatus').value;
+
+  if (
+    ['تم التسليم', 'ملغي'].includes(status) &&
+    status !== editing.status
+  ) {
+    const message = status === 'تم التسليم'
+      ? 'تأكيد تسليم الطلب وتسجيل البيع وخصم المخزون؟'
+      : 'تأكيد إلغاء الطلب وفك حجز الكمية؟';
+
+    if (!confirm(message)) return;
+  }
+
+  busy = true;
+
+  $('updateBtn').disabled = true;
+  $('closeEdit').disabled = true;
+
+  try {
+    await api('onlineUpdate', {
+      id: editing.id,
+      version: editing.version,
+      status: status,
+      courier: $('editCourier').value,
+      notes: $('editNotes').value
+    });
+
+    $('editDialog').close();
+    notice('تم تحديث الطلب');
+
+    await refreshOrders();
+
+  } catch (error) {
+    $('editDialog').close();
+
+    notice(
+      error.message +
+      ' — اضغط تحديث قبل إعادة المحاولة للتحقق من حالة الطلب.'
+    );
+
+  } finally {
+    busy = false;
+    $('updateBtn').disabled = false;
+    $('closeEdit').disabled = false;
+  }
+});
+
+restorePending();
+renderCart();
+</script>
+
+</body>
+</html>
