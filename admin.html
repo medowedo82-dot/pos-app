@@ -2,552 +2,210 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لوحة تحكم الإدارة والمخازن</title>
-<script src="https://unpkg.com/html5-qrcode"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>MG ALL IN ONE — لوحة الإدارة</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-:root{--primary:#004d34;--bg:#f8fafc;--border:#e2e8f0;--text-muted:#64748b;--success:#15803d;--success-bg:#f0fdf4;--warning:#b45309;--warning-bg:#fffbeb}
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
-body{background:var(--bg);padding-bottom:30px}
-.top-header{background:var(--primary);color:white;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.top-header h1{font-size:17px;font-weight:600}
-.scanner-container{display:none;margin:12px;background:#000;border-radius:16px;overflow:hidden;border:2px solid var(--primary)}
-#reader{width:100%}
-.close-cam-btn{width:100%;background:#dc2626;color:white;border:0;padding:8px;font-weight:bold;cursor:pointer}
-.screen-content{padding:14px;max-width:520px;margin:auto}
-.form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-muted)}
-.form-control{width:100%;border:1px solid #cbd5e1;border-radius:25px;padding:10px 16px;outline:none;font-size:14px;background:white}
-.form-control:focus,.search-box-wrapper:focus-within{border-color:var(--primary)}
-.form-control[readonly]{background:#f1f5f9;color:#475569}
-.search-box-wrapper{display:flex;align-items:center;background:white;border:1px solid #cbd5e1;border-radius:25px;padding:4px 12px;gap:8px}
-.search-box-wrapper input{border:0;outline:0;flex:1;padding:8px;font-size:14px;min-width:0}
-.search-btn-icon{color:var(--primary);font-size:18px;cursor:pointer;padding:4px}
-.btn-submit{width:100%;background:var(--primary);color:white;border:0;border-radius:25px;padding:12px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px}
-.btn-submit:disabled{opacity:.65;cursor:not-allowed}
-.product-status{display:none;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.7}
-.product-status.found{display:block;background:var(--success-bg);border:1px solid #bbf7d0;color:var(--success)}
-.product-status.new{display:block;background:var(--warning-bg);border:1px solid #fde68a;color:var(--warning)}
-.product-status.searching{display:block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
-.stock-card{display:none;background:var(--primary);color:white;border-radius:16px;padding:16px;margin-bottom:14px;justify-content:space-between;align-items:center}
-.stock-card.show{display:flex}
-.stock-card .label{font-size:12px;opacity:.85}
-.stock-card .stock-number{font-size:28px;font-weight:800;margin-top:2px}
-.stock-card i{font-size:28px;opacity:.8}
-#lock-screen{position:fixed;inset:0;background:#004d34;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;padding:20px;color:white}
-.lock-box{background:white;color:#1e293b;padding:25px 20px;border-radius:20px;width:100%;max-width:320px;text-align:center}
-.price-row{display:flex;gap:8px}
-.price-row>.form-group{flex:1;min-width:0}
-.profit-card{background:#eaf8ee;border:1px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px 15px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
-.profit-card strong{font-size:19px;direction:ltr}
-.helper{font-size:11px;color:#64748b;margin-top:5px;line-height:1.6}
-@media(max-width:340px){.price-row{flex-direction:column}}
+:root{--brand:#004d34;--brand2:#087851;--bg:#f5f7f8;--surface:#fff;--ink:#152b25;--muted:#63776f;--line:#dce6e1;--red:#b42318;--orange:#a65800;--green:#0e6f46;--radius:16px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif;padding-bottom:46px}
+button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #68c9a1;outline-offset:2px}
+.header{background:var(--brand);color:white;padding:18px max(16px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-size:18px;font-weight:800;letter-spacing:.3px}.brand small{display:block;font-size:11px;font-weight:400;opacity:.8}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+.nav{display:flex;gap:8px;overflow:auto;padding:0 0 12px;margin-bottom:16px;scrollbar-width:thin}.nav-btn{white-space:nowrap;border:1px solid var(--line);background:white;color:var(--ink);padding:10px 13px;border-radius:12px;font-weight:700}.nav-btn.active{background:var(--brand);color:white;border-color:var(--brand)}
+.panel{display:none}.panel.active{display:block}.card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 1px 3px #163a2808}
+.heading{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 14px}.heading h2{font-size:19px;margin:0}.heading p{margin:0;color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field{margin-bottom:10px;min-width:0}.field label{display:block;font-size:12px;font-weight:700;color:#50685e;margin-bottom:5px}.input{width:100%;border:1px solid #cedbd4;background:white;border-radius:12px;padding:11px 12px;min-height:44px;color:var(--ink)}.input[readonly]{background:#f1f5f3}.input:focus{border-color:var(--brand2);outline:none;box-shadow:0 0 0 3px #c8ead8}
+.btn{border:0;border-radius:12px;padding:10px 15px;font-weight:700;min-height:42px;display:inline-flex;justify-content:center;align-items:center;gap:8px}.btn.primary{background:var(--brand);color:white}.btn.ghost{background:#eef4f0;color:#15563b}.btn.warn{background:#fff1e1;color:#9a5600}.btn.danger{background:#fff0ec;color:var(--red)}.btn.small{padding:6px 10px;min-height:32px;font-size:12px}.btn.full{width:100%}.actions{display:flex;flex-wrap:wrap;gap:8px}
+.hint{font-size:12px;color:var(--muted);line-height:1.7}.alert{padding:12px;border-radius:12px;background:#eef6ff;color:#1a5486;margin:10px 0}.alert.warning{background:#fff6e7;color:#915100}.alert.success{background:#ecf9f1;color:#116b42}.alert.error{background:#fff0ee;color:var(--red)}
+.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{background:white;border:1px solid var(--line);border-radius:14px;padding:14px}.metric b{display:block;font-size:21px;color:var(--brand)}.metric small{color:var(--muted)}
+.table-scroll{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:550px;background:white}th,td{padding:10px 12px;text-align:right;border-bottom:1px solid #eef1ef;vertical-align:middle}th{background:#f4f7f5;color:#486458;font-size:12px}td{font-size:13px}.muted{color:var(--muted)}.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#e6f5ee;color:#07683b}.pill.off{background:#f2f3f5;color:#677580}
+.line-card{border:1px solid var(--line);border-radius:14px;background:#fafcfb;margin:10px 0;padding:12px}.line-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.line-top strong{font-size:13px}
+.totals{background:#f2f7f4;padding:16px;border-radius:14px}.totals .amount-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0}.totals .grand{border-top:1px solid #cbded1;padding-top:11px;margin-top:7px;font-size:18px;font-weight:800;color:var(--brand)}
+#lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#004d34,#007f5b);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px}.lock-box{background:white;color:var(--ink);width:100%;max-width:400px;padding:28px;border-radius:24px;text-align:center;box-shadow:0 20px 60px #001c1244}.lock-box h2{margin:7px 0}
+#scannerWrapper{display:none;position:fixed;inset:0;background:#061a12ee;z-index:2500;padding:14px;overflow:auto}.scanner-body{max-width:450px;margin:5vh auto;background:white;padding:12px;border-radius:14px}#reader{min-height:230px}
+.toast{position:fixed;bottom:16px;left:16px;right:16px;z-index:2700;max-width:620px;margin:auto;padding:12px 16px;background:#153c2c;color:white;border-radius:12px;box-shadow:0 6px 30px #0e241e44;display:none}.toast.error{background:#a32720}.toast.warn{background:#985f0e}
+@media(max-width:740px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:11px}.card{padding:14px}.header{padding:14px}}
+@media(max-width:460px){.grid,.grid.three{grid-template-columns:1fr}.brand{font-size:16px}.metric b{font-size:18px}}
 </style>
 </head>
 <body>
-
 <div id="lock-screen">
-<div class="lock-box">
-<i class="fa-solid fa-lock" style="font-size:36px;color:#004d34;margin-bottom:12px"></i>
-<h3 style="margin-bottom:8px">لوحة الإدارة والمخزن</h3>
-<p style="font-size:12px;color:#64748b;margin-bottom:16px">أدخل الرقم السري للمتابعة</p>
-<input type="password" id="pinCodeInput" class="form-control" placeholder="رمز PIN" style="text-align:center;font-size:18px;margin-bottom:14px" onkeydown="if(event.key==='Enter')verifyPin()">
-<button type="button" class="btn-submit" onclick="verifyPin()">دخول</button>
+ <div class="lock-box">
+  <i class="fa-solid fa-shield-halved" style="font-size:35px;color:#004d34"></i>
+  <h2>MG ALL IN ONE</h2>
+  <p class="hint">دخول إدارة المخزون والبزارات والفواتير</p>
+  <form id="loginForm">
+   <div class="field"><input class="input" id="adminPassword" type="password" autocomplete="current-password" placeholder="كلمة مرور الإدارة" required></div>
+   <button id="loginBtn" class="btn primary full" type="submit">تسجيل الدخول</button>
+  </form>
+  <p class="hint">يتم التحقق من كلمة المرور في Apps Script، وليست مكتوبة داخل كود الصفحة.</p>
+ </div>
 </div>
-</div>
-
-<div class="top-header">
-<i class="fa-solid fa-boxes-stacked"></i>
-<h1>إدارة المخزون والمنتجات</h1>
-<div></div>
-</div>
-
-<div class="scanner-container" id="scannerWrapper">
-<div id="reader"></div>
-<button type="button" class="close-cam-btn" onclick="stopCamera()">إغلاق الكاميرا ✕</button>
-</div>
-
-<div class="screen-content">
-<div class="form-group">
-<label>الباركود *</label>
-<div class="search-box-wrapper">
-<input type="text" id="addBarcode" placeholder="امسح أو اكتب الباركود" autocomplete="off" onkeydown="if(event.key==='Enter')searchExistingProduct()">
-<i class="fa-solid fa-magnifying-glass search-btn-icon" title="بحث عن المنتج" onclick="searchExistingProduct()"></i>
-<i class="fa-solid fa-barcode search-btn-icon" title="مسح باركود المنتج" onclick="startCamera()"></i>
-</div>
-</div>
-
-<div id="productStatus" class="product-status"></div>
-
-<div id="stockCard" class="stock-card">
-<div>
-<div class="label">الرصيد الحالي بالمخزون</div>
-<div class="stock-number" id="currentStockText">0</div>
-<div class="label">قطعة</div>
-</div>
-<i class="fa-solid fa-boxes-stacked"></i>
-</div>
-
-<div class="form-group">
-<label>اسم المنتج *</label>
-<input type="text" id="addName" class="form-control" placeholder="اسم الصنف">
-</div>
-
-<div class="form-group">
-<label>الفئة / الصنف</label>
-<input type="text" id="addCategory" class="form-control" placeholder="مثال: مشروبات / ملابس">
-</div>
-
-<div class="price-row">
-<div class="form-group">
-<label>سعر البيع (جنيه) *</label>
-<input type="number" id="addPrice" class="form-control" placeholder="0.00" min="0" step="0.01">
-</div>
-<div class="form-group">
-<label id="costLabel">سعر الشراء / الجملة (جنيه) *</label>
-<input type="number" id="addCost" class="form-control" placeholder="0.00" min="0" step="0.01">
-<div class="helper" id="costHelp">تكلفة شراء القطعة من المورد</div>
-</div>
-</div>
-
-<div class="profit-card">
-<span id="profitLabel">المكسب المتوقع للقطعة</span>
-<strong id="profitValue">—</strong>
-</div>
-
-<div class="form-group">
-<label id="stockInputLabel">الرصيد المضاف (قطع) *</label>
-<input type="number" id="addStock" class="form-control" value="1" min="1" step="1">
-</div>
-
-<button type="button" class="btn-submit" id="saveProdBtn" onclick="submitProductToSheet()">
-<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل
-</button>
-</div>
-
+<header class="header"><div class="brand">MG ALL IN ONE<small>لوحة الإدارة والمخازن — نسخة الويب</small></div><div class="actions"><button class="btn ghost small" id="refreshBtn"><i class="fa-solid fa-rotate"></i> تحديث</button><button class="btn danger small" id="logoutBtn">خروج</button></div></header>
+<div id="scannerWrapper"><div class="scanner-body"><div id="reader"></div><button id="closeScanner" class="btn danger full">إغلاق الكاميرا</button></div></div>
+<main class="container">
+<nav class="nav" aria-label="أقسام الإدارة">
+<button class="nav-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-simple"></i> الرئيسية</button>
+<button class="nav-btn" data-tab="products"><i class="fa-solid fa-box"></i> المنتجات</button>
+<button class="nav-btn" data-tab="purchases"><i class="fa-solid fa-file-invoice-dollar"></i> فواتير المشتريات</button>
+<button class="nav-btn" data-tab="bazaars"><i class="fa-solid fa-store"></i> إدارة البزارات</button>
+<button class="nav-btn" data-tab="suppliers"><i class="fa-solid fa-truck"></i> الموردون</button>
+<button class="nav-btn" data-tab="expenses"><i class="fa-solid fa-wallet"></i> المصروفات</button>
+</nav>
+<section class="panel active" id="tab-dashboard">
+ <div class="heading"><h2>ملخص MG المالي</h2><p>إجماليات مسجلة في Google Sheets</p></div>
+ <div class="metric-grid" id="metricGrid">
+  <div class="metric"><small>صافي المبيعات</small><b id="mSales">—</b></div>
+  <div class="metric"><small>مشتريات البضاعة</small><b id="mPurchases">—</b></div>
+  <div class="metric"><small>مصاريف الشراء</small><b id="mPurchaseExtras">—</b></div>
+  <div class="metric"><small>المصروفات التشغيلية</small><b id="mExpenses">—</b></div>
+  <div class="metric"><small>مستحقات الموردين</small><b id="mDue">—</b></div>
+  <div class="metric"><small>الربح الإجمالي التقديري</small><b id="mProfit">—</b></div>
+  <div class="metric"><small>البزارات النشطة</small><b id="mBazaars">—</b></div>
+  <div class="metric"><small>عدد الموردين</small><b id="mSuppliers">—</b></div>
+ </div>
+ <div class="card" style="margin-top:14px"><h3>مبيعات كل بازار</h3><div class="table-scroll"><table><thead><tr><th>البازار</th><th>صافي المبيعات</th><th>الربح الإجمالي التقديري</th></tr></thead><tbody id="bazaarSalesBody"><tr><td colspan="3">سجّل الدخول لتحديث التقرير</td></tr></tbody></table></div><p class="hint">الربح الإجمالي لا يساوي صافي الربح؛ لا يشمل كل المصاريف التشغيلية. الفواتير القديمة التي لا تتضمن بازار تظهر تحت «غير محدد».</p></div>
+</section>
+<section class="panel" id="tab-products">
+ <div class="heading"><h2>إدارة المنتجات والمخزون</h2><p>إضافة منتج، بحث بالباركود، أو زيادة مخزون مباشرة</p></div>
+ <div class="card">
+  <div class="field"><label>الباركود *</label><div class="actions"><input id="pBarcode" class="input" style="flex:1;min-width:160px" placeholder="اكتب أو امسح الباركود"><button id="pLookup" class="btn ghost" type="button"><i class="fa-solid fa-magnifying-glass"></i> بحث</button><button id="pScan" class="btn ghost" type="button"><i class="fa-solid fa-barcode"></i></button></div></div>
+  <div id="pStatus" class="alert" style="display:none"></div>
+  <div id="pStock" class="alert success" style="display:none">المخزون المتبقي: <strong id="pStockValue">0</strong> قطعة</div>
+  <div class="grid"><div class="field"><label>اسم المنتج *</label><input id="pName" class="input" placeholder="اسم الصنف"></div><div class="field"><label>الفئة</label><input id="pCategory" class="input" placeholder="ألعاب / إكسسوارات"></div><div class="field"><label>سعر البيع (ج) *</label><input id="pPrice" type="number" min="0" step="0.01" class="input"></div><div class="field"><label>سعر شراء الدفعة (ج) *</label><input id="pCost" type="number" min="0" step="0.01" class="input"></div><div class="field"><label>الكمية *</label><input id="pQty" type="number" min="1" step="1" value="1" class="input"></div><div class="field"><label>الربح المتوقع للقطعة</label><input id="pProfit" class="input" readonly placeholder="—"></div></div>
+  <p class="alert warning">الإضافة المباشرة هنا لا تسجل فاتورة مشتريات أو اسم مورد؛ للمشتريات العادية استخدم «فواتير المشتريات» حتى تكون الحسابات دقيقة.</p>
+  <button id="pSave" class="btn primary full" type="button">ابحث عن الباركود أولًا</button>
+ </div>
+</section>
+<section class="panel" id="tab-purchases">
+ <div class="heading"><h2>فاتورة بضاعة جديدة</h2><p>تسجيل مشتريات التاجر وإضافة الأصناف للمخزون مرة واحدة</p></div>
+ <div class="card">
+  <div class="grid three">
+   <div class="field"><label>تاريخ فاتورة الشراء *</label><input id="iDate" class="input" type="date" required></div>
+   <div class="field"><label>اسم التاجر *</label><input id="iSupplier" class="input" placeholder="اسم التاجر" list="knownSuppliers"><datalist id="knownSuppliers"></datalist></div>
+   <div class="field"><label>رقم التاجر *</label><input id="iPhone" class="input" type="tel" placeholder="01xxxxxxxxx"></div>
+   <div class="field"><label>رقم فاتورة التاجر (اختياري)</label><input id="iSupplierInvoice" class="input" placeholder="رقم الفاتورة الورقية"></div>
+   <div class="field"><label>قيمة فاتورة التاجر (للمطابقة)</label><input id="iDocumentTotal" class="input" type="number" min="0" step="0.01" placeholder="اختياري"></div>
+   <div class="field"><label>تكلفة الشحن والنقل (ج)</label><input id="iShipping" class="input" type="number" min="0" step="0.01" value="0"></div>
+   <div class="field"><label>مصاريف شراء إضافية (ج)</label><input id="iOther" class="input" type="number" min="0" step="0.01" value="0"></div>
+   <div class="field"><label>المدفوع للتاجر (ج)</label><input id="iPaid" class="input" type="number" min="0" step="0.01" value="0"></div>
+   <div class="field"><label>طريقة دفع قيمة البضاعة</label><select id="iPayment" class="input"><option>نقدي</option><option>فيزا</option><option>إنستاباي</option><option>تحويل بنكي</option><option>آجل</option></select></div>
+   <div class="field"><label>ملاحظات</label><input id="iNotes" class="input" placeholder="اختياري"></div>
+  </div>
+  <div class="heading"><h3 style="margin:0">الأصناف المشتراة</h3><button id="addLineBtn" class="btn ghost" type="button"><i class="fa-solid fa-plus"></i> إضافة صنف</button></div>
+  <div id="invoiceLines"></div>
+  <div class="totals">
+   <div class="amount-row"><span>مجموع البضاعة</span><strong id="iSubtotal">0.00 ج</strong></div>
+   <div class="amount-row"><span>المصاريف الإضافية</span><strong id="iExtras">0.00 ج</strong></div>
+   <div class="amount-row grand"><span>إجمالي التكلفة</span><strong id="iTotal">0.00 ج</strong></div>
+   <div class="amount-row"><span>المتبقي للتاجر من قيمة البضاعة</span><strong id="iDue">0.00 ج</strong></div>
+  </div>
+  <div id="iMismatch" class="alert warning" style="display:none"></div>
+  <div class="actions" style="margin-top:13px"><button id="iSave" class="btn primary" type="button">اعتماد الفاتورة وإضافة المخزون</button><button id="iVerify" class="btn ghost" type="button">التحقق من حفظ الفاتورة الحالية</button></div>
+  <p class="hint">يُوزّع الشحن والمصاريف على تكلفة الأصناف. المتبقي للمورد هو قيمة البضاعة ناقص المدفوع له؛ المصاريف الإضافية لا تُحسب دينًا على التاجر. عند تعطل الاتصال لا تنشئ فاتورة جديدة قبل التحقق من رقم الفاتورة.</p>
+  <p id="iDraftId" class="hint"></p>
+ </div>
+ <div class="card"><div class="heading"><h3 style="margin:0">آخر فواتير المشتريات</h3><button id="loadPurchases" type="button" class="btn ghost small">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>رقم الفاتورة</th><th>التاجر</th><th>التاريخ</th><th>قيمة البضاعة</th><th>التكلفة النهائية</th><th>المتبقي</th></tr></thead><tbody id="purchaseTable"><tr><td colspan="6" class="muted">لا توجد بيانات معروضة</td></tr></tbody></table></div></div>
+</section>
+<section class="panel" id="tab-bazaars">
+ <div class="heading"><h2>إدارة البزارات — للأدمن فقط</h2><p>الإضافة والتعديل والإيقاف من الإدارة؛ صفحة المبيعات تختار فقط</p></div>
+ <div class="card"><form id="bazaarForm" class="actions" style="align-items:end"><div class="field" style="flex:1;min-width:180px;margin:0"><label>اسم البازار الجديد</label><input id="bazaarName" class="input" placeholder="مثلاً بازار أكتوبر" required></div><button type="submit" id="bazaarAdd" class="btn primary">إضافة بازار</button></form></div>
+ <div class="card"><div class="heading"><h3 style="margin:0">البزارات المسجلة</h3><button id="loadBazaars" class="btn ghost small">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>اسم البازار</th><th>الحالة</th><th>إجراءات الأدمن</th></tr></thead><tbody id="bazaarTable"><tr><td colspan="3">لا توجد بيانات</td></tr></tbody></table></div></div>
+</section>
+<section class="panel" id="tab-suppliers">
+ <div class="heading"><h2>الموردون والتجار</h2><p>المورد يُحفظ تلقائيًا عند اعتماد أول فاتورة مشتريات</p></div>
+ <div class="card"><div class="table-scroll"><table><thead><tr><th>التاجر</th><th>رقم الهاتف</th><th>المتبقي المستحق</th></tr></thead><tbody id="suppliersTable"><tr><td colspan="3">لا توجد بيانات</td></tr></tbody></table></div></div>
+</section>
+<section class="panel" id="tab-expenses">
+ <div class="heading"><h2>المصروفات التشغيلية</h2><p>مصروف منفصل عن فاتورة شراء البضاعة</p></div>
+ <div class="card">
+  <form id="expenseForm"><div class="grid"><div class="field"><label>تاريخ المصروف</label><input id="eDate" class="input" type="date" required></div><div class="field"><label>نوع المصروف *</label><select id="eCategory" class="input"><option>إيجار</option><option>عمالة</option><option>مواصلات</option><option>دعاية وإعلان</option><option>كهرباء وإنترنت</option><option>أخرى</option></select></div><div class="field"><label>المبلغ (ج) *</label><input id="eAmount" class="input" type="number" min="0.01" step="0.01" required></div><div class="field"><label>البازار المرتبط بالمصروف (اختياري)</label><select id="eBazaar" class="input"><option value="">مصروف عام</option></select></div><div class="field"><label>ملاحظات</label><input id="eNotes" class="input" placeholder="بيان المصروف"></div></div><button id="expenseSave" class="btn primary" type="submit">تسجيل المصروف</button></form>
+ </div>
+ <div class="card"><div class="heading"><h3 style="margin:0">سجل المصروفات</h3><button id="loadExpenses" type="button" class="btn ghost small">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>البازار</th><th>الملاحظة</th></tr></thead><tbody id="expensesTable"><tr><td colspan="5">لا توجد بيانات</td></tr></tbody></table></div></div>
+</section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
+'use strict';
+// PUBLIC DEPLOYMENT URL ONLY. Never put a PIN, token or password into this source.
+// Replace this URL with the actual deployment URL after testing the Apps Script version.
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec';
-const ADMIN_PIN='1234';
-
-let html5QrCode=null;
-let isScanning=false;
-let isSearching=false;
-let isSaving=false;
-let productMode=false;
-let currentProduct=null;
-
-const el=id=>document.getElementById(id);
-
-function verifyPin(){
-  if(el('pinCodeInput').value===ADMIN_PIN){
-    el('lock-screen').style.display='none';
-    setTimeout(()=>el('addBarcode').focus(),100);
-  }else{
-    alert('رمز المرور غير صحيح!');
-  }
+const $=id=>document.getElementById(id);
+const state={session:sessionStorage.getItem('mg_admin_session')||'',activeTab:'dashboard',productMode:'',currentProduct:null,bazaars:[],suppliers:[],scanner:null,scanning:false,saving:false,purchaseId:sessionStorage.getItem('mg_purchase_id')||newId('PUR'),expenseId:sessionStorage.getItem('mg_expense_id')||newId('EXP')};
+function newId(prefix){return prefix+'-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2,16))}
+sessionStorage.setItem('mg_purchase_id',state.purchaseId);sessionStorage.setItem('mg_expense_id',state.expenseId);
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function money(n){return (Number(n)||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج'}
+function number(v){return Number(v)||0}
+function toast(t,type=''){const node=$('toast');node.textContent=t;node.className='toast '+type;node.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>node.style.display='none',5200)}
+function setLoading(id,loading){const btn=$(id);if(btn)btn.disabled=!!loading;}
+async function api(action,payload,loginData){
+ const body={action};if(payload!==undefined)body.payload=payload;
+ if(action!=='adminLogin')body.session=state.session;
+ if(loginData)Object.assign(body,loginData);
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
+ try{
+  const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body),signal:controller.signal,redirect:'follow'});
+  if(!res.ok)throw Error('خطأ اتصال HTTP '+res.status);
+  const text=await res.text();let data;try{data=JSON.parse(text)}catch(e){throw Error('السيرفر لم يرجع JSON. راجع رابط نشر Apps Script والصلاحيات')}
+  if(!data||data.success!==true)throw Error(data?.message||'لم تتم العملية');
+  return data;
+ }finally{clearTimeout(timer)}
 }
-
-async function startCamera(){
-  el('scannerWrapper').style.display='block';
-  if(isScanning)return;
-
-  if(typeof Html5Qrcode==='undefined'){
-    alert('تعذر تحميل مكتبة الكاميرا');
-    el('scannerWrapper').style.display='none';
-    return;
-  }
-
-  try{
-    html5QrCode=new Html5Qrcode('reader');
-    isScanning=true;
-
-    await html5QrCode.start(
-      {facingMode:'environment'},
-      {
-        fps:20,
-        qrbox:{width:260,height:130},
-        formatsToSupport:[
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E
-        ]
-      },
-      decodedText=>{
-        el('addBarcode').value=decodedText;
-        invalidateProduct();
-        stopCamera();
-        setTimeout(searchExistingProduct,250);
-      }
-    );
-  }catch(err){
-    isScanning=false;
-    el('scannerWrapper').style.display='none';
-    alert('تأكد من إذن الكاميرا: '+err);
-  }
-}
-
-async function stopCamera(){
-  el('scannerWrapper').style.display='none';
-
-  if(html5QrCode&&isScanning){
-    try{await html5QrCode.stop()}catch(e){}
-    try{html5QrCode.clear()}catch(e){}
-  }
-
-  isScanning=false;
-  html5QrCode=null;
-}
-
-function showStatus(type,message){
-  el('productStatus').className='product-status '+type;
-  el('productStatus').textContent=message;
-}
-
-function hideStockCard(){
-  el('stockCard').classList.remove('show');
-  el('currentStockText').textContent='0';
-}
-
-function updateProfit(){
-  const p=el('addPrice').value;
-  const c=el('addCost').value;
-
-  if(p===''||c===''||
-     !Number.isFinite(Number(p))||
-     !Number.isFinite(Number(c))){
-    el('profitValue').textContent='—';
-    return;
-  }
-
-  const difference=Number(p)-Number(c);
-  el('profitValue').textContent=difference.toFixed(2)+' ج';
-  el('profitValue').style.color=
-    difference<0?'#b91c1c':'#166534';
-}
-
-function setCostMode(){
-  if(productMode==='existing'){
-    el('costLabel').textContent=
-      'سعر شراء الدفعة الجديدة (جنيه) *';
-
-    el('costHelp').textContent=
-      currentProduct&&currentProduct.cost!==null
-      ?'متوسط تكلفة المخزون الحالي: '+
-        Number(currentProduct.cost).toFixed(2)+
-        ' ج — أدخل سعر شراء الدفعة الجديدة'
-      :'تكلفة المخزون القديم غير مسجلة؛ أدخلها أولًا في العمود F بالشيت إذا كان الرصيد أكبر من صفر';
-
-    el('profitLabel').textContent=
-      'مكسب القطعة بسعر شراء الدفعة الجديدة';
-  }else{
-    el('costLabel').textContent=
-      'سعر الشراء / الجملة (جنيه) *';
-    el('costHelp').textContent=
-      'تكلفة شراء القطعة من المورد';
-    el('profitLabel').textContent=
-      'المكسب المتوقع للقطعة';
-  }
-
-  updateProfit();
-}
-
-function invalidateProduct(){
-  productMode=false;
-  currentProduct=null;
-  hideStockCard();
-
-  el('productStatus').className='product-status';
-  el('productStatus').textContent='';
-
-  ['addName','addCategory','addPrice'].forEach(
-    id=>el(id).readOnly=false
-  );
-
-  el('addName').value='';
-  el('addCategory').value='';
-  el('addPrice').value='';
-  el('addCost').value='';
-  el('addStock').value='1';
-
-  el('stockInputLabel').textContent=
-    'الرصيد المضاف (قطع) *';
-
-  el('saveProdBtn').innerHTML=
-    '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
-
-  setCostMode();
-}
-
-async function searchExistingProduct(){
-  if(isSearching||isSaving)return;
-
-  const barcode=el('addBarcode').value.trim();
-
-  if(!barcode){
-    alert('اكتب أو امسح الباركود أولاً!');
-    return;
-  }
-
-  isSearching=true;
-  invalidateProduct();
-  showStatus('searching','جاري البحث عن المنتج...');
-
-  try{
-    const res=await fetch(
-      SCRIPT_URL+
-      '?action=findProduct&barcode='+
-      encodeURIComponent(barcode)
-    );
-
-    if(!res.ok)throw new Error('HTTP '+res.status);
-
-    const data=await res.json();
-
-    if(el('addBarcode').value.trim()!==barcode)return;
-
-    if(data&&data.success===false){
-      throw new Error(data.message||'فشل البحث');
-    }
-
-    if(data&&data.name){
-      productMode='existing';
-      currentProduct=data;
-
-      el('addName').value=data.name||'';
-      el('addCategory').value=data.category||'';
-      el('addPrice').value=Number(data.price)||0;
-      el('addCost').value='';
-
-      el('currentStockText').textContent=
-        Number(data.stock)||0;
-
-      el('stockCard').classList.add('show');
-      el('addStock').value='1';
-
-      el('stockInputLabel').textContent=
-        'الكمية المراد إضافتها للمخزون *';
-
-      ['addName','addCategory','addPrice'].forEach(
-        id=>el(id).readOnly=true
-      );
-
-      el('saveProdBtn').innerHTML=
-        '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
-
-      showStatus(
-        'found',
-        '✅ المنتج موجود بالفعل — أدخل سعر شراء الدفعة الجديدة والكمية.'
-      );
-
-      setCostMode();
-
-      setTimeout(()=>el('addCost').focus(),100);
-    }else{
-      setNewProductMode();
-    }
-  }catch(err){
-    invalidateProduct();
-    showStatus(
-      'new',
-      '❌ حدث خطأ أثناء البحث: '+err.message
-    );
-  }finally{
-    isSearching=false;
-  }
-}
-
-function setNewProductMode(){
-  productMode='new';
-  currentProduct=null;
-  hideStockCard();
-
-  ['addName','addCategory','addPrice','addCost'].forEach(
-    id=>el(id).value=''
-  );
-
-  el('addStock').value='1';
-
-  ['addName','addCategory','addPrice'].forEach(
-    id=>el(id).readOnly=false
-  );
-
-  el('stockInputLabel').textContent=
-    'الرصيد الافتتاحي (قطع) *';
-
-  el('saveProdBtn').innerHTML=
-    '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
-
-  showStatus(
-    'new',
-    'ℹ️ الباركود غير مسجل — أدخل بيانات المنتج وسعر الشراء والبيع.'
-  );
-
-  setCostMode();
-
-  setTimeout(()=>el('addName').focus(),100);
-}
-
-async function submitProductToSheet(){
-  if(isSaving||isSearching)return;
-
-  const barcode=el('addBarcode').value.trim();
-  const name=el('addName').value.trim();
-  const category=el('addCategory').value.trim();
-  const priceText=el('addPrice').value;
-  const costText=el('addCost').value;
-  const stockText=el('addStock').value;
-
-  const price=Number(priceText);
-  const cost=Number(costText);
-  const stock=Number(stockText);
-
-  if(!barcode){
-    alert('أدخل الباركود!');
-    return;
-  }
-
-  if(!productMode){
-    alert('ابحث عن الباركود أولاً للتأكد من حالة المنتج.');
-    searchExistingProduct();
-    return;
-  }
-
-  if(!Number.isSafeInteger(stock)||stock<=0){
-    alert('أدخل كمية صحيحة أكبر من صفر!');
-    return;
-  }
-
-  if(costText===''||!Number.isFinite(cost)||cost<0){
-    alert('أدخل سعر شراء صحيح!');
-    return;
-  }
-
-  if(productMode==='new'&&(
-    !name||priceText===''||
-    !Number.isFinite(price)||price<0
-  )){
-    alert('أدخل اسم الصنف وسعر البيع!');
-    return;
-  }
-
-  if(
-    productMode==='existing'&&
-    currentProduct&&
-    Number(currentProduct.stock)>0&&
-    (
-      currentProduct.cost===null||
-      currentProduct.cost===undefined||
-      currentProduct.cost===''
-    )
-  ){
-    alert(
-      'لازم تسجل تكلفة المخزون القديم في العمود F بالشيت أولًا، وبعدها ابحث عن المنتج مرة أخرى.'
-    );
-    return;
-  }
-
-  const btn=el('saveProdBtn');
-  btn.disabled=true;
-  isSaving=true;
-
-  const mode=productMode;
-
-  btn.innerHTML=
-    '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-
-  const payload=mode==='existing'
-    ?{
-      barcode:barcode,
-      stockToAdd:stock,
-      cost:cost
-    }
-    :{
-      barcode:barcode,
-      name:name,
-      category:category,
-      price:price,
-      cost:cost,
-      stock:stock
-    };
-
-  try{
-    const res=await fetch(SCRIPT_URL,{
-      method:'POST',
-      body:JSON.stringify({
-        action:mode==='existing'
-          ?'addStock'
-          :'addNewProduct',
-        payload:payload
-      })
-    });
-
-    if(!res.ok){
-      throw new Error('HTTP '+res.status);
-    }
-
-    const result=await res.json();
-
-    if(!result.success){
-      throw new Error(
-        result.message||'تعذر الحفظ'
-      );
-    }
-
-    alert(
-      '✅ '+(result.message||'تم الحفظ بنجاح')
-    );
-
-    if(mode==='existing'){
-      await searchAfterSave(barcode);
-    }else{
-      resetForm();
-    }
-  }catch(err){
-    alert(
-      '⚠️ '+err.message+
-      '\nإذا انقطع الاتصال، راجع الشيت قبل إعادة الحفظ لتجنب التكرار.'
-    );
-  }finally{
-    isSaving=false;
-    btn.disabled=false;
-
-    if(productMode==='existing'){
-      btn.innerHTML=
-        '<i class="fa-solid fa-plus"></i> إضافة الكمية للمخزون';
-    }else if(productMode==='new'){
-      btn.innerHTML=
-        '<i class="fa-solid fa-box-archive"></i> إضافة منتج جديد';
-    }else{
-      btn.innerHTML=
-        '<i class="fa-solid fa-box-archive"></i> حفظ في شيت الإكسل';
-    }
-  }
-}
-
-async function searchAfterSave(barcode){
-  invalidateProduct();
-  el('addBarcode').value=barcode;
-  isSaving=false;
-  await searchExistingProduct();
-  isSaving=true;
-}
-
-function resetForm(){
-  invalidateProduct();
-  el('addBarcode').value='';
-  setTimeout(()=>el('addBarcode').focus(),100);
-}
-
-el('addBarcode').addEventListener('input',()=>{
-  if(!isSaving)invalidateProduct();
-});
-
-el('addPrice').addEventListener('input',updateProfit);
-el('addCost').addEventListener('input',updateProfit);
+function authError(e){const msg=String(e?.message||e);if(/جلسة الإدارة|جلسة.*صالحة/.test(msg)){state.session='';sessionStorage.removeItem('mg_admin_session');$('lock-screen').style.display='flex'}toast(msg,'error')}
+function showPanel(name){state.activeTab=name;document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));if(!state.session)return;
+ const loader={dashboard:loadDashboard,bazaars:loadBazaars,purchases:loadPurchases,suppliers:loadSuppliers,expenses:loadExpenses};if(loader[name])loader[name]();}
+document.querySelectorAll('[data-tab]').forEach(x=>x.addEventListener('click',()=>showPanel(x.dataset.tab)));
+$('refreshBtn').addEventListener('click',()=>showPanel(state.activeTab));
+$('logoutBtn').addEventListener('click',()=>{state.session='';sessionStorage.removeItem('mg_admin_session');$('adminPassword').value='';$('lock-screen').style.display='flex'});
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();setLoading('loginBtn',true);try{const data=await api('adminLogin',undefined,{password:$('adminPassword').value});state.session=data.session;sessionStorage.setItem('mg_admin_session',state.session);$('adminPassword').value='';$('lock-screen').style.display='none';toast('تم تسجيل الدخول','');loadBazaars();loadSuppliers();showPanel('dashboard')}catch(err){authError(err)}finally{setLoading('loginBtn',false)}});
+if(state.session){$('lock-screen').style.display='none';loadBazaars();loadSuppliers();showPanel('dashboard')}
+function emptyTbody(id,colspan,msg){$(id).innerHTML='<tr><td colspan="'+colspan+'" class="muted">'+esc(msg)+'</td></tr>'}
+async function loadDashboard(){try{const {summary:s,bazaarSales}=await api('mgOverview');[['mSales',s.netSales,true],['mPurchases',s.purchases,true],['mPurchaseExtras',s.purchaseExtras,true],['mExpenses',s.expenses,true],['mDue',s.supplierDue,true],['mProfit',s.estimatedGrossProfit,true],['mBazaars',s.bazaarCount,false],['mSuppliers',s.supplierCount,false]].forEach(([id,v,c])=>$(id).textContent=c?money(v):v);$('bazaarSalesBody').innerHTML=bazaarSales.length?bazaarSales.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.netSales)+'</td><td>'+money(x.profit)+'</td></tr>').join(''):'<tr><td colspan="3">لا توجد مبيعات مسجلة</td></tr>'}catch(e){authError(e)}}
+async function loadBazaars(){try{const data=await api('mgListBazaars');state.bazaars=data.bazaars||[];renderBazaars()}catch(e){authError(e)}}
+function renderBazaars(){const list=state.bazaars; if(!list.length)emptyTbody('bazaarTable',3,'لم تُضف أي بازار حتى الآن');else $('bazaarTable').innerHTML=list.map(b=>'<tr><td>'+esc(b.name)+'</td><td><span class="pill '+(b.active?'':'off')+'">'+(b.active?'نشط':'موقوف')+'</span></td><td><div class="actions"><button class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل الاسم</button><button class="btn '+(b.active?'warn':'ghost')+' small" data-bz-toggle="'+esc(b.id)+'">'+(b.active?'إيقاف':'تفعيل')+'</button></div></td></tr>').join('');
+ const selector=$('eBazaar');selector.innerHTML='<option value="">مصروف عام</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');}
+$('bazaarForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('bazaarName').value.trim();if(!name)return;setLoading('bazaarAdd',true);try{await api('mgCreateBazaar',{id:newId('BZ'),name});$('bazaarName').value='';toast('تمت إضافة البازار');await loadBazaars()}catch(e){authError(e)}finally{setLoading('bazaarAdd',false)}});
+$('bazaarTable').addEventListener('click',async e=>{const el=e.target.closest('[data-bz-edit],[data-bz-toggle]');if(!el)return;const id=el.dataset.bzEdit||el.dataset.bzToggle,b=state.bazaars.find(x=>x.id===id);if(!b)return;const edit=!!el.dataset.bzEdit;const name=edit?prompt('اسم البازار الجديد:',b.name):b.name;if(name===null||!name.trim())return;const active=edit?b.active:!b.active;if(!edit&&!confirm('هل تريد '+(active?'تفعيل':'إيقاف')+' بازار '+b.name+'؟'))return;el.disabled=true;try{await api('mgUpdateBazaar',{id,name:name.trim(),active});toast('تم تحديث البازار');await loadBazaars()}catch(err){authError(err)}finally{el.disabled=false}});
+$('loadBazaars').addEventListener('click',loadBazaars);
+async function loadSuppliers(){try{const r=await api('mgSuppliers');state.suppliers=r.suppliers||[];emptyTbody('suppliersTable',3,'لا يوجد موردون بعد');if(state.suppliers.length)$('suppliersTable').innerHTML=state.suppliers.map(s=>'<tr><td>'+esc(s.name)+'</td><td dir="ltr">'+esc(s.phone)+'</td><td>'+money(s.balance)+'</td></tr>').join('');$('knownSuppliers').innerHTML=state.suppliers.map(s=>'<option value="'+esc(s.name)+'"></option>').join('')}catch(e){authError(e)}}
+$('iSupplier').addEventListener('change',()=>{const s=state.suppliers.find(x=>x.name===$('iSupplier').value.trim());if(s)$('iPhone').value=s.phone});
+function productStatus(msg,type=''){$('pStatus').textContent=msg;$('pStatus').className='alert '+type;$('pStatus').style.display='block'}
+function resetProduct(){state.productMode='';state.currentProduct=null;['pName','pCategory','pPrice'].forEach(id=>{$(id).value='';$(id).readOnly=false});$('pCost').value='';$('pQty').value=1;$('pStock').style.display='none';$('pStatus').style.display='none';$('pSave').textContent='ابحث عن الباركود أولًا';$('pProfit').value=''}
+$('pBarcode').addEventListener('input',resetProduct);
+$('pBarcode').addEventListener('keydown',e=>{if(e.key==='Enter')lookupProduct()});
+$('pLookup').addEventListener('click',lookupProduct);
+async function lookupProduct(){const barcode=$('pBarcode').value.trim();if(!barcode)return toast('أدخل الباركود','warn');setLoading('pLookup',true);resetProduct();productStatus('جاري البحث عن المنتج…');try{const r=await api('findProductAdmin',{barcode});if($('pBarcode').value.trim()!==barcode)return;const p=r.product;if(p){state.productMode='existing';state.currentProduct=p;$('pName').value=p.name||'';$('pCategory').value=p.category||'';$('pPrice').value=number(p.sellingPrice);['pName','pCategory','pPrice'].forEach(id=>$(id).readOnly=true);$('pStockValue').textContent=number(p.physicalStock);$('pStock').style.display='block';productStatus('منتج موجود: أدخل كمية وسعر شراء الدفعة الجديدة.','success');$('pSave').textContent='زيادة مخزون المنتج مباشرة'}else{state.productMode='new';productStatus('باركود جديد: أدخل اسم المنتج وفئته وأسعار الشراء والبيع.','warning');$('pSave').textContent='إضافة منتج جديد مباشرة'}$('pCost').focus()}catch(err){productStatus(String(err.message||err),'error')}finally{setLoading('pLookup',false)}}
+function updateProfit(){const cost=$('pCost').value,price=$('pPrice').value;$('pProfit').value=cost!==''&&price!==''?money(number(price)-number(cost)):'—'}
+['pCost','pPrice'].forEach(id=>$(id).addEventListener('input',updateProfit));
+$('pSave').addEventListener('click',async()=>{if(!state.productMode)return toast('ابحث عن الباركود أولًا','warn');const barcode=$('pBarcode').value.trim(),qty=number($('pQty').value),cost=number($('pCost').value),selling=number($('pPrice').value);if(!Number.isSafeInteger(qty)||qty<=0||$('pCost').value===''||cost<0)return toast('أدخل كمية وتكلفة صحيحتين','warn');if(state.productMode==='new'&&(!$('pName').value.trim()||$('pPrice').value===''||selling<0))return toast('أكمل بيانات المنتج الجديد','warn');if(state.productMode==='existing'&&number(state.currentProduct.physicalStock)>0&&(state.currentProduct.cost===null||state.currentProduct.cost===undefined))return toast('تكلفة المخزون القديم غير مسجلة؛ لا يمكن حساب المتوسط','warn');if(!confirm('هذه إضافة مباشرة لا تُنشئ فاتورة مشتريات. هل تريد الاستمرار؟'))return;const action=state.productMode==='existing'?'addStock':'addNewProduct',payload=action==='addStock'?{barcode,stockToAdd:qty,cost}:{barcode,name:$('pName').value.trim(),category:$('pCategory').value.trim(),price:selling,cost,stock:qty};setLoading('pSave',true);try{await api(action,payload);toast('تم تسجيل المنتج/المخزون');if(action==='addStock')await lookupProduct();else{$('pBarcode').value='';resetProduct()}}catch(err){authError(err);toast('إذا انقطع الاتصال تحقق من الشيت قبل إعادة المحاولة','warn')}finally{setLoading('pSave',false)}});
+// Barcode scanning
+async function startScanner(onCode){$('scannerWrapper').style.display='block';if(typeof Html5Qrcode==='undefined')return toast('مكتبة الكاميرا غير متاحة','error');if(state.scanning)return;try{state.scanner=new Html5Qrcode('reader');state.scanning=true;await state.scanner.start({facingMode:'environment'},{fps:15,qrbox:{width:260,height:130},formatsToSupport:[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E]},code=>{onCode(code);stopScanner()})}catch(e){toast('تعذر تشغيل الكاميرا: '+String(e),'error');await stopScanner()}}
+async function stopScanner(){try{if(state.scanner&&state.scanning)await state.scanner.stop()}catch(e){}try{state.scanner?.clear()}catch(e){}state.scanner=null;state.scanning=false;$('scannerWrapper').style.display='none'}
+$('closeScanner').addEventListener('click',stopScanner);$('pScan').addEventListener('click',()=>startScanner(code=>{$('pBarcode').value=code;lookupProduct()}));
+// Purchase invoice editing
+let lineIndex=0;
+function addPurchaseLine(){const id=++lineIndex,box=document.createElement('div');box.className='line-card';box.dataset.index=id;box.innerHTML=`<div class="line-top"><strong>صنف #${id}</strong><div class="actions"><button type="button" class="btn ghost small item-scan" title="مسح باركود">مسح باركود</button><button type="button" class="btn danger small item-remove" title="حذف">حذف</button></div></div><div class="grid three" style="margin-top:10px"><div class="field"><label>الباركود *</label><input class="input item-barcode" placeholder="الباركود"></div><div class="field"><label>اسم الصنف *</label><input class="input item-name" placeholder="اسم المنتج"></div><div class="field"><label>الفئة</label><input class="input item-category" placeholder="ألعاب"></div><div class="field"><label>الكمية *</label><input type="number" class="input item-qty" min="1" step="1" value="1"></div><div class="field"><label>سعر شراء القطعة *</label><input type="number" class="input item-cost" min="0" step="0.01" placeholder="0.00"></div><div class="field"><label>سعر بيع القطعة (ج) *</label><input type="number" class="input item-price" min="0" step="0.01" placeholder="0.00"></div></div><div class="hint item-info">أدخل باركود الصنف؛ سيتم البحث عنه، أو تعبئة بياناته إذا كان جديدًا.</div>`;$('invoiceLines').appendChild(box);updatePurchaseTotals();return box;}
+function rowValue(row,cls){return row.querySelector('.'+cls).value.trim()}
+function updatePurchaseTotals(){const subtotal=Array.from(document.querySelectorAll('.line-card')).reduce((s,r)=>s+number(rowValue(r,'item-cost'))*number(rowValue(r,'item-qty')),0);const extras=number($('iShipping').value)+number($('iOther').value),due=subtotal-number($('iPaid').value);$('iSubtotal').textContent=money(subtotal);$('iExtras').textContent=money(extras);$('iTotal').textContent=money(subtotal+extras);$('iDue').textContent=money(Math.max(0,due));const doc=$('iDocumentTotal').value;const mismatch=doc!==''&&Math.abs(number(doc)-subtotal)>0.009;$('iMismatch').style.display=mismatch?'block':'none';$('iMismatch').textContent=mismatch?'قيمة فاتورة التاجر لا تطابق مجموع الأصناف؛ سيتم رفض الحفظ حتى تصحح الأرقام.':'';}
+$('invoiceLines').addEventListener('input',updatePurchaseTotals);['iShipping','iOther','iPaid','iDocumentTotal'].forEach(id=>$(id).addEventListener('input',updatePurchaseTotals));
+$('invoiceLines').addEventListener('click',async e=>{const btn=e.target.closest('button');if(!btn)return;const row=btn.closest('.line-card');if(btn.classList.contains('item-remove')){row.remove();updatePurchaseTotals()}else if(btn.classList.contains('item-scan'))startScanner(code=>{row.querySelector('.item-barcode').value=code;lookupItemRow(row)})});
+$('invoiceLines').addEventListener('focusout',e=>{if(e.target.classList.contains('item-barcode'))lookupItemRow(e.target.closest('.line-card'))});
+async function lookupItemRow(row){const barcode=rowValue(row,'item-barcode');if(!barcode)return;row.querySelector('.item-info').textContent='جاري البحث…';try{const r=await api('findProductAdmin',{barcode});if(!row.isConnected||rowValue(row,'item-barcode')!==barcode)return;const p=r.product;['item-name','item-category','item-price'].forEach(id=>row.querySelector('.'+id).readOnly=!!p);if(p){row.querySelector('.item-name').value=p.name||'';row.querySelector('.item-category').value=p.category||'';row.querySelector('.item-price').value=number(p.sellingPrice);row.querySelector('.item-info').textContent='موجود بالمخزون: '+number(p.physicalStock)+' قطعة، متوسط التكلفة الحالي: '+(p.cost===null?'غير مسجل':money(p.cost))}else{row.querySelector('.item-info').textContent='صنف جديد؛ أكمل الاسم والفئة وسعر البيع.'}}catch(e){row.querySelector('.item-info').textContent='فشل البحث: '+String(e.message||e)}}
+$('addLineBtn').addEventListener('click',()=>addPurchaseLine());addPurchaseLine();$('iDraftId').textContent='رقم فاتورة الشراء الحالية: '+state.purchaseId;
+function purchasePayload(){const items=Array.from(document.querySelectorAll('.line-card')).map(r=>({barcode:rowValue(r,'item-barcode'),name:rowValue(r,'item-name'),category:rowValue(r,'item-category'),qty:Number(rowValue(r,'item-qty')),unitCost:Number(rowValue(r,'item-cost')),sellingPrice:Number(rowValue(r,'item-price'))}));if(!items.length)throw Error('أضف صنفًا واحدًا على الأقل');if(items.some(x=>!x.barcode||!x.name||!Number.isSafeInteger(x.qty)||x.qty<=0||!Number.isFinite(x.unitCost)||x.unitCost<0||!Number.isFinite(x.sellingPrice)||x.sellingPrice<0))throw Error('أكمل بيانات الأصناف والكمية والأسعار بشكل صحيح');if(new Set(items.map(x=>x.barcode)).size!==items.length)throw Error('يوجد باركود مكرر في الفاتورة');const subtotal=items.reduce((s,x)=>s+x.qty*x.unitCost,0);if(!$('iDate').value)throw Error('حدد تاريخ فاتورة الشراء');if(number($('iPaid').value)>subtotal+0.001)throw Error('المدفوع للمورد لا يمكن أن يزيد عن قيمة البضاعة');if($('iDocumentTotal').value!==''&&Math.abs(number($('iDocumentTotal').value)-subtotal)>0.009)throw Error('قيمة فاتورة التاجر لا تطابق إجمالي الأصناف');if(!$('iSupplier').value.trim()||!$('iPhone').value.trim())throw Error('اسم التاجر ورقم هاتفه مطلوبان');return {id:state.purchaseId,date:$('iDate').value,supplierName:$('iSupplier').value.trim(),supplierPhone:$('iPhone').value.trim(),supplierInvoice:$('iSupplierInvoice').value.trim(),supplierInvoiceTotal:$('iDocumentTotal').value.trim(),shipping:number($('iShipping').value),other:number($('iOther').value),paid:number($('iPaid').value),paymentMethod:$('iPayment').value,notes:$('iNotes').value.trim(),items}}
+$('iSave').addEventListener('click',async()=>{let payload;try{payload=purchasePayload()}catch(e){return toast(e.message,'warn')}if(!confirm('اعتماد فاتورة شراء بقيمة '+$('iTotal').textContent+' وتحديث المخزون؟'))return;setLoading('iSave',true);try{const result=await api('mgSavePurchase',payload);toast(result.message||'تم اعتماد الفاتورة');state.purchaseId=newId('PUR');sessionStorage.setItem('mg_purchase_id',state.purchaseId);$('iDraftId').textContent='رقم فاتورة الشراء الحالية: '+state.purchaseId;['iSupplier','iPhone','iSupplierInvoice','iDocumentTotal','iNotes'].forEach(id=>$(id).value='');['iShipping','iOther','iPaid'].forEach(id=>$(id).value='0');$('invoiceLines').innerHTML='';addPurchaseLine();updatePurchaseTotals();loadPurchases();loadSuppliers()}catch(e){authError(e);toast('لا تعيد إنشاء الفاتورة برقم جديد قبل الضغط على «التحقق من حفظ الفاتورة»','warn')}finally{setLoading('iSave',false)}});
+$('iVerify').addEventListener('click',verifyPurchase);
+async function verifyPurchase(){try{const r=await api('mgGetPurchase',{id:state.purchaseId});if(r.found)toast('الفاتورة '+state.purchaseId+' محفوظة بالفعل. لا تعيد تسجيلها.');else toast('لم تظهر الفاتورة في السجل؛ راجع قبل إعادة الإرسال بنفس الرقم.','warn')}catch(e){authError(e)}}
+async function loadPurchases(){try{const r=await api('mgPurchaseInvoices');if(!r.invoices.length)return emptyTbody('purchaseTable',6,'لم تُسجَّل فواتير مشتريات بعد');$('purchaseTable').innerHTML=r.invoices.map(x=>'<tr><td style="direction:ltr">'+esc(x.id)+'</td><td>'+esc(x.supplierName)+'</td><td>'+esc(x.date)+'</td><td>'+money(x.subtotal)+'</td><td>'+money(x.total)+'</td><td>'+money(x.due)+'</td></tr>').join('')}catch(e){authError(e)}}
+$('loadPurchases').addEventListener('click',loadPurchases);
+function localToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+$('eDate').value=localToday();$('iDate').value=localToday();
+$('expenseForm').addEventListener('submit',async e=>{e.preventDefault();setLoading('expenseSave',true);try{const p={id:state.expenseId,date:$('eDate').value,category:$('eCategory').value,amount:Number($('eAmount').value),bazaarId:$('eBazaar').value,notes:$('eNotes').value.trim()};const r=await api('mgSaveExpense',p);toast(r.message||'تم تسجيل المصروف');state.expenseId=newId('EXP');sessionStorage.setItem('mg_expense_id',state.expenseId);$('eAmount').value='';$('eNotes').value='';loadExpenses()}catch(e){authError(e)}finally{setLoading('expenseSave',false)}});
+async function loadExpenses(){try{const r=await api('mgExpenses');if(!r.expenses.length)return emptyTbody('expensesTable',5,'لا توجد مصروفات بعد');$('expensesTable').innerHTML=r.expenses.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.category)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.bazaar||'عام')+'</td><td>'+esc(x.notes)+'</td></tr>').join('')}catch(e){authError(e)}}
+$('loadExpenses').addEventListener('click',loadExpenses);
 </script>
 </body>
 </html>
