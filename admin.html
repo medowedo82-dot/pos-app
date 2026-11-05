@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MG ALL IN ONE — لوحة الإدارة</title>
+<title>MG ALL IN ONE — داشبورد الإدارة والبزارات والمشتريات</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
@@ -28,6 +28,20 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 .toast{position:fixed;bottom:16px;left:16px;right:16px;z-index:4100;max-width:620px;margin:auto;padding:12px 16px;background:#153c2c;color:white;border-radius:12px;box-shadow:0 6px 30px #0e241e44;display:none}.toast.error{background:#a32720}.toast.warn{background:#985f0e}
 @media(max-width:740px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:11px}.card{padding:14px}.header{padding:14px}}
 @media(max-width:460px){.grid,.grid.three{grid-template-columns:1fr}.brand{font-size:16px}.metric b{font-size:18px}}
+
+/* لوحة اختصارات الإدارة — تظهر الأقسام الرئيسية دون الحاجة للتمرير داخل شريط التبويبات */
+.dashboard-welcome{background:linear-gradient(130deg,#e8f4ed,#ffffff);border:1px solid #d4e6db}
+.dashboard-welcome h3{margin:0;font-size:19px;color:var(--brand)}
+.dashboard-welcome p{margin:5px 0 16px;color:var(--muted);font-size:13px}
+.module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.module-link{display:flex;align-items:flex-start;text-align:right;gap:11px;border:1px solid #d7e5dc;background:#fff;border-radius:15px;padding:16px 13px;min-height:106px;transition:box-shadow .15s,border-color .15s,transform .15s;color:var(--ink);width:100%}
+.module-link:hover,.module-link:focus-visible{border-color:#65a886;box-shadow:0 5px 15px #00633a17;transform:translateY(-1px)}
+.module-icon{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;color:var(--brand);background:#e4f3ea;font-size:18px}
+.module-copy{display:block;min-width:0;flex:1}.module-copy strong{display:block;font-size:14px;margin-bottom:4px}.module-copy small{display:block;font-size:11px;line-height:1.6;color:var(--muted)}
+.module-arrow{align-self:center;color:#80a492;font-size:12px}
+#setupNotice[hidden]{display:none}#setupNotice{border:1px solid #f3cf9d;background:#fff9ef}#setupNotice h3{margin:0 0 5px;color:#885000}#setupNotice ol{padding-right:18px;margin:7px 0}#setupNotice code{direction:ltr;display:inline-block;padding:2px 7px;background:white;border:1px solid #eed6ac;border-radius:7px;color:#85520b}
+@media(max-width:740px){.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.module-grid{grid-template-columns:1fr}.module-link{min-height:80px;padding:12px}.module-link .module-copy small{font-size:12px}}
 </style>
 </head>
 <body>
@@ -63,6 +77,24 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 <button class="nav-btn" data-tab="expenses"><i class="fa-solid fa-wallet"></i> المصروفات</button>
 </nav>
 <section class="panel active" id="tab-dashboard">
+ <div class="card dashboard-welcome" id="adminShortcuts">
+  <h3>إدارة MG من مكان واحد</h3>
+  <p>اختار القسم اللي عايز تشتغل عليه. إضافة البزارات وفواتير الشراء والمصروفات متاحة للأدمن فقط.</p>
+  <div class="module-grid" aria-label="اختصارات لوحة الإدارة">
+   <button type="button" class="module-link" data-tab="bazaars" id="shortcutBazaars"><span class="module-icon"><i class="fa-solid fa-store"></i></span><span class="module-copy"><strong>إدارة البزارات</strong><small>إضافة بازار، تعديل اسمه، تفعيله أو إيقافه</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="purchases" id="shortcutPurchases"><span class="module-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span><span class="module-copy"><strong>فاتورة شراء بضاعة</strong><small>تاجر، أصناف، تكلفة شراء، شحن ومدفوعات</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="suppliers" id="shortcutSuppliers"><span class="module-icon"><i class="fa-solid fa-truck-fast"></i></span><span class="module-copy"><strong>الموردون والتجار</strong><small>أرقام التجار ورصيد المستحق لكل مورد</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="expenses" id="shortcutExpenses"><span class="module-icon"><i class="fa-solid fa-wallet"></i></span><span class="module-copy"><strong>مصروفات التشغيل</strong><small>إيجار، نقل، تجهيز ومصاريف كل بازار</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="products" id="shortcutProducts"><span class="module-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span class="module-copy"><strong>المنتجات والمخزون</strong><small>الباركود وإضافة صنف أو زيادة كمية</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="dashboard" data-goto="bazaarReportsCard" id="shortcutReports"><span class="module-icon"><i class="fa-solid fa-chart-column"></i></span><span class="module-copy"><strong>التقارير ومبيعات البزارات</strong><small>مبيعات كل بازار والربح الإجمالي التقديري</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+  </div>
+ </div>
+ <div class="card" id="setupNotice" role="status" hidden>
+  <h3><i class="fa-solid fa-triangle-exclamation"></i> يلزم تجهيز سجلات Google Sheets</h3>
+  <p>ملفات الإدارة موجودة، لكن الجداول الجديدة لم تُنشأ بعد. قبل تسجيل أي فاتورة حقيقية، افتح مشروع Google Apps Script الذي يتصل به الموقع، واختر الدالة <code>setupMGExtensions</code> ثم اضغط <strong>Run</strong> مرة واحدة بعد عمل نسخة احتياطية من الشيت.</p>
+  <ol><li>تأكد أن <code>MG_SPREADSHEET_ID</code> يشير إلى الشيت الصحيح.</li><li>تحقق أن أوراق <strong>MG_البزارات، MG_الموردون، MG_فواتير_المشتريات، MG_بنود_المشتريات، MG_المصروفات</strong> ظهرت.</li><li>ارجع هنا واضغط <strong>تحديث</strong>.</li></ol>
+  <p class="hint">لا تنشئ هذه الأوراق يدويًا بأسماء أو أعمدة مختلفة؛ دالة التهيئة تضبط الأسماء والعناوين المطلوبة.</p>
+ </div>
  <div class="heading"><h2>ملخص MG المالي</h2><p>إجماليات مسجلة في Google Sheets</p></div>
  <div class="metric-grid" id="metricGrid">
   <div class="metric"><small>صافي المبيعات</small><b id="mSales">—</b></div>
@@ -75,7 +107,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
   <div class="metric"><small>البزارات النشطة</small><b id="mBazaars">—</b></div>
   <div class="metric"><small>عدد الموردين</small><b id="mSuppliers">—</b></div>
  </div>
- <div class="card" style="margin-top:14px"><h3>مبيعات كل بازار</h3><div class="table-scroll"><table><thead><tr><th>البازار</th><th>صافي المبيعات</th><th>الربح الإجمالي التقديري</th></tr></thead><tbody id="bazaarSalesBody"><tr><td colspan="3">سجّل الدخول لتحديث التقرير</td></tr></tbody></table></div><p class="hint">الربح الإجمالي لا يساوي صافي الربح؛ لا يشمل كل المصاريف التشغيلية. الفواتير القديمة التي لا تتضمن بازار تظهر تحت «غير محدد».</p></div>
+ <div class="card" id="bazaarReportsCard" style="margin-top:14px"><h3>مبيعات كل بازار</h3><div class="table-scroll"><table><thead><tr><th>البازار</th><th>صافي المبيعات</th><th>الربح الإجمالي التقديري</th></tr></thead><tbody id="bazaarSalesBody"><tr><td colspan="3">سجّل الدخول لتحديث التقرير</td></tr></tbody></table></div><p class="hint">الربح الإجمالي لا يساوي صافي الربح؛ لا يشمل كل المصاريف التشغيلية. الفواتير القديمة التي لا تتضمن بازار تظهر تحت «غير محدد».</p></div>
 </section>
 <section class="panel" id="tab-products">
  <div class="heading"><h2>إدارة المنتجات والمخزون</h2><p>إضافة منتج، بحث بالباركود، أو زيادة مخزون مباشرة</p></div>
@@ -83,8 +115,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
   <div class="field"><label>الباركود *</label><div class="actions"><input id="pBarcode" class="input" style="flex:1;min-width:160px" placeholder="اكتب أو امسح الباركود"><button id="pLookup" class="btn ghost" type="button"><i class="fa-solid fa-magnifying-glass"></i> بحث</button><button id="pScan" class="btn ghost" type="button"><i class="fa-solid fa-barcode"></i></button></div></div>
   <div id="pStatus" class="alert" style="display:none"></div>
   <div id="pStock" class="alert success" style="display:none">المخزون المتبقي: <strong id="pStockValue">0</strong> قطعة</div>
-  <div class="grid"><div class="field"><label>اسم المنتج *</label><input id="pName" class="input" placeholder="اسم الصنف"></div><div class="field"><label>الفئة</label><input id="pCategory" class="input" placeholder="ألعاب / إكسسوارات"></div><div class="field"><label>سعر البيع (ج) *</label><input id="pPrice" type="number" min="0" step="0.01" class="input"></div><div class="field"><label>سعر شراء الدفعة (ج) *</label><input id="pCost" type="number" min="0" step="0.01" class="input"></div><div class="field"><label>الكمية *</label><input id="pQty" type="number" min="1" step="1" value="1" class="input"></div><div class="field"><label>الربح المتوقع للقطعة</label><input id="pProfit" class="input" readonly placeholder="—"></div></div>
-  <p class="alert warning">الإضافة المباشرة هنا لا تسجل فاتورة مشتريات أو اسم مورد؛ للمشتريات العادية استخدم «فواتير المشتريات» حتى تكون الحسابات دقيقة.</p>
+  <div class="grid"><div class="field"><label>اسم المنتج *</label><input id="pName" class="input" placeholder="اسم الصنف"></div><div class="field"><label>الفئة</label><input id="pCategory" class="input" placeholder="ألعاب / إكسسوارات"></div><div class="field"><label>سعر البيع (ج) *</label><input id="pPrice" type="number" min="0" step="0.01" class="input"></div><div class="field"><label>سعر شراء القطعة (ج) *</label><input id="pCost" type="number" min="0" step="any" class="input" placeholder="يُحسب من إجمالي الدفعة"></div><div class="field"><label>إجمالي شراء الدفعة (ج) *</label><input id="pBatchTotal" type="number" min="0" step="0.01" class="input" placeholder="مثال: 85"></div><div class="field"><label>الكمية *</label><input id="pQty" type="number" min="1" step="1" value="1" class="input"></div><div class="field"><label>الربح المتوقع للقطعة</label><input id="pProfit" class="input" readonly placeholder="—"></div></div>
+  <p class="alert warning">اكتب الكمية وإجمالي شراء الدفعة (مثال: 12 قطعة مقابل 85 جنيه) لتحسب تكلفة القطعة تلقائيًا. ويمكنك بدلًا من ذلك إدخال سعر القطعة فيُحسب إجمالي الدفعة. الإضافة المباشرة هنا لا تسجل فاتورة مشتريات أو اسم مورد؛ للمشتريات العادية استخدم «فواتير المشتريات».</p>
   <button id="pSave" class="btn primary full" type="button">ابحث عن الباركود أولًا</button>
  </div>
 </section>
@@ -96,15 +128,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
    <div class="field"><label>اسم التاجر *</label><input id="iSupplier" class="input" placeholder="اسم التاجر" list="knownSuppliers"><datalist id="knownSuppliers"></datalist></div>
    <div class="field"><label>رقم التاجر *</label><input id="iPhone" class="input" type="tel" placeholder="01xxxxxxxxx"></div>
    <div class="field"><label>رقم فاتورة التاجر (اختياري)</label><input id="iSupplierInvoice" class="input" placeholder="رقم الفاتورة الورقية"></div>
-   <div class="field"><label>قيمة فاتورة التاجر (للمطابقة)</label><input id="iDocumentTotal" class="input" type="number" min="0" step="0.01" placeholder="اختياري"></div>
+   <div class="field"><label>قيمة البضاعة فقط بفواتير التاجر (للمطابقة - اختياري)</label><input id="iDocumentTotal" class="input" type="number" min="0" step="0.01" placeholder="اختياري"></div>
    <div class="field"><label>تكلفة الشحن والنقل (ج)</label><input id="iShipping" class="input" type="number" min="0" step="0.01" value="0"></div>
    <div class="field"><label>مصاريف شراء إضافية (ج)</label><input id="iOther" class="input" type="number" min="0" step="0.01" value="0"></div>
-   <div class="field"><label>المدفوع للتاجر (ج)</label><input id="iPaid" class="input" type="number" min="0" step="0.01" value="0"></div>
+   <div class="field"><label>المدفوع للتاجر مقابل البضاعة فقط (ج)</label><input id="iPaid" class="input" type="number" min="0" step="0.01" value="0"><button id="iPayFull" type="button" class="btn ghost small" style="margin-top:6px">دفعت قيمة البضاعة كاملة — تعبئة المبلغ تلقائيًا</button></div>
+   <p class="hint" style="grid-column:1/-1;margin:0">مهم: أكتب في «المدفوع للتاجر مقابل البضاعة» قيمة المنتجات فقط، بدون الشحن أو المصاريف الإضافية. مثال: بضاعة ٣٨٥٠ + شحن ١٥٠ = إجمالي تكلفة ٤٠٠٠؛ المدفوع عن البضاعة بالكامل هو ٣٨٥٠. لو دفعت مبلغًا مقدمًا زيادة عن ثمن البضاعة، يلزم تسجيله كدفعة مقدمة في نظام حسابات الموردين، وليس هنا.</p>
    <div class="field"><label>طريقة دفع قيمة البضاعة</label><select id="iPayment" class="input"><option>نقدي</option><option>فيزا</option><option>إنستاباي</option><option>تحويل بنكي</option><option>آجل</option></select></div>
    <div class="field"><label>ملاحظات</label><input id="iNotes" class="input" placeholder="اختياري"></div>
   </div>
   <div class="heading"><h3 style="margin:0">الأصناف المشتراة</h3><button id="addLineBtn" class="btn ghost" type="button"><i class="fa-solid fa-plus"></i> إضافة صنف</button></div>
   <div id="invoiceLines"></div>
+  <p class="hint">لكل صنف اكتب الكمية و«إجمالي شراء الصنف» مثل 85 جنيه مقابل 12 قطعة؛ سيتحسب سعر الوحدة تلقائيًا دون فقد قروش. أو اكتب سعر الوحدة وسيظهر الإجمالي تلقائيًا. سعر التاجر الجديد ممكن يكون أقل من السعر القديم.</p>
   <div class="totals">
    <div class="amount-row"><span>مجموع البضاعة</span><strong id="iSubtotal">0.00 ج</strong></div>
    <div class="amount-row"><span>المصاريف الإضافية</span><strong id="iExtras">0.00 ج</strong></div>
@@ -112,8 +146,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
    <div class="amount-row"><span>المتبقي للتاجر من قيمة البضاعة</span><strong id="iDue">0.00 ج</strong></div>
   </div>
   <div id="iMismatch" class="alert warning" style="display:none"></div>
+  <div id="purchaseSaveStatus" class="alert warning" role="status" aria-live="polite" style="display:none;white-space:pre-line;margin-top:12px"></div>
   <div class="actions" style="margin-top:13px"><button id="iSave" class="btn primary" type="button">اعتماد الفاتورة وإضافة المخزون</button><button id="iVerify" class="btn ghost" type="button">التحقق من حفظ الفاتورة الحالية</button></div>
-  <p class="hint">يُوزّع الشحن والمصاريف على تكلفة الأصناف. المتبقي للمورد هو قيمة البضاعة ناقص المدفوع له؛ المصاريف الإضافية لا تُحسب دينًا على التاجر. عند تعطل الاتصال لا تنشئ فاتورة جديدة قبل التحقق من رقم الفاتورة.</p>
+  <p class="hint">يُوزّع الشحن والمصاريف على تكلفة الأصناف. المتبقي للمورد هو قيمة البضاعة بأسعار الشراء الحالية ناقص المدفوع له عن البضاعة فقط؛ المصاريف الإضافية لا تُحسب دينًا على التاجر. لا يوجد حد أدنى لسعر شراء المنتج بسبب سعره السابق. عند تعطل الاتصال لا تنشئ فاتورة جديدة قبل التحقق من رقم الفاتورة.</p>
   <p id="iDraftId" class="hint"></p>
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">آخر فواتير المشتريات</h3><button id="loadPurchases" type="button" class="btn ghost small">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>رقم الفاتورة</th><th>التاجر</th><th>التاريخ</th><th>قيمة البضاعة</th><th>التكلفة النهائية</th><th>المتبقي</th></tr></thead><tbody id="purchaseTable"><tr><td colspan="6" class="muted">لا توجد بيانات معروضة</td></tr></tbody></table></div></div>
@@ -151,6 +186,7 @@ sessionStorage.setItem('mg_purchase_id',state.purchaseId);sessionStorage.setItem
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function money(n){return (Number(n)||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج'}
 function number(v){return Number(v)||0}
+function cents(v){return Math.round((Number(v)+Number.EPSILON)*100)/100}
 function toast(t,type=''){const node=$('toast');node.textContent=t;node.className='toast '+type;node.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>node.style.display='none',5200)}
 function setLoading(id,loading){const btn=$(id);if(btn)btn.disabled=!!loading;}
 async function api(action,payload,loginData){
@@ -162,26 +198,26 @@ async function api(action,payload,loginData){
   const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body),signal:controller.signal,redirect:'follow'});
   if(!res.ok)throw Error('خطأ اتصال HTTP '+res.status);
   const text=await res.text();let data;try{data=JSON.parse(text)}catch(e){throw Error('السيرفر لم يرجع JSON. راجع رابط نشر Apps Script والصلاحيات')}
-  if(!data||data.success!==true)throw Error(data?.message||'لم تتم العملية');
+  if(!data||data.success!==true){const err=Error(data?.message||'لم تتم العملية');err.uncertain=data?.uncertain===true;err.rejected=data?.rejected===true;throw err;}
   return data;
  }finally{clearTimeout(timer)}
 }
 function loginErrorMessage(err){const raw=String(err?.message||err||'');if(/Failed to fetch|NetworkError|Load failed/i.test(raw))return 'تعذّر الاتصال بـ Apps Script. افحص رابط /exec وإعداد Web App → Who has access: Anyone. لو عملت New deployment استخدم الرابط الجديد.';if(/AbortError/i.test(raw))return 'انتهت مهلة الاتصال بالسيرفر بعد 30 ثانية. افحص رابط النشر واتصال الإنترنت.';if(/لم يرجع JSON|HTTP 403|HTTP 401/i.test(raw))return 'لم يرجع السيرفر رد Apps Script صحيح. قد يكون رابط النشر قديمًا، أو صلاحية الوصول إلى Web App غير متاحة. التفاصيل: '+raw;return raw;}
 function showLoginError(msg,type='error'){$('loginFeedback').textContent=msg;$('loginFeedback').className='alert '+(type==='success'?'success':type==='warning'?'warning':'error')+' show';}
-function authError(e){const msg=loginErrorMessage(e);if(/جلسة الإدارة|جلسة.*صالحة/.test(msg)){state.session='';sessionStorage.removeItem('mg_admin_session');$('lock-screen').style.display='flex'}if($('lock-screen').style.display!=='none')showLoginError(msg);toast(msg,'error')}
+function authError(e){const msg=loginErrorMessage(e);if(/setupMGExtensions|تهيئة السجلات الجديدة/.test(msg)){$('setupNotice').hidden=false;}if(/جلسة الإدارة|جلسة.*صالحة/.test(msg)){state.session='';sessionStorage.removeItem('mg_admin_session');$('lock-screen').style.display='flex'}if($('lock-screen').style.display!=='none')showLoginError(msg);toast(msg,'error')}
 $('connectionUrl').value=SCRIPT_URL;
 function applyEndpoint(){const v=$('connectionUrl').value.trim();if(!validEndpoint(v)){showLoginError('أدخل رابط Web App صحيح من script.google.com ينتهي بـ /exec، بدون إضافات بعده.');return false}if(v!==SCRIPT_URL){SCRIPT_URL=v;localStorage.setItem(URL_KEY,v);state.session='';sessionStorage.removeItem('mg_admin_session');$('connectionFeedback').textContent='تم حفظ رابط النشر الجديد على هذا المتصفح.'}return true}
 $('connectionUrl').addEventListener('change',applyEndpoint);
 $('connTest').addEventListener('click',async()=>{if(!applyEndpoint())return;const el=$('connectionFeedback');el.textContent='جاري اختبار اتصال السيرفر…';$('connTest').disabled=true;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(SCRIPT_URL+'?action=ping',{method:'GET',signal:controller.signal,redirect:'follow'});if(!r.ok)throw Error('HTTP '+r.status);const txt=await r.text();let d;try{d=JSON.parse(txt)}catch(e){throw Error('رابط النشر يعرض HTML بدل JSON؛ تأكد من Web App Access: Anyone والرابط الصحيح')}if(!d.success)throw Error(d.message||'خدمة Apps Script لا تستجيب');el.textContent='✅ اتصال السيرفر يعمل. إصدار الخدمة: '+String(d.version||'غير محدد')+'. لو الدخول يرفض 1234، راجع MG_ADMIN_PASSWORD أو إصدار Code.gs المنشور.';showLoginError('السيرفر متصل. جرّب الدخول الآن.', 'success')}catch(e){el.textContent='❌ '+loginErrorMessage(e);showLoginError(el.textContent)}finally{clearTimeout(timer);$('connTest').disabled=false}});
 function showPanel(name){state.activeTab=name;document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));if(!state.session)return;
  const loader={dashboard:loadDashboard,bazaars:loadBazaars,purchases:loadPurchases,suppliers:loadSuppliers,expenses:loadExpenses};if(loader[name])loader[name]();}
-document.querySelectorAll('[data-tab]').forEach(x=>x.addEventListener('click',()=>showPanel(x.dataset.tab)));
+document.querySelectorAll('[data-tab]').forEach(x=>x.addEventListener('click',()=>{showPanel(x.dataset.tab);if(x.dataset.goto){const dest=$(x.dataset.goto);if(dest)setTimeout(()=>dest.scrollIntoView({behavior:'smooth',block:'start'}),120)}else if(x.classList.contains('module-link'))window.scrollTo({top:0,behavior:'smooth'});}));
 $('refreshBtn').addEventListener('click',()=>showPanel(state.activeTab));
 $('logoutBtn').addEventListener('click',async()=>{try{if(state.session)await api('adminLogout')}catch(e){/* session will also expire server-side */}finally{state.session='';sessionStorage.removeItem('mg_admin_session');$('adminPassword').value='';$('lock-screen').style.display='flex'}});
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!applyEndpoint())return;$('loginFeedback').className='alert error';$('loginFeedback').textContent='';setLoading('loginBtn',true);try{const data=await api('adminLogin',undefined,{password:$('adminPassword').value});state.session=data.session;sessionStorage.setItem('mg_admin_session',state.session);$('adminPassword').value='';$('lock-screen').style.display='none';toast('تم تسجيل الدخول','');loadBazaars();loadSuppliers();showPanel('dashboard')}catch(err){authError(err)}finally{setLoading('loginBtn',false)}});
 if(state.session){$('lock-screen').style.display='none';loadBazaars();loadSuppliers();showPanel('dashboard')}
 function emptyTbody(id,colspan,msg){$(id).innerHTML='<tr><td colspan="'+colspan+'" class="muted">'+esc(msg)+'</td></tr>'}
-async function loadDashboard(){try{const {summary:s,bazaarSales}=await api('mgOverview');[['mSales',s.netSales,true],['mPurchases',s.purchases,true],['mPurchaseExtras',s.purchaseExtras,true],['mExpenses',s.expenses,true],['mDue',s.supplierDue,true],['mProfit',s.profitComplete?s.estimatedGrossProfit:null,true],['mNetProfit',s.profitComplete?s.estimatedNetProfit:null,true],['mBazaars',s.bazaarCount,false],['mSuppliers',s.supplierCount,false]].forEach(([id,v,c])=>$(id).textContent=c?(v===null?'غير مكتمل':money(v)):v);$('bazaarSalesBody').innerHTML=bazaarSales.length?bazaarSales.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.netSales)+'</td><td>'+money(x.profit)+'</td></tr>').join(''):'<tr><td colspan="3">لا توجد مبيعات مسجلة</td></tr>'}catch(e){authError(e)}}
+async function loadDashboard(){try{const {summary:s,bazaarSales}=await api('mgOverview');$('setupNotice').hidden=true;[['mSales',s.netSales,true],['mPurchases',s.purchases,true],['mPurchaseExtras',s.purchaseExtras,true],['mExpenses',s.expenses,true],['mDue',s.supplierDue,true],['mProfit',s.profitComplete?s.estimatedGrossProfit:null,true],['mNetProfit',s.profitComplete?s.estimatedNetProfit:null,true],['mBazaars',s.bazaarCount,false],['mSuppliers',s.supplierCount,false]].forEach(([id,v,c])=>$(id).textContent=c?(v===null?'غير مكتمل':money(v)):v);$('bazaarSalesBody').innerHTML=bazaarSales.length?bazaarSales.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.netSales)+'</td><td>'+money(x.profit)+'</td></tr>').join(''):'<tr><td colspan="3">لا توجد مبيعات مسجلة</td></tr>'}catch(e){authError(e)}}
 async function loadBazaars(){try{const data=await api('mgListBazaars');state.bazaars=data.bazaars||[];renderBazaars()}catch(e){authError(e)}}
 function renderBazaars(){const list=state.bazaars; if(!list.length)emptyTbody('bazaarTable',3,'لم تُضف أي بازار حتى الآن');else $('bazaarTable').innerHTML=list.map(b=>'<tr><td>'+esc(b.name)+'</td><td><span class="pill '+(b.active?'':'off')+'">'+(b.active?'نشط':'موقوف')+'</span></td><td><div class="actions"><button class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل الاسم</button><button class="btn '+(b.active?'warn':'ghost')+' small" data-bz-toggle="'+esc(b.id)+'">'+(b.active?'إيقاف':'تفعيل')+'</button></div></td></tr>').join('');
  const selector=$('eBazaar');selector.innerHTML='<option value="">مصروف عام</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');}
@@ -191,33 +227,195 @@ $('loadBazaars').addEventListener('click',loadBazaars);
 async function loadSuppliers(){try{const r=await api('mgSuppliers');state.suppliers=r.suppliers||[];emptyTbody('suppliersTable',3,'لا يوجد موردون بعد');if(state.suppliers.length)$('suppliersTable').innerHTML=state.suppliers.map(s=>'<tr><td>'+esc(s.name)+'</td><td dir="ltr">'+esc(s.phone)+'</td><td>'+money(s.balance)+'</td></tr>').join('');$('knownSuppliers').innerHTML=state.suppliers.map(s=>'<option value="'+esc(s.name)+'"></option>').join('')}catch(e){authError(e)}}
 $('iSupplier').addEventListener('change',()=>{const s=state.suppliers.find(x=>x.name===$('iSupplier').value.trim());if(s)$('iPhone').value=s.phone});
 function productStatus(msg,type=''){$('pStatus').textContent=msg;$('pStatus').className='alert '+type;$('pStatus').style.display='block'}
-function resetProduct(){state.productMode='';state.currentProduct=null;['pName','pCategory','pPrice'].forEach(id=>{$(id).value='';$(id).readOnly=false});$('pCost').value='';$('pQty').value=1;$('pStock').style.display='none';$('pStatus').style.display='none';$('pSave').textContent='ابحث عن الباركود أولًا';$('pProfit').value=''}
+function resetProduct(){state.productMode='';state.currentProduct=null;['pName','pCategory','pPrice'].forEach(id=>{$(id).value='';$(id).readOnly=false});$('pCost').value='';$('pBatchTotal').value='';$('pQty').value=1;$('pStock').style.display='none';$('pStatus').style.display='none';$('pSave').textContent='ابحث عن الباركود أولًا';$('pProfit').value=''}
 $('pBarcode').addEventListener('input',resetProduct);
 $('pBarcode').addEventListener('keydown',e=>{if(e.key==='Enter')lookupProduct()});
 $('pLookup').addEventListener('click',lookupProduct);
 async function lookupProduct(){const barcode=$('pBarcode').value.trim();if(!barcode)return toast('أدخل الباركود','warn');setLoading('pLookup',true);resetProduct();productStatus('جاري البحث عن المنتج…');try{const r=await api('findProductAdmin',{barcode});if($('pBarcode').value.trim()!==barcode)return;const p=r.product;if(p){state.productMode='existing';state.currentProduct=p;$('pName').value=p.name||'';$('pCategory').value=p.category||'';$('pPrice').value=number(p.sellingPrice);['pName','pCategory','pPrice'].forEach(id=>$(id).readOnly=true);$('pStockValue').textContent=number(p.physicalStock);$('pStock').style.display='block';productStatus('منتج موجود: أدخل كمية وسعر شراء الدفعة الجديدة.','success');$('pSave').textContent='زيادة مخزون المنتج مباشرة'}else{state.productMode='new';productStatus('باركود جديد: أدخل اسم المنتج وفئته وأسعار الشراء والبيع.','warning');$('pSave').textContent='إضافة منتج جديد مباشرة'}$('pCost').focus()}catch(err){productStatus(String(err.message||err),'error')}finally{setLoading('pLookup',false)}}
+// Both forms: total purchase amount is authoritative when entered directly.
+function preciseUnit(value){const n=Number(value);return Number.isFinite(n)?Number(n.toFixed(8)).toString():''}
+function validInvoiceCents(value){return value!==''&&Number.isFinite(Number(value))&&Number(value)>=0&&Math.abs(Number(value)-cents(Number(value)))<1e-7}
+let productCostMode='total';
+function syncProductPurchase(changed){
+ const qty=Number($('pQty').value),cost=$('pCost'),total=$('pBatchTotal');
+ if(changed==='pCost')productCostMode='unit';
+ if(changed==='pBatchTotal')productCostMode='total';
+ if(!Number.isSafeInteger(qty)||qty<=0){updateProfit();return}
+ if(productCostMode==='total'){
+  if(total.value!==''&&validInvoiceCents(total.value))cost.value=preciseUnit(Number(total.value)/qty);
+  else if(changed==='pBatchTotal')cost.value='';
+ }else{
+  if(cost.value!==''&&Number.isFinite(Number(cost.value))&&Number(cost.value)>=0)total.value=cents(qty*Number(cost.value)).toFixed(2);
+  else if(changed==='pCost')total.value='';
+ }
+ updateProfit();
+}
 function updateProfit(){const cost=$('pCost').value,price=$('pPrice').value;$('pProfit').value=cost!==''&&price!==''?money(number(price)-number(cost)):'—'}
-['pCost','pPrice'].forEach(id=>$(id).addEventListener('input',updateProfit));
-$('pSave').addEventListener('click',async()=>{if(!state.productMode)return toast('ابحث عن الباركود أولًا','warn');const barcode=$('pBarcode').value.trim(),qty=number($('pQty').value),cost=number($('pCost').value),selling=number($('pPrice').value);if(!Number.isSafeInteger(qty)||qty<=0||$('pCost').value===''||cost<0)return toast('أدخل كمية وتكلفة صحيحتين','warn');if(state.productMode==='new'&&(!$('pName').value.trim()||$('pPrice').value===''||selling<0))return toast('أكمل بيانات المنتج الجديد','warn');if(state.productMode==='existing'&&number(state.currentProduct.physicalStock)>0&&(state.currentProduct.cost===null||state.currentProduct.cost===undefined))return toast('تكلفة المخزون القديم غير مسجلة؛ لا يمكن حساب المتوسط','warn');if(!confirm('هذه إضافة مباشرة لا تُنشئ فاتورة مشتريات. هل تريد الاستمرار؟'))return;const action=state.productMode==='existing'?'addStock':'addNewProduct',payload=action==='addStock'?{barcode,stockToAdd:qty,cost}:{barcode,name:$('pName').value.trim(),category:$('pCategory').value.trim(),price:selling,cost,stock:qty};setLoading('pSave',true);try{await api(action,payload);toast('تم تسجيل المنتج/المخزون');if(action==='addStock')await lookupProduct();else{$('pBarcode').value='';resetProduct()}}catch(err){authError(err);toast('إذا انقطع الاتصال تحقق من الشيت قبل إعادة المحاولة','warn')}finally{setLoading('pSave',false)}});
+['pCost','pQty','pBatchTotal'].forEach(id=>$(id).addEventListener('input',()=>syncProductPurchase(id)));
+$('pPrice').addEventListener('input',updateProfit);
+$('pSave').addEventListener('click',async()=>{if(!state.productMode)return toast('ابحث عن الباركود أولًا','warn');const barcode=$('pBarcode').value.trim(),qty=number($('pQty').value),cost=number($('pCost').value),selling=number($('pPrice').value);if(!Number.isSafeInteger(qty)||qty<=0||$('pCost').value===''||cost<0||!validInvoiceCents($('pBatchTotal').value))return toast('أدخل كمية صحيحة وإجمالي شراء الدفعة بالجنيه والقرش','warn');if(state.productMode==='new'&&(!$('pName').value.trim()||$('pPrice').value===''||selling<0))return toast('أكمل بيانات المنتج الجديد','warn');if(state.productMode==='existing'&&number(state.currentProduct.physicalStock)>0&&(state.currentProduct.cost===null||state.currentProduct.cost===undefined))return toast('تكلفة المخزون القديم غير مسجلة؛ لا يمكن حساب المتوسط','warn');if(!confirm('هذه إضافة مباشرة لا تُنشئ فاتورة مشتريات. هل تريد الاستمرار؟'))return;const action=state.productMode==='existing'?'addStock':'addNewProduct',payload=action==='addStock'?{barcode,stockToAdd:qty,cost}:{barcode,name:$('pName').value.trim(),category:$('pCategory').value.trim(),price:selling,cost,stock:qty};setLoading('pSave',true);try{await api(action,payload);toast('تم تسجيل المنتج/المخزون');if(action==='addStock')await lookupProduct();else{$('pBarcode').value='';resetProduct()}}catch(err){authError(err);toast('إذا انقطع الاتصال تحقق من الشيت قبل إعادة المحاولة','warn')}finally{setLoading('pSave',false)}});
 // Barcode scanning
 async function startScanner(onCode){$('scannerWrapper').style.display='block';if(typeof Html5Qrcode==='undefined')return toast('مكتبة الكاميرا غير متاحة','error');if(state.scanning)return;try{state.scanner=new Html5Qrcode('reader');state.scanning=true;await state.scanner.start({facingMode:'environment'},{fps:15,qrbox:{width:260,height:130},formatsToSupport:[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.UPC_A,Html5QrcodeSupportedFormats.UPC_E]},code=>{onCode(code);stopScanner()})}catch(e){toast('تعذر تشغيل الكاميرا: '+String(e),'error');await stopScanner()}}
 async function stopScanner(){try{if(state.scanner&&state.scanning)await state.scanner.stop()}catch(e){}try{state.scanner?.clear()}catch(e){}state.scanner=null;state.scanning=false;$('scannerWrapper').style.display='none'}
 $('closeScanner').addEventListener('click',stopScanner);$('pScan').addEventListener('click',()=>startScanner(code=>{$('pBarcode').value=code;lookupProduct()}));
 // Purchase invoice editing
 let lineIndex=0;
-function addPurchaseLine(){const id=++lineIndex,box=document.createElement('div');box.className='line-card';box.dataset.index=id;box.innerHTML=`<div class="line-top"><strong>صنف #${id}</strong><div class="actions"><button type="button" class="btn ghost small item-scan" title="مسح باركود">مسح باركود</button><button type="button" class="btn danger small item-remove" title="حذف">حذف</button></div></div><div class="grid three" style="margin-top:10px"><div class="field"><label>الباركود *</label><input class="input item-barcode" placeholder="الباركود"></div><div class="field"><label>اسم الصنف *</label><input class="input item-name" placeholder="اسم المنتج"></div><div class="field"><label>الفئة</label><input class="input item-category" placeholder="ألعاب"></div><div class="field"><label>الكمية *</label><input type="number" class="input item-qty" min="1" step="1" value="1"></div><div class="field"><label>سعر شراء القطعة *</label><input type="number" class="input item-cost" min="0" step="0.01" placeholder="0.00"></div><div class="field"><label>سعر بيع القطعة (ج) *</label><input type="number" class="input item-price" min="0" step="0.01" placeholder="0.00"></div></div><div class="hint item-info">أدخل باركود الصنف؛ سيتم البحث عنه، أو تعبئة بياناته إذا كان جديدًا.</div>`;$('invoiceLines').appendChild(box);updatePurchaseTotals();return box;}
+function addPurchaseLine(){
+ const id=++lineIndex,box=document.createElement('div');box.className='line-card';box.dataset.index=id;
+ box.dataset.costMode='total';
+ box.innerHTML=`<div class="line-top"><strong>صنف #${id}</strong><div class="actions"><button type="button" class="btn ghost small item-scan" title="مسح باركود">مسح باركود</button><button type="button" class="btn danger small item-remove" title="حذف">حذف</button></div></div>
+ <div class="grid three" style="margin-top:10px">
+ <div class="field"><label>الباركود *</label><input class="input item-barcode" placeholder="الباركود"></div>
+ <div class="field"><label>اسم الصنف *</label><input class="input item-name" placeholder="اسم المنتج"></div>
+ <div class="field"><label>الفئة</label><input class="input item-category" placeholder="ألعاب"></div>
+ <div class="field"><label>الكمية *</label><input type="number" class="input item-qty" min="1" step="1" value="1"></div>
+ <div class="field"><label>إجمالي شراء الصنف من التاجر (ج) *</label><input type="number" class="input item-line-total" min="0" step="0.01" placeholder="مثال: 85"></div>
+ <div class="field"><label>سعر شراء القطعة المحسوب (ج) *</label><input type="number" class="input item-cost" min="0" step="any" placeholder="يتحسب من الإجمالي والكمية"></div>
+ <div class="field"><label>سعر بيع القطعة (ج) *</label><input type="number" class="input item-price" min="0" step="0.01" placeholder="0.00"></div>
+ </div><div class="hint item-info">أدخل الكمية وإجمالي ما دفعته للصنف، وسيُحسب سعر الوحدة بدقة. أو اكتب سعر الوحدة لحساب الإجمالي. سعر الشراء الجديد مستقل عن السعر القديم.</div>`;
+ $('invoiceLines').appendChild(box);updatePurchaseTotals();return box;
+}
 function rowValue(row,cls){return row.querySelector('.'+cls).value.trim()}
-function updatePurchaseTotals(){const subtotal=Array.from(document.querySelectorAll('.line-card')).reduce((s,r)=>s+number(rowValue(r,'item-cost'))*number(rowValue(r,'item-qty')),0);const extras=number($('iShipping').value)+number($('iOther').value),due=subtotal-number($('iPaid').value);$('iSubtotal').textContent=money(subtotal);$('iExtras').textContent=money(extras);$('iTotal').textContent=money(subtotal+extras);$('iDue').textContent=money(Math.max(0,due));const doc=$('iDocumentTotal').value;const mismatch=doc!==''&&Math.abs(number(doc)-subtotal)>0.009;$('iMismatch').style.display=mismatch?'block':'none';$('iMismatch').textContent=mismatch?'قيمة فاتورة التاجر لا تطابق مجموع الأصناف؛ سيتم رفض الحفظ حتى تصحح الأرقام.':'';}
-$('invoiceLines').addEventListener('input',updatePurchaseTotals);['iShipping','iOther','iPaid','iDocumentTotal'].forEach(id=>$(id).addEventListener('input',updatePurchaseTotals));
+function syncPurchaseLine(row,changed){
+ const qty=Number(rowValue(row,'item-qty'));
+ const unit=row.querySelector('.item-cost'),total=row.querySelector('.item-line-total');
+ if(changed==='item-line-total')row.dataset.costMode='total';
+ if(changed==='item-cost')row.dataset.costMode='unit';
+ if(!Number.isSafeInteger(qty)||qty<=0)return;
+ if(row.dataset.costMode==='total'){
+  if(total.value!==''&&validInvoiceCents(total.value))unit.value=preciseUnit(Number(total.value)/qty);
+  else if(changed==='item-line-total')unit.value='';
+ }else{
+  if(unit.value!==''&&Number.isFinite(Number(unit.value))&&Number(unit.value)>=0)
+   total.value=cents(Number(unit.value)*qty).toFixed(2);
+  else if(changed==='item-cost')total.value='';
+ }
+}
+function purchaseSubtotal(){return cents(Array.from(document.querySelectorAll('.line-card')).reduce((s,r)=>{
+ const raw=rowValue(r,'item-line-total');return s+(validInvoiceCents(raw)?Number(raw):0);
+},0))}
+function updatePurchaseTotals(){
+ const subtotal=purchaseSubtotal();
+ const extras=number($('iShipping').value)+number($('iOther').value);
+ const paid=number($('iPaid').value);
+ const due=subtotal-paid;
+ $('iSubtotal').textContent=money(subtotal);
+ $('iExtras').textContent=money(extras);
+ $('iTotal').textContent=money(subtotal+extras);
+ $('iDue').textContent=money(Math.max(0,due));
+ const doc=$('iDocumentTotal').value;
+ const messages=[];
+ if(paid>subtotal+0.001)messages.push('المدفوع للتاجر أكبر من قيمة البضاعة الحالية بمبلغ '+money(paid-subtotal)+'. الشحن والمصاريف لا تدخل ضمن المدفوع للتاجر مقابل البضاعة.');
+ if(doc!==''&&Math.abs(number(doc)-subtotal)>0.009)messages.push('قيمة فاتورة التاجر '+money(doc)+' لا تساوي مجموع الأصناف '+money(subtotal)+'.');
+ const badLines=Array.from(document.querySelectorAll('.line-card')).some(r=>rowValue(r,'item-line-total')!==''&&!validInvoiceCents(rowValue(r,'item-line-total')));
+ if(badLines)messages.push('إجمالي شراء كل صنف يجب أن يكون بالجنيه والقرش (منزلتان عشريتان فقط).');
+ $('iMismatch').style.display=messages.length?'block':'none';$('iMismatch').textContent=messages.join(' ');
+}
+$('invoiceLines').addEventListener('input',e=>{
+ const row=e.target.closest('.line-card');
+ if(row&&(e.target.classList.contains('item-qty')||e.target.classList.contains('item-cost')||e.target.classList.contains('item-line-total'))){
+  const changed=['item-qty','item-cost','item-line-total'].find(x=>e.target.classList.contains(x));syncPurchaseLine(row,changed);
+ }
+ updatePurchaseTotals();
+});
+['iShipping','iOther','iPaid','iDocumentTotal'].forEach(id=>$(id).addEventListener('input',updatePurchaseTotals));
+$('iPayFull').addEventListener('click',()=>{$('iPaid').value=purchaseSubtotal().toFixed(2);updatePurchaseTotals()});
 $('invoiceLines').addEventListener('click',async e=>{const btn=e.target.closest('button');if(!btn)return;const row=btn.closest('.line-card');if(btn.classList.contains('item-remove')){row.remove();updatePurchaseTotals()}else if(btn.classList.contains('item-scan'))startScanner(code=>{row.querySelector('.item-barcode').value=code;lookupItemRow(row)})});
 $('invoiceLines').addEventListener('focusout',e=>{if(e.target.classList.contains('item-barcode'))lookupItemRow(e.target.closest('.line-card'))});
-async function lookupItemRow(row){const barcode=rowValue(row,'item-barcode');if(!barcode)return;row.querySelector('.item-info').textContent='جاري البحث…';try{const r=await api('findProductAdmin',{barcode});if(!row.isConnected||rowValue(row,'item-barcode')!==barcode)return;const p=r.product;['item-name','item-category','item-price'].forEach(id=>row.querySelector('.'+id).readOnly=!!p);if(p){row.querySelector('.item-name').value=p.name||'';row.querySelector('.item-category').value=p.category||'';row.querySelector('.item-price').value=number(p.sellingPrice);row.querySelector('.item-info').textContent='موجود بالمخزون: '+number(p.physicalStock)+' قطعة، متوسط التكلفة الحالي: '+(p.cost===null?'غير مسجل':money(p.cost))}else{row.querySelector('.item-info').textContent='صنف جديد؛ أكمل الاسم والفئة وسعر البيع.'}}catch(e){row.querySelector('.item-info').textContent='فشل البحث: '+String(e.message||e)}}
+async function lookupItemRow(row){const barcode=rowValue(row,'item-barcode');if(!barcode)return;row.querySelector('.item-info').textContent='جاري البحث…';try{const r=await api('findProductAdmin',{barcode});if(!row.isConnected||rowValue(row,'item-barcode')!==barcode)return;const p=r.product;['item-name','item-category','item-price'].forEach(id=>row.querySelector('.'+id).readOnly=!!p);if(p){row.querySelector('.item-name').value=p.name||'';row.querySelector('.item-category').value=p.category||'';row.querySelector('.item-price').value=number(p.sellingPrice);row.querySelector('.item-cost').readOnly=false;row.querySelector('.item-info').textContent='موجود بالمخزون: '+number(p.physicalStock)+' قطعة، متوسط تكلفة المخزون القديم (للمقارنة فقط): '+(p.cost===null?'غير مسجل':money(p.cost))+'. سعر شراء التاجر الجديد مستقل، ويجوز أن يكون أقل أو أعلى من المتوسط القديم.'}else{row.querySelector('.item-info').textContent='صنف جديد؛ أكمل الاسم والفئة وسعر البيع.'}}catch(e){row.querySelector('.item-info').textContent='فشل البحث: '+String(e.message||e)}}
 $('addLineBtn').addEventListener('click',()=>addPurchaseLine());addPurchaseLine();$('iDraftId').textContent='رقم فاتورة الشراء الحالية: '+state.purchaseId;
-function purchasePayload(){const items=Array.from(document.querySelectorAll('.line-card')).map(r=>({barcode:rowValue(r,'item-barcode'),name:rowValue(r,'item-name'),category:rowValue(r,'item-category'),qty:Number(rowValue(r,'item-qty')),unitCost:Number(rowValue(r,'item-cost')),sellingPrice:Number(rowValue(r,'item-price'))}));if(!items.length)throw Error('أضف صنفًا واحدًا على الأقل');if(items.some(x=>!x.barcode||!x.name||!Number.isSafeInteger(x.qty)||x.qty<=0||!Number.isFinite(x.unitCost)||x.unitCost<0||!Number.isFinite(x.sellingPrice)||x.sellingPrice<0))throw Error('أكمل بيانات الأصناف والكمية والأسعار بشكل صحيح');if(new Set(items.map(x=>x.barcode)).size!==items.length)throw Error('يوجد باركود مكرر في الفاتورة');if(Array.from(document.querySelectorAll('.line-card')).some(r=>rowValue(r,'item-cost')===''||rowValue(r,'item-price')===''))throw Error('اكتب أسعار شراء وبيع كل صنف، ولا تترك الأسعار فارغة');const subtotal=items.reduce((s,x)=>s+x.qty*x.unitCost,0);if(!$('iDate').value)throw Error('حدد تاريخ فاتورة الشراء');if(number($('iPaid').value)>subtotal+0.001)throw Error('المدفوع للمورد لا يمكن أن يزيد عن قيمة البضاعة');if($('iDocumentTotal').value!==''&&Math.abs(number($('iDocumentTotal').value)-subtotal)>0.009)throw Error('قيمة فاتورة التاجر لا تطابق إجمالي الأصناف');if(!$('iSupplier').value.trim()||!$('iPhone').value.trim())throw Error('اسم التاجر ورقم هاتفه مطلوبان');return {id:state.purchaseId,date:$('iDate').value,supplierName:$('iSupplier').value.trim(),supplierPhone:$('iPhone').value.trim(),supplierInvoice:$('iSupplierInvoice').value.trim(),supplierInvoiceTotal:$('iDocumentTotal').value.trim(),shipping:number($('iShipping').value),other:number($('iOther').value),paid:number($('iPaid').value),paymentMethod:$('iPayment').value,notes:$('iNotes').value.trim(),items}}
-$('iSave').addEventListener('click',async()=>{let payload;try{payload=purchasePayload()}catch(e){return toast(e.message,'warn')}if(!confirm('اعتماد فاتورة شراء بقيمة '+$('iTotal').textContent+' وتحديث المخزون؟'))return;setLoading('iSave',true);try{const result=await api('mgSavePurchase',payload);toast(result.message||'تم اعتماد الفاتورة');state.purchaseId=newId('PUR');sessionStorage.setItem('mg_purchase_id',state.purchaseId);$('iDraftId').textContent='رقم فاتورة الشراء الحالية: '+state.purchaseId;['iSupplier','iPhone','iSupplierInvoice','iDocumentTotal','iNotes'].forEach(id=>$(id).value='');['iShipping','iOther','iPaid'].forEach(id=>$(id).value='0');$('invoiceLines').innerHTML='';addPurchaseLine();updatePurchaseTotals();loadPurchases();loadSuppliers()}catch(e){authError(e);toast('لا تعيد إنشاء الفاتورة برقم جديد قبل الضغط على «التحقق من حفظ الفاتورة»','warn')}finally{setLoading('iSave',false)}});
+function purchasePayload(){
+ const rows=Array.from(document.querySelectorAll('.line-card'));
+ if(!rows.length)throw Error('أضف صنفًا واحدًا على الأقل');
+ const items=rows.map(r=>{
+  const qty=Number(rowValue(r,'item-qty'));
+  const totalRaw=rowValue(r,'item-line-total');
+  const unitRaw=rowValue(r,'item-cost');
+  const sellingRaw=rowValue(r,'item-price');
+  if(!Number.isSafeInteger(qty)||qty<=0||!validInvoiceCents(totalRaw)||unitRaw===''||sellingRaw==='')
+   throw Error('أكمل الكمية وإجمالي شراء كل صنف وسعر بيعه بصورة صحيحة');
+  const lineTotal=cents(Number(totalRaw));
+  // The line total in EGP/piasters is authoritative; unit price can be fractional.
+  const unitCost=Number(preciseUnit(lineTotal/qty));
+  if(!Number.isFinite(unitCost)||unitCost<0||!Number.isFinite(Number(sellingRaw))||Number(sellingRaw)<0)
+   throw Error('سعر شراء أو بيع غير صالح');
+  return {barcode:rowValue(r,'item-barcode'),name:rowValue(r,'item-name'),category:rowValue(r,'item-category'),qty,unitCost,lineTotal,sellingPrice:Number(sellingRaw)};
+ });
+ if(items.some(x=>!x.barcode||!x.name))throw Error('الباركود واسم الصنف مطلوبان');
+ if(new Set(items.map(x=>x.barcode)).size!==items.length)throw Error('يوجد باركود مكرر في الفاتورة');
+ const subtotal=cents(items.reduce((s,x)=>s+x.lineTotal,0));
+ if(!$('iDate').value)throw Error('حدد تاريخ فاتورة الشراء');
+ const paid=number($('iPaid').value),extras=number($('iShipping').value)+number($('iOther').value);
+ if(['iPaid','iShipping','iOther'].some(id=>!validInvoiceCents($(id).value)))throw Error('أدخل المدفوع والشحن والمصاريف بالجنيه والقرش دون قيم سالبة');
+ if(paid>subtotal+0.001)throw Error('المدفوع عن البضاعة '+money(paid)+' أكبر من قيمة البضاعة '+money(subtotal)+' بمبلغ '+money(paid-subtotal)+'. المصاريف الإضافية '+money(extras)+' تُسجل منفصلة.');
+ if($('iDocumentTotal').value!==''&&(!validInvoiceCents($('iDocumentTotal').value)||Math.abs(number($('iDocumentTotal').value)-subtotal)>0.009))
+  throw Error('قيمة البضاعة في فاتورة التاجر لا تطابق مجموع الأصناف؛ الشحن منفصل.');
+ if(!$('iSupplier').value.trim()||!$('iPhone').value.trim())throw Error('اسم التاجر ورقم هاتفه مطلوبان');
+ return {id:state.purchaseId,date:$('iDate').value,supplierName:$('iSupplier').value.trim(),supplierPhone:$('iPhone').value.trim(),supplierInvoice:$('iSupplierInvoice').value.trim(),supplierInvoiceTotal:$('iDocumentTotal').value.trim(),shipping:number($('iShipping').value),other:number($('iOther').value),paid:number($('iPaid').value),paymentMethod:$('iPayment').value,notes:$('iNotes').value.trim(),items};
+}
+// Invoice save is idempotent: never advance the invoice ID without server readback.
+function purchaseStatus(message,variant='warning'){
+ const el=$('purchaseSaveStatus');el.style.display='block';
+ el.className='alert '+variant;el.textContent=message;
+}
+function clearPurchaseDraftAfterConfirmedSave(){
+ state.purchaseId=newId('PUR');
+ sessionStorage.setItem('mg_purchase_id',state.purchaseId);
+ $('iDraftId').textContent='رقم فاتورة الشراء الحالية: '+state.purchaseId;
+ ['iSupplier','iPhone','iSupplierInvoice','iDocumentTotal','iNotes'].forEach(id=>$(id).value='');
+ ['iShipping','iOther','iPaid'].forEach(id=>$(id).value='0');
+ $('invoiceLines').innerHTML='';addPurchaseLine();updatePurchaseTotals();
+ loadPurchases();loadSuppliers();
+}
+async function readPurchaseStatus(id){
+ const result=await api('mgGetPurchase',{id});
+ return result && result.found===true;
+}
+$('iSave').addEventListener('click',async()=>{
+ let payload;try{payload=purchasePayload()}catch(e){purchaseStatus(e.message,'error');return}
+ if(!confirm('اعتماد فاتورة شراء بقيمة '+$('iTotal').textContent+' وتحديث المخزون؟'))return;
+ setLoading('iSave',true);setLoading('iVerify',true);
+ purchaseStatus('جارٍ الحفظ والتحقق من تسجيل الفاتورة برقم: '+payload.id,'warning');
+ try{
+  const result=await api('mgSavePurchase',payload);
+  if(!await readPurchaseStatus(payload.id)){
+   purchaseStatus('السيرفر رد بنجاح، لكن لم نتمكن من إثبات وجود الفاتورة '+payload.id+' في سجل المشتريات. لم يتم مسح البيانات أو تغيير رقم الفاتورة. افحص الشيت ورابط السيرفر قبل إعادة الحفظ.','error');
+   return;
+  }
+  clearPurchaseDraftAfterConfirmedSave();
+  purchaseStatus((result.duplicate?'الفاتورة كانت محفوظة بالفعل ولم يُضف المخزون مرة ثانية.':'تم تأكيد حفظ الفاتورة وإضافة المخزون بنجاح.')+' رقمها: '+payload.id,'success');
+ }catch(err){
+  const reason=loginErrorMessage(err);
+  // A failed network response cannot be assumed to mean the write failed. Verify by ID.
+  let found=false,readError='';
+  try{found=await readPurchaseStatus(payload.id)}catch(verifyErr){readError=loginErrorMessage(verifyErr)}
+  if(found){
+   clearPurchaseDraftAfterConfirmedSave();
+   purchaseStatus('تم العثور على الفاتورة في السجل وتأكيد الحفظ: '+payload.id+'. لم نكرر المخزون.','success');
+  }else{
+   purchaseStatus('فشل حفظ الفاتورة '+payload.id+'\nالسبب المرسل من السيرفر: '+reason+'\n'+(readError?'وتعذر التحقق من السجل: '+readError:'التحقق من السجل: الفاتورة غير موجودة حاليًا.')+'\nاحتفظ بنفس رقم الفاتورة؛ لا تنشئ فاتورة جديدة قبل معالجة الخطأ.','error');
+   if(/جلسة الإدارة|جلسة.*صالحة/.test(reason))authError(err);
+  }
+ }finally{setLoading('iSave',false);setLoading('iVerify',false)}
+});
 $('iVerify').addEventListener('click',verifyPurchase);
-async function verifyPurchase(){try{const r=await api('mgGetPurchase',{id:state.purchaseId});if(r.found)toast('الفاتورة '+state.purchaseId+' محفوظة بالفعل. لا تعيد تسجيلها.');else toast('لم تظهر الفاتورة في السجل؛ راجع قبل إعادة الإرسال بنفس الرقم.','warn')}catch(e){authError(e)}}
-async function loadPurchases(){try{const r=await api('mgPurchaseInvoices');if(!r.invoices.length)return emptyTbody('purchaseTable',6,'لم تُسجَّل فواتير مشتريات بعد');$('purchaseTable').innerHTML=r.invoices.map(x=>'<tr><td style="direction:ltr">'+esc(x.id)+'</td><td>'+esc(x.supplierName)+'</td><td>'+esc(x.date)+'</td><td>'+money(x.subtotal)+'</td><td>'+money(x.total)+'</td><td>'+money(x.due)+'</td></tr>').join('')}catch(e){authError(e)}}
+async function verifyPurchase(){
+ try{
+  const id=state.purchaseId;
+  if(await readPurchaseStatus(id)){
+   purchaseStatus('تم العثور على الفاتورة '+id+' محفوظة بالفعل. لا تعيد تسجيلها.','success');
+  }else{
+   purchaseStatus('لم تظهر الفاتورة '+id+' في السجل. راجع رسالة الحفظ السابقة، وتأكد من رقم الفاتورة ورابط السيرفر.','warning');
+  }
+ }catch(e){purchaseStatus('تعذر الاستعلام عن سجل الفواتير: '+loginErrorMessage(e),'error')}
+}
+async function loadPurchases(){
+ try{
+  const r=await api('mgPurchaseInvoices');
+  if(!r.invoices.length)return emptyTbody('purchaseTable',6,'لم تُسجَّل فواتير مشتريات بعد');
+  $('purchaseTable').innerHTML=r.invoices.map(x=>'<tr><td style="direction:ltr">'+esc(x.id)+'</td><td>'+esc(x.supplierName)+'</td><td>'+esc(x.date)+'</td><td>'+money(x.subtotal)+'</td><td>'+money(x.total)+'</td><td>'+money(x.due)+'</td></tr>').join('');
+ }catch(e){purchaseStatus('تعذر تحميل سجل المشتريات: '+loginErrorMessage(e),'error')}
+}
 $('loadPurchases').addEventListener('click',loadPurchases);
 function localToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 $('eDate').value=localToday();$('iDate').value=localToday();
