@@ -20,6 +20,12 @@
   .search input{width:100%;border:none;outline:none;background:transparent;padding:6px;min-width:0}.search button{border:none;background:none;color:var(--green);font-size:19px}
   .scan-help{color:var(--muted);font-size:11px;line-height:1.6;margin:-8px 18px 13px;text-align:right}
   .scanner{display:none;margin:0 16px 14px;background:#000;border:2px solid var(--green);border-radius:14px;overflow:hidden}.scanner #reader{width:100%}.scanner button{width:100%;border:0;background:#b91c1c;color:#fff;padding:12px}
+  .scan-preview{margin:0 16px 14px;padding:16px;border-radius:15px;border:2px solid #b45309;background:#fffbeb;color:#78350f}
+  .scan-preview h3{margin:0 0 9px;font-size:16px}
+  .scan-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:900;font-size:27px;letter-spacing:1px;direction:ltr;text-align:center;background:#fff;border:1px solid #fcd34d;border-radius:12px;padding:10px;margin-bottom:9px}
+  .scan-product{font-size:14px;font-weight:700;margin-bottom:9px;line-height:1.7;white-space:pre-line}
+  .scan-actions{display:flex;gap:8px;flex-wrap:wrap}.scan-actions button{flex:1;min-width:110px;border-radius:12px;padding:12px;border:1px solid #d1d5db;background:white;color:#334155;font-weight:700}.scan-actions .confirm-scan{background:#004d34;color:#fff;border-color:#004d34}.scan-actions button:disabled{opacity:.5}
+  .camera-hint{padding:9px 12px;background:#0f172a;color:white;font-size:13px;min-height:37px}
   .card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
   .card-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px;font-weight:700}.muted{color:var(--muted);font-size:12px;font-weight:400}
   .cart-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px dashed var(--line)}.cart-item:last-child{border:0}
@@ -47,7 +53,17 @@
 <section class="stats"><div><small>صافي الفاتورة الحالية</small><strong id="totalAmountText">0.00 جنيه</strong></div><span class="count" id="totalQtyText">0 قطعة</span></section>
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
-<div id="scannerWrapper" class="scanner"><div id="reader"></div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
+<div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الخطوط، وسيتم التأكد من القراءة قبل عرض المنتج.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
+<div id="scanPreview" class="scan-preview" hidden role="region" aria-label="مراجعة الباركود قبل إضافة المنتج">
+  <h3>راجع رقم الباركود والمنتج قبل الإضافة</h3>
+  <div class="scan-code" id="scanDecodedText">—</div>
+  <div id="scanProductInfo" class="scan-product">جاري البحث عن المنتج…</div>
+  <div class="scan-actions">
+    <button id="scanConfirmBtn" class="confirm-scan" type="button" disabled>تأكيد وإضافة المنتج</button>
+    <button id="scanRetryBtn" type="button">إعادة المسح</button>
+    <button id="scanCancelBtn" type="button">إلغاء</button>
+  </div>
+</div>
 <div class="pad">
 <div class="card" id="fixedIdentity" hidden style="border-color:#75b8a0;background:#f0fdf4">
   <div class="card-title"><span><i class="fa-solid fa-user-check"></i> الموظف والفرع المعيّن اليوم</span><button type="button" id="cashierLogout" class="qty-btn" title="تسجيل الخروج" style="width:auto;border-radius:12px;padding:0 12px">خروج</button></div>
@@ -116,7 +132,7 @@ function numbers(){const before=gross(),d=discount(),ok=Number.isFinite(d)&&d>=0
 function renderCart(){
  const target=$('cartListContainer');
  if(!cart.length){target.className='empty';target.textContent='لم يتم إضافة منتجات في الفاتورة بعد';}
- else{target.className='';target.innerHTML=cart.map((x,i)=>'<div class="cart-item"><div><div class="item-name">'+escapeHtml(x.name)+'</div><div class="item-desc">'+format(x.price)+' × '+x.qty+' = '+format(x.price*x.qty)+'<br>المتاح بالمخزن: '+x.stock+'</div></div><div class="qty"><button class="qty-btn" data-idx="'+i+'" data-delta="-1" type="button" title="نقص قطعة">−</button><b>'+x.qty+'</b><button class="qty-btn" data-idx="'+i+'" data-delta="1" type="button" title="زيادة قطعة">+</button></div></div>').join('');}
+ else{target.className='';target.innerHTML=cart.map((x,i)=>'<div class="cart-item"><div><div class="item-name">'+escapeHtml(x.name)+'</div><div class="item-desc">باركود: <b dir="ltr">'+escapeHtml(x.barcode)+'</b><br>'+format(x.price)+' × '+x.qty+' = '+format(x.price*x.qty)+'<br>المتاح بالمخزن: '+x.stock+'</div></div><div class="qty"><button class="qty-btn" data-idx="'+i+'" data-delta="-1" type="button" title="نقص قطعة">−</button><b>'+x.qty+'</b><button class="qty-btn" data-idx="'+i+'" data-delta="1" type="button" title="زيادة قطعة">+</button></div></div>').join('');}
  $('itemsCountText').textContent=cart.length+' صنف';$('totalQtyText').textContent=cart.reduce((s,x)=>s+x.qty,0)+' قطعة';
  const n=numbers();$('subTotalText').textContent=format(n.before);$('discountText').textContent=Number.isFinite(n.d)?format(n.d):'غير صحيح';$('netTotalText').textContent=n.ok?format(n.net):'تحقق من الخصم';$('totalAmountText').textContent=n.ok?format(n.net):'—';$('approvalField').hidden=!(n.ok&&n.d>0);
  $('saveInvoiceBtn').disabled=isSaving||uncertain||cart.length===0||!n.ok||!cashierIdentity;
@@ -137,7 +153,7 @@ function addToCart(p){
  clearNotice();renderCart();
 }
 async function searchProduct(value){const q=String(value??'').trim();if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}if(!q||isSearching)return;if(uncertain){notice('تحقق من الفاتورة السابقة أولًا','error');return;}isSearching=true;
- try{const response=await fetch(SCRIPT_URL+'?action=findProduct&barcode='+encodeURIComponent(q),{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);const data=await response.json();if(data&&data.success===false)throw Error(data.message||'تعذر البحث');const product=data&&data.product?data.product:data;if(!product||!product.name){notice('الباركود أو اسم المنتج غير موجود في الشيت: '+q,'error');return;}addToCart(product);$('barcodeSearchInput').value='';}
+ try{const response=await fetch(SCRIPT_URL+'?action=findProduct&barcode='+encodeURIComponent(q),{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);const data=await response.json();if(data&&data.success===false)throw Error(data.message||'تعذر البحث');const product=data&&data.product?data.product:data;if(!product||!product.name){notice('الباركود أو اسم المنتج غير موجود في الشيت: '+q,'error');return;}if(cleanBarcode(product.barcode)!==cleanBarcode(q)){notice('خطأ حماية: السيرفر أعاد باركود '+String(product.barcode||'غير محدد')+' بدل '+q+'. لم تتم إضافة أي صنف.','error');return;}addToCart(product);$('barcodeSearchInput').value='';}
  catch(err){notice('تعذر البحث عن المنتج: '+err.message,'error');}
  finally{isSearching=false;$('barcodeSearchInput').focus();}}
 // USB / Bluetooth "keyboard wedge" readers may end scans with Enter, Tab, or no suffix.
@@ -260,29 +276,77 @@ async function checkout(){
  finally{isSaving=false;$('saveInvoiceBtn').innerHTML='<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';renderCart();}}
 $('saveInvoiceBtn').addEventListener('click',checkout);
 let cameraReadHandled=false;
+let cameraCandidate='',cameraStableCount=0,cameraCandidateAt=0;
+let pendingCameraProduct=null, pendingCameraBarcode='';
+function showScanPreview(code, message, product){
+ pendingCameraBarcode=code;
+ pendingCameraProduct=product||null;
+ $('scanPreview').hidden=false;
+ $('scanDecodedText').textContent=code||'—';
+ $('scanProductInfo').textContent=message;
+ $('scanConfirmBtn').disabled=!product;
+ $('scanPreview').scrollIntoView({behavior:'smooth',block:'center'});
+}
+async function reviewCameraBarcode(code){
+ if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
+ code=cleanBarcode(code);
+ if(!code)return;
+ showScanPreview(code,'جاري البحث في المنتجات عن الباركود الذي قرأته الكاميرا…',null);
+ // Stop the camera before reading the product; NEVER automatically put a scan in the cart.
+ await stopCamera();
+ try{
+  const response=await fetch(SCRIPT_URL+'?action=findProduct&barcode='+encodeURIComponent(code),{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();
+  if(data&&data.success===false)throw Error(data.message||'تعذر قراءة الشيت');
+  const product=data&&data.product?data.product:data;
+  if(!product||!product.name){showScanPreview(code,'الرقم غير موجود في الشيت. قارن الرقم المكتوب أسفل الباركود، ثم جرّب مرة أخرى أو اكتبه يدويًا.',null);return;}
+  if(cleanBarcode(product.barcode)!==code){showScanPreview(code,'تحذير: السيرفر رجّع باركود مختلف '+String(product.barcode||'')+'. تم منع الإضافة حتى لا نبيع صنفًا غلط.',null);return;}
+  const price=Number(product.sellingPrice??product.price??product.retailPrice);
+  const stock=Number(product.availableStock??product.remainingStock??product.stock);
+  const detail='المنتج في الشيت: '+String(product.name)+'\nسعر البيع: '+(Number.isFinite(price)?format(price):'غير معروف')+'\nالمتاح: '+(Number.isFinite(stock)?stock:'غير معروف')+' قطعة\nتأكد إن الاسم والباركود على الاستيكر مطابقين قبل الإضافة.';
+  if(!Number.isFinite(price)||price<=0||!Number.isSafeInteger(stock)||stock<=0){showScanPreview(code,detail+'\nلا يمكن إضافته بسبب السعر أو المخزون.',null);return;}
+  showScanPreview(code,detail,product);
+ }catch(err){showScanPreview(code,'تعذر الاستعلام عن المنتج: '+(err?.message||String(err))+'. لا تضف صنفًا قبل نجاح التحقق.',null);}
+}
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
  if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}
  if(typeof Html5Qrcode==='undefined'){
-  notice('تعذر تحميل مكتبة قارئ الكاميرا. تأكد من الإنترنت أو استخدم قارئ USB.','error');return;
+  notice('تعذر تحميل مكتبة قارئ الكاميرا. تأكد من الإنترنت أو استخدم الإدخال اليدوي.','error');return;
  }
- isCameraStarting=true;cameraReadHandled=false;
+ if(isSaving||uncertain){notice('تحقق من حالة الفاتورة الحالية قبل المسح.','error');return;}
+ $('scanPreview').hidden=true;
+ pendingCameraBarcode='';pendingCameraProduct=null;
+ isCameraStarting=true;cameraReadHandled=false;cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
  $('scannerWrapper').style.display='block';
+ $('cameraHint').textContent='ثبّت الباركود داخل الإطار حتى يتم قراءته بنفس الرقم 3 مرات.';
  try{
   const F=typeof Html5QrcodeSupportedFormats!=='undefined'?Html5QrcodeSupportedFormats:null;
-  const formats=F?[F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.CODE_128,F.CODE_39,F.ITF,F.QR_CODE].filter(v=>v!==undefined):undefined;
+  // MG 5-digit internal labels should be CODE_128 or CODE_39.
+  // Restrict supported formats to avoid false positives from ITF/QR/UPC guesses.
+  const formats=F?[F.CODE_128,F.CODE_39,F.EAN_13,F.EAN_8].filter(v=>v!==undefined):undefined;
   html5QrCode=new Html5Qrcode('reader',formats?{formatsToSupport:formats,verbose:false}:{verbose:false});
-  const options={fps:12,qrbox:{width:260,height:140}};
-  const onRead=value=>{
+  const options={fps:15,qrbox:{width:260,height:140}};
+  const onRead=(raw,decodedResult)=>{
    if(cameraReadHandled)return;
+   const code=cleanBarcode(raw);
+   if(!/^\d{4,20}$/.test(code)){
+    $('cameraHint').textContent='تم تجاهل قراءة غير رقمية؛ جرّب تثبيت الكاميرا على الباركود.';
+    return;
+   }
+   const now=Date.now();
+   if(code!==cameraCandidate||now-cameraCandidateAt>2000){cameraCandidate=code;cameraStableCount=1;}
+   else cameraStableCount++;
+   cameraCandidateAt=now;
+   $('cameraHint').textContent='قراءة '+cameraStableCount+'/3 للكود '+code+' — ثبّت الكاميرا.';
+   if(cameraStableCount<3)return;
    cameraReadHandled=true;
-   void stopCamera();
-   void addBarcodeScan(value,'camera');
+   void reviewCameraBarcode(code);
   };
   try{
    await html5QrCode.start({facingMode:'environment'},options,onRead);
   }catch(initialError){
-   // Laptops frequently have only a front-facing camera.
    const available=await Html5Qrcode.getCameras();
    if(!available||!available.length)throw initialError;
    const camera=available.find(c=>/back|rear|environment|خلف/i.test(c.label||''))||available[0];
@@ -291,7 +355,7 @@ async function startCamera(){
   isScanning=true;
  }catch(err){
   isScanning=false;$('scannerWrapper').style.display='none';
-  notice('تعذر قراءة الباركود بالكاميرا: '+(err?.message||String(err))+' — راجع إذن الكاميرا والإضاءة.','error');
+  notice('تعذر تشغيل كاميرا الباركود: '+(err?.message||String(err))+' — راجع الأذونات والإضاءة.','error');
   try{html5QrCode?.clear();}catch(e){}
   html5QrCode=null;
  }finally{isCameraStarting=false;}
@@ -300,16 +364,24 @@ async function stopCamera(){
  $('scannerWrapper').style.display='none';
  const cam=html5QrCode;
  html5QrCode=null;
- try{if(cam&&isScanning)await cam.stop();}catch(e){}
+ try{if(cam)await cam.stop();}catch(e){}
  try{cam?.clear();}catch(e){}
  isScanning=false;
 }
 $('scanBtn').addEventListener('click',startCamera);
 $('stopCameraBtn').addEventListener('click',stopCamera);
+$('scanConfirmBtn').addEventListener('click',()=>{
+ if(!pendingCameraProduct||cleanBarcode(pendingCameraProduct.barcode)!==pendingCameraBarcode){notice('لم تتم الإضافة لأن الباركود غير مطابق. أعد المسح.','error');return;}
+ const p=pendingCameraProduct;
+ pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;
+ addToCart(p);
+});
+$('scanRetryBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;void startCamera();});
+$('scanCancelBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;});
 // A cashier logs in with their own password. The server derives the employee and
 // bazaar of the current Cairo date, and binds them to a short-lived session.
 function showCashierLogin(message){
- barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
+ barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('scanPreview').hidden=true;pendingCameraProduct=null;pendingCameraBarcode='';$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
  $('cashierLoginFeedback').textContent=message||'';renderCart();
 }
 function showCashierIdentity(data){
