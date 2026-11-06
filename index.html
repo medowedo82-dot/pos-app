@@ -18,6 +18,7 @@
   .stats .count{background:#ffffff30;border-radius:28px;padding:9px 16px;white-space:nowrap;font-size:13px}
   .search{display:flex;gap:10px;align-items:center;background:#f8fafc;border:1.5px solid var(--green);border-radius:40px;padding:8px 15px;margin:0 16px 14px}
   .search input{width:100%;border:none;outline:none;background:transparent;padding:6px;min-width:0}.search button{border:none;background:none;color:var(--green);font-size:19px}
+  .scan-help{color:var(--muted);font-size:11px;line-height:1.6;margin:-8px 18px 13px;text-align:right}
   .scanner{display:none;margin:0 16px 14px;background:#000;border:2px solid var(--green);border-radius:14px;overflow:hidden}.scanner #reader{width:100%}.scanner button{width:100%;border:0;background:#b91c1c;color:#fff;padding:12px}
   .card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
   .card-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px;font-weight:700}.muted{color:var(--muted);font-size:12px;font-weight:400}
@@ -45,6 +46,7 @@
 <header><i class="fa-solid fa-cash-register" aria-hidden="true"></i><h1>نقطة البيع - الكاشير</h1><span></span></header>
 <section class="stats"><div><small>صافي الفاتورة الحالية</small><strong id="totalAmountText">0.00 جنيه</strong></div><span class="count" id="totalQtyText">0 قطعة</span></section>
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+<p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
 <div id="scannerWrapper" class="scanner"><div id="reader"></div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
 <div class="pad">
 <div class="card" id="fixedIdentity" hidden style="border-color:#75b8a0;background:#f0fdf4">
@@ -95,7 +97,12 @@ const POS_ENDPOINT_KEY='mg_admin_script_url';
 const isValidPosEndpoint=u=>/^https:\/\/script\.google\.com\/macros\/s\/[^/?#]+\/exec$/.test(String(u||''));
 let SCRIPT_URL=isValidPosEndpoint(localStorage.getItem(POS_ENDPOINT_KEY))?localStorage.getItem(POS_ENDPOINT_KEY):DEFAULT_SCRIPT_URL;
 const $=id=>document.getElementById(id);
-let cart=[],isSearching=false,isSaving=false,html5QrCode=null,isScanning=false;
+let cart=[],isSearching=false,isSaving=false,html5QrCode=null,isScanning=false,isCameraStarting=false;
+let barcodeQueue=[],isDrainingBarcodeQueue=false;
+// Do not convert barcodes to numbers: leading zeroes identify real products.
+function cleanBarcode(value){
+ return normalizeDigits(String(value??'').replace(/[\u200B-\u200D\uFEFF\r\n\t]/g,'')).trim();
+}
 let invoiceId=null,uncertain=false,cashierSession='',cashierIdentity=null;
 const format=n=>(Math.round(n*100)/100).toFixed(2)+' جنيه';
 function normalizeDigits(value){return String(value??'').replace(/[٠-٩]/g,x=>String(x.charCodeAt(0)-0x0660)).replace(/[۰-۹]/g,x=>String(x.charCodeAt(0)-0x06F0)).replace(/٫/g,'.').replace(/٬/g,'').replace(/،/g,'.').trim();}
@@ -133,8 +140,89 @@ async function searchProduct(value){const q=String(value??'').trim();if(!cashier
  try{const response=await fetch(SCRIPT_URL+'?action=findProduct&barcode='+encodeURIComponent(q),{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);const data=await response.json();if(data&&data.success===false)throw Error(data.message||'تعذر البحث');const product=data&&data.product?data.product:data;if(!product||!product.name){notice('الباركود أو اسم المنتج غير موجود في الشيت: '+q,'error');return;}addToCart(product);$('barcodeSearchInput').value='';}
  catch(err){notice('تعذر البحث عن المنتج: '+err.message,'error');}
  finally{isSearching=false;$('barcodeSearchInput').focus();}}
-$('searchBtn').addEventListener('click',()=>searchProduct($('barcodeSearchInput').value));
-$('barcodeSearchInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchProduct(e.target.value);}});
+// USB / Bluetooth "keyboard wedge" readers may end scans with Enter, Tab, or no suffix.
+// A short idle timeout picks up only fast, scan-like typing; normal manual input
+// still works with the search button or Enter.
+const barcodeField=$('barcodeSearchInput');
+let inputScanTimer=null,inputFastChars=0,inputLastAt=0,inputFirstAt=0,inputLastLength=0;
+let globalScanTimer=null,globalScanBuffer='',globalScanFirst=0,globalScanLast=0;
+function resetInputScan(){clearTimeout(inputScanTimer);inputScanTimer=null;inputFastChars=0;inputLastAt=0;inputFirstAt=0;inputLastLength=0;}
+function resetGlobalScan(){clearTimeout(globalScanTimer);globalScanTimer=null;globalScanBuffer='';globalScanFirst=0;globalScanLast=0;}
+async function addBarcodeScan(value,source='scanner'){
+ const barcode=cleanBarcode(value);
+ if(!barcode)return;
+ if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير قبل استخدام قارئ الباركود.');return;}
+ if(uncertain||isSaving){notice('تحقق من حالة الفاتورة الحالية أولًا قبل المسح.','error');return;}
+ if(barcodeQueue.length>=30){notice('تم إيقاف استقبال أكواد إضافية مؤقتًا؛ أكمل معالجة القراءات الحالية.','error');return;}
+ // Each intentional scan is counted, including scanning an item twice. Never
+ // silently strip a UPC/EAN leading zero or substitute another product.
+ barcodeQueue.push(barcode);
+ if(isDrainingBarcodeQueue)return;
+ isDrainingBarcodeQueue=true;
+ try{
+  while(barcodeQueue.length){
+   if(!cashierIdentity||uncertain||isSaving){barcodeQueue.length=0;break;}
+   const next=barcodeQueue.shift();
+   await searchProduct(next);
+  }
+ }finally{isDrainingBarcodeQueue=false;}
+}
+$('searchBtn').addEventListener('click',()=>{
+ const value=barcodeField.value;
+ resetInputScan();
+ void addBarcodeScan(value,'manual');
+});
+barcodeField.addEventListener('keydown',e=>{
+ if(e.key==='Enter'||(e.key==='Tab'&&cleanBarcode(barcodeField.value).length>=4)){
+  e.preventDefault();
+  const value=barcodeField.value;
+  resetInputScan();
+  void addBarcodeScan(value,'field');
+ }
+});
+barcodeField.addEventListener('input',e=>{
+ if(!cashierIdentity)return;
+ const value=cleanBarcode(barcodeField.value);
+ const now=Date.now(),growth=value.length-inputLastLength;
+ if(!value){resetInputScan();return;}
+ if(now-inputLastAt>180||growth<=0){inputFastChars=0;inputFirstAt=now;}
+ if(growth>0){
+  const bulk=growth>=4;
+  inputFastChars+=growth;
+  inputLastAt=now;
+  inputLastLength=value.length;
+  clearTimeout(inputScanTimer);
+  // Bulk insertion also covers readers in paste/instant text mode.
+  if(value.length>=4&&(inputFastChars>=4||bulk)){
+   inputScanTimer=setTimeout(()=>{
+    if(cleanBarcode(barcodeField.value)!==value)return;
+    const fast=now-inputFirstAt<=Math.max(1000,value.length*110);
+    if(fast){resetInputScan();void addBarcodeScan(value,'fast-input');}
+   },240);
+  }
+ }
+});
+// Some external scanners type into the page even when no field is focused.
+// Never capture login fields, other inputs, passwords, select controls or shortcuts.
+document.addEventListener('keydown',e=>{
+ if(!cashierIdentity||e.repeat||e.isComposing||e.ctrlKey||e.altKey||e.metaKey)return;
+ const active=e.target;
+ if(active&&((['INPUT','TEXTAREA','SELECT','BUTTON'].includes(active.tagName))||active.isContentEditable))return;
+ const now=Date.now();
+ if(e.key.length===1&&/^[A-Za-z0-9_.-]$/.test(e.key)){
+  if(now-globalScanLast>190){resetGlobalScan();globalScanFirst=now;}
+  globalScanBuffer+=e.key;globalScanLast=now;
+  clearTimeout(globalScanTimer);
+  globalScanTimer=setTimeout(()=>{
+   const code=globalScanBuffer;
+   const fast=globalScanLast-globalScanFirst<=Math.max(650,code.length*100);
+   resetGlobalScan();
+   if(code.length>=4&&fast)void addBarcodeScan(code,'keyboard');
+  },240);
+ }else if((e.key==='Enter'||e.key==='Tab')&&globalScanBuffer.length>=4){
+  e.preventDefault();const code=globalScanBuffer;resetGlobalScan();void addBarcodeScan(code,'keyboard');
+ }else if(e.key==='Escape'){resetGlobalScan();}
+});
 function createInvoiceId(){if(globalThis.crypto&&crypto.randomUUID)return 'POS-'+crypto.randomUUID();return 'POS-'+Date.now()+'-'+Math.floor(Math.random()*1e9);}
 async function post(action,payload){
  const response=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action,payload,session:cashierSession})});
@@ -171,14 +259,57 @@ async function checkout(){
  }catch(err){notice('انقطع الاتصال أثناء الحفظ: '+err.message+'\nلا تنشئ فاتورة جديدة. اضغط التحقق من الفاتورة.','error');}
  finally{isSaving=false;$('saveInvoiceBtn').innerHTML='<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';renderCart();}}
 $('saveInvoiceBtn').addEventListener('click',checkout);
-async function startCamera(){if(isScanning)return;if(typeof Html5Qrcode==='undefined'){notice('مكتبة ماسح الكاميرا لم تُحمّل. استخدم قارئ الباركود أو البحث اليدوي.','error');return;}
- $('scannerWrapper').style.display='block';try{html5QrCode=new Html5Qrcode('reader');isScanning=true;await html5QrCode.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:120}},value=>{searchProduct(value);stopCamera();});}catch(e){isScanning=false;$('scannerWrapper').style.display='none';notice('تعذر تشغيل الكاميرا: '+e.message,'error');}}
-async function stopCamera(){try{if(html5QrCode&&isScanning)await html5QrCode.stop();}catch(e){}finally{isScanning=false;$('scannerWrapper').style.display='none';}}
-$('scanBtn').addEventListener('click',startCamera);$('stopCameraBtn').addEventListener('click',stopCamera);
+let cameraReadHandled=false;
+async function startCamera(){
+ if(isScanning||isCameraStarting)return;
+ if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}
+ if(typeof Html5Qrcode==='undefined'){
+  notice('تعذر تحميل مكتبة قارئ الكاميرا. تأكد من الإنترنت أو استخدم قارئ USB.','error');return;
+ }
+ isCameraStarting=true;cameraReadHandled=false;
+ $('scannerWrapper').style.display='block';
+ try{
+  const F=typeof Html5QrcodeSupportedFormats!=='undefined'?Html5QrcodeSupportedFormats:null;
+  const formats=F?[F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.CODE_128,F.CODE_39,F.ITF,F.QR_CODE].filter(v=>v!==undefined):undefined;
+  html5QrCode=new Html5Qrcode('reader',formats?{formatsToSupport:formats,verbose:false}:{verbose:false});
+  const options={fps:12,qrbox:{width:260,height:140}};
+  const onRead=value=>{
+   if(cameraReadHandled)return;
+   cameraReadHandled=true;
+   void stopCamera();
+   void addBarcodeScan(value,'camera');
+  };
+  try{
+   await html5QrCode.start({facingMode:'environment'},options,onRead);
+  }catch(initialError){
+   // Laptops frequently have only a front-facing camera.
+   const available=await Html5Qrcode.getCameras();
+   if(!available||!available.length)throw initialError;
+   const camera=available.find(c=>/back|rear|environment|خلف/i.test(c.label||''))||available[0];
+   await html5QrCode.start(camera.id,options,onRead);
+  }
+  isScanning=true;
+ }catch(err){
+  isScanning=false;$('scannerWrapper').style.display='none';
+  notice('تعذر قراءة الباركود بالكاميرا: '+(err?.message||String(err))+' — راجع إذن الكاميرا والإضاءة.','error');
+  try{html5QrCode?.clear();}catch(e){}
+  html5QrCode=null;
+ }finally{isCameraStarting=false;}
+}
+async function stopCamera(){
+ $('scannerWrapper').style.display='none';
+ const cam=html5QrCode;
+ html5QrCode=null;
+ try{if(cam&&isScanning)await cam.stop();}catch(e){}
+ try{cam?.clear();}catch(e){}
+ isScanning=false;
+}
+$('scanBtn').addEventListener('click',startCamera);
+$('stopCameraBtn').addEventListener('click',stopCamera);
 // A cashier logs in with their own password. The server derives the employee and
 // bazaar of the current Cairo date, and binds them to a short-lived session.
 function showCashierLogin(message){
- $('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
+ barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
  $('cashierLoginFeedback').textContent=message||'';renderCart();
 }
 function showCashierIdentity(data){
@@ -200,7 +331,7 @@ $('cashierLogout').addEventListener('click',async()=>{
  if(!confirm('تسجيل الخروج من الكاشير؟'))return;
  const old=cashierSession;cashierSession='';cashierIdentity=null;sessionStorage.removeItem('mg_cashier_session');
  if(old){try{await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'mgCashierLogout',session:old})})}catch(e){}}
- cart=[];invoiceId=null;$('discountAmount').value='0';renderCart();showCashierLogin('تم تسجيل الخروج');
+ cart=[];barcodeQueue.length=0;resetGlobalScan();resetInputScan();invoiceId=null;$('discountAmount').value='0';renderCart();showCashierLogin('تم تسجيل الخروج');
 });
 async function restoreCashierSession(){
  cashierSession=sessionStorage.getItem('mg_cashier_session')||'';
