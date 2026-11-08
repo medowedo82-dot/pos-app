@@ -42,6 +42,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 #setupNotice[hidden]{display:none}#setupNotice{border:1px solid #f3cf9d;background:#fff9ef}#setupNotice h3{margin:0 0 5px;color:#885000}#setupNotice ol{padding-right:18px;margin:7px 0}#setupNotice code{direction:ltr;display:inline-block;padding:2px 7px;background:white;border:1px solid #eed6ac;border-radius:7px;color:#85520b}
 @media(max-width:740px){.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.module-grid{grid-template-columns:1fr}.module-link{min-height:80px;padding:12px}.module-link .module-copy small{font-size:12px}}
+
+.nav-dropdown{position:relative;display:inline-flex}
+.nav-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:1000;min-width:260px;max-width:min(88vw,360px);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 14px 35px #0f172a22}
+.nav-menu button{display:flex;width:100%;align-items:center;gap:9px;text-align:right;border:0;background:transparent;color:var(--ink);padding:11px 12px;border-radius:10px;cursor:pointer;font:inherit}
+.nav-menu button:hover{background:#f0f7f3}
+.nav-menu .nav-menu-add{background:var(--brand);color:white;font-weight:800}
+.nav-menu-title{padding:12px 10px 5px;color:var(--muted);font-size:12px;font-weight:700}
+.nav-menu-empty{padding:12px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -72,7 +80,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 <button class="nav-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-simple"></i> الرئيسية</button>
 <button class="nav-btn" data-tab="products"><i class="fa-solid fa-box"></i> المنتجات</button>
 <button class="nav-btn" data-tab="purchases"><i class="fa-solid fa-file-invoice-dollar"></i> فواتير المشتريات</button>
-<button class="nav-btn" data-tab="bazaars"><i class="fa-solid fa-store"></i> إدارة البزارات</button>
+<div class="nav-dropdown" id="bazaarNavDropdown">
+ <button class="nav-btn" type="button" id="bazaarMenuToggle" aria-expanded="false"><i class="fa-solid fa-store"></i> إدارة البزارات <i class="fa-solid fa-chevron-down"></i></button>
+ <div class="nav-menu" id="bazaarNavMenu" hidden>
+  <button type="button" class="nav-menu-add" id="bazaarMenuAdd"><i class="fa-solid fa-plus"></i> إضافة بازار جديد</button>
+  <div class="nav-menu-title">اختيار بازار للتعديل</div>
+  <div id="bazaarNavOptions"><div class="nav-menu-empty">سجّل الدخول لتحميل البزارات</div></div>
+ </div>
+</div>
 <button class="nav-btn" data-tab="employees"><i class="fa-solid fa-users"></i> الموظفون</button>
 <button class="nav-btn" data-tab="suppliers"><i class="fa-solid fa-truck"></i> الموردون</button>
 <button class="nav-btn" data-tab="expenses"><i class="fa-solid fa-wallet"></i> المصروفات</button>
@@ -277,6 +292,30 @@ function beginBazaarEdit(id){
  $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});
  $('bazaarName').focus();
 }
+function renderBazaarNavMenu(){
+ const target=$('bazaarNavOptions');
+ const list=state.bazaars||[];
+ target.innerHTML=list.length?list.map(b=>'<button type="button" data-nav-bazaar="'+esc(b.id)+'"><i class="fa-solid fa-store"></i><span>'+esc(b.name)+'</span><small style="margin-right:auto;color:var(--muted)">'+(b.active?'نشط':'موقوف')+'</small></button>').join(''):'<div class="nav-menu-empty">لا توجد بزارات مسجلة بعد</div>';
+}
+function closeBazaarNavMenu(){
+ $('bazaarNavMenu').hidden=true;$('bazaarMenuToggle').setAttribute('aria-expanded','false');
+}
+$('bazaarMenuToggle').addEventListener('click',()=>{
+ const menu=$('bazaarNavMenu');menu.hidden=!menu.hidden;
+ $('bazaarMenuToggle').setAttribute('aria-expanded',String(!menu.hidden));
+ if(!menu.hidden){showPanel('bazaars');renderBazaarNavMenu();}
+});
+$('bazaarMenuAdd').addEventListener('click',()=>{
+ showPanel('bazaars');resetBazaarForm();closeBazaarNavMenu();
+ $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});$('bazaarName').focus();
+});
+$('bazaarNavOptions').addEventListener('click',e=>{
+ const item=e.target.closest('[data-nav-bazaar]');if(!item)return;
+ showPanel('bazaars');beginBazaarEdit(item.dataset.navBazaar);closeBazaarNavMenu();
+});
+document.addEventListener('click',e=>{
+ if(!$('bazaarNavDropdown').contains(e.target))closeBazaarNavMenu();
+});
 $('bazaarCancelEdit').addEventListener('click',resetBazaarForm);
 
 async function loadBazaars(){
@@ -287,6 +326,7 @@ function bazaarDateLabel(value){return value?esc(value):'—'}
 function bazaarMoneyLabel(value){return money(Number(value)||0)}
 function renderBazaars(){
  const list=state.bazaars;
+ renderBazaarNavMenu();
  if(!list.length)emptyTbody('bazaarTable',6,'لم تُضف أي بازار حتى الآن');
  else $('bazaarTable').innerHTML=list.map(b=>'<tr>'+
   '<td>'+esc(b.name)+'</td>'+
