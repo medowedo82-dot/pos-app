@@ -265,7 +265,7 @@ async function checkout(){
  if(!n.ok){notice('قيمة الخصم غير صحيحة أو أكبر من إجمالي الفاتورة','error');return;}
  for(const x of cart){if(x.qty>x.stock){notice('الرصيد غير كافٍ للمنتج: '+x.name,'error');return;}}
  if(!invoiceId)invoiceId=createInvoiceId();
- const payload={id:invoiceId,idempotencyKey:invoiceId,paymentMethod:$('payMethod').value,discountAmount:n.d,total:n.net,discountApprovalPin:$('discountApprovalPin').value.trim(),items:cart.map(x=>({barcode:x.barcode,name:x.name,price:x.price,qty:x.qty}))};
+ const payload={id:invoiceId,idempotencyKey:invoiceId,bazaarId:identity.bazaar.id,employeeId:identity.employee.id,sellerName:identity.employee.name,paymentMethod:$('payMethod').value,discountAmount:n.d,total:n.net,discountApprovalPin:$('discountApprovalPin').value.trim(),items:cart.map(x=>({barcode:x.barcode,name:x.name,price:x.price,qty:x.qty}))};
  if(!confirm('تأكيد بيع '+cart.reduce((s,x)=>s+x.qty,0)+' قطعة\nالفرع: '+identity.bazaar.name+'\nالموظف: '+identity.employee.name+'\nقبل الخصم: '+format(n.before)+'\nالخصم: '+format(n.d)+'\nالمطلوب: '+format(n.net)+'؟'))return;
  isSaving=true;uncertain=true;renderCart();$('saveInvoiceBtn').textContent='جاري إرسال الفاتورة والتحقق...';
  try{const data=await post('saveInvoice',payload);
@@ -380,6 +380,8 @@ $('scanRetryBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendin
 $('scanCancelBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;});
 // A cashier logs in with their own password. The server derives the employee and
 // bazaar of the current Cairo date, and binds them to a short-lived session.
+// Checkout includes those IDs for consistency; the server independently verifies
+// them against the authenticated session and never trusts browser-supplied identity.
 function showCashierLogin(message){
  barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('scanPreview').hidden=true;pendingCameraProduct=null;pendingCameraBarcode='';$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
  $('cashierLoginFeedback').textContent=message||'';renderCart();
