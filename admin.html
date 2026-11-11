@@ -42,14 +42,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 #setupNotice[hidden]{display:none}#setupNotice{border:1px solid #f3cf9d;background:#fff9ef}#setupNotice h3{margin:0 0 5px;color:#885000}#setupNotice ol{padding-right:18px;margin:7px 0}#setupNotice code{direction:ltr;display:inline-block;padding:2px 7px;background:white;border:1px solid #eed6ac;border-radius:7px;color:#85520b}
 @media(max-width:740px){.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.module-grid{grid-template-columns:1fr}.module-link{min-height:80px;padding:12px}.module-link .module-copy small{font-size:12px}}
-
-.nav-dropdown{position:relative;display:inline-flex}
-.nav-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:1000;min-width:260px;max-width:min(88vw,360px);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 14px 35px #0f172a22}
-.nav-menu button{display:flex;width:100%;align-items:center;gap:9px;text-align:right;border:0;background:transparent;color:var(--ink);padding:11px 12px;border-radius:10px;cursor:pointer;font:inherit}
-.nav-menu button:hover{background:#f0f7f3}
-.nav-menu .nav-menu-add{background:var(--brand);color:white;font-weight:800}
-.nav-menu-title{padding:12px 10px 5px;color:var(--muted);font-size:12px;font-weight:700}
-.nav-menu-empty{padding:12px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -80,14 +72,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 <button class="nav-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-simple"></i> الرئيسية</button>
 <button class="nav-btn" data-tab="products"><i class="fa-solid fa-box"></i> المنتجات</button>
 <button class="nav-btn" data-tab="purchases"><i class="fa-solid fa-file-invoice-dollar"></i> فواتير المشتريات</button>
-<div class="nav-dropdown" id="bazaarNavDropdown">
- <button class="nav-btn" type="button" id="bazaarMenuToggle" aria-expanded="false"><i class="fa-solid fa-store"></i> إدارة البزارات <i class="fa-solid fa-chevron-down"></i></button>
- <div class="nav-menu" id="bazaarNavMenu" hidden>
-  <button type="button" class="nav-menu-add" id="bazaarMenuAdd"><i class="fa-solid fa-plus"></i> إضافة بازار جديد</button>
-  <div class="nav-menu-title">اختيار بازار للتعديل</div>
-  <div id="bazaarNavOptions"><div class="nav-menu-empty">سجّل الدخول لتحميل البزارات</div></div>
- </div>
-</div>
+<button class="nav-btn" data-tab="bazaars"><i class="fa-solid fa-store"></i> إدارة البزارات</button>
 <button class="nav-btn" data-tab="employees"><i class="fa-solid fa-users"></i> الموظفون</button>
 <button class="nav-btn" data-tab="suppliers"><i class="fa-solid fa-truck"></i> الموردون</button>
 <button class="nav-btn" data-tab="expenses"><i class="fa-solid fa-wallet"></i> المصروفات</button>
@@ -179,9 +164,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
    <div class="field"><label for="bazaarEndDate">تاريخ النهاية *</label><input id="bazaarEndDate" class="input" type="date" required></div>
    <div class="field"><label for="bazaarDeposit">الديبوزت بالجنيه</label><input id="bazaarDeposit" class="input" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
    <div class="field"><button type="submit" id="bazaarAdd" class="btn primary full">إضافة بازار</button></div>
-  <div class="field" id="bazaarEditControls" hidden><button type="button" id="bazaarCancelEdit" class="btn ghost full">إلغاء التعديل</button></div>
   </form>
-  <p class="hint" id="bazaarFormHint">يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.</p>
+  <p class="hint">يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.</p>
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">البزارات المسجلة</h3><button id="loadBazaars" class="btn ghost small" type="button">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>اسم البازار</th><th>بداية البازار</th><th>نهاية البازار</th><th>الديبوزت</th><th>الحالة</th><th>إجراءات الأدمن</th></tr></thead><tbody id="bazaarTable"><tr><td colspan="6">لا توجد بيانات</td></tr></tbody></table></div></div>
 </section>
@@ -191,10 +175,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
   <form id="employeeForm" class="grid" style="align-items:end">
    <div class="field"><label for="employeeAdminName">اسم الموظف لتسجيل الدخول *</label><input id="employeeAdminName" class="input" maxlength="100" placeholder="مثل: أحمد محمد" required></div>
    <div class="field"><label for="employeeAdminPassword">كلمة مرور الموظف * (8 أحرف فأكثر)</label><input id="employeeAdminPassword" type="password" class="input" minlength="8" autocomplete="new-password" placeholder="كلمة مرور قوية" required></div>
-   <div class="field"><label for="employeeAdminBazaar">البازار المخصص اليوم *</label><select id="employeeAdminBazaar" class="input" required><option value="">اختر فرع اليوم...</option></select></div>
-   <div class="field"><button id="employeeAdminAdd" class="btn primary full" type="submit"><i class="fa-solid fa-user-plus"></i> إضافة الموظف وتعيينه اليوم</button></div>
+   <div class="field"><button id="employeeAdminAdd" class="btn primary full" type="submit"><i class="fa-solid fa-user-plus"></i> حفظ الموظف فقط</button></div>
   </form>
-  <p class="hint">عند إنشاء الموظف، يتم تعيينه في البازار المختار لليوم الحالي بتوقيت القاهرة. في اليوم التالي يجب تجديد تعيين الفرع. كلمة المرور تُحفظ كتجزئة مشفّرة بمفتاح سري في إعدادات Apps Script، ولا تظهر في القائمة.</p>
+  <p class="hint">يتم حفظ الموظف وكلمة مروره فقط دون تعيين أي بازار. لن يستطيع تسجيل الدخول أو استخدام الكاشير إلا بعد أن يعيّنه الأدمن يدويًا في بازار اليوم. يتجدد التعيين كل يوم بتوقيت القاهرة. كلمة المرور تُحفظ كتجزئة مشفّرة ولا تظهر في القائمة.</p>
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">الموظفون المسجلون</h3><button id="employeeAdminRefresh" type="button" class="btn ghost small">تحديث الموظفين</button></div>
  <p class="hint" id="employeeTodayStatus">تاريخ التعيين اليوم (بتوقيت القاهرة): —</p>
@@ -202,7 +185,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
  </div>
  <div class="card" id="employeeAssignmentPanel" hidden>
   <h3 id="employeeAssignmentTitle">إدارة الموظف</h3>
-  <p class="hint">التغيير أثناء اليوم يلغي جلسة الكاشير السابقة؛ الموظف يسجّل دخوله من جديد ويرى البازار الجديد.</p>
+  <p class="hint">بعد حفظ تعيين اليوم، يضغط الموظف «تحديث التعيين» في شاشة الكاشير. ستظل جلسة دخوله الحالية فعّالة دون الحاجة إلى تسجيل الدخول مرة أخرى.</p>
   <div class="grid">
    <div class="field"><label for="employeeAssignBazaar">اختيار بازار اليوم *</label><select class="input" id="employeeAssignBazaar"><option value="">اختر بازار...</option></select></div>
    <div class="field"><label for="employeePasswordReset">كلمة مرور جديدة (اختياري)</label><input class="input" id="employeePasswordReset" type="password" minlength="8" autocomplete="new-password" placeholder="اتركها فارغة لو مش هتغيّرها"></div>
@@ -270,54 +253,6 @@ $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!applyE
 if(state.session){$('lock-screen').style.display='none';loadBazaars();loadEmployees();loadSuppliers();showPanel('dashboard')}
 function emptyTbody(id,colspan,msg){$(id).innerHTML='<tr><td colspan="'+colspan+'" class="muted">'+esc(msg)+'</td></tr>'}
 async function loadDashboard(){try{const {summary:s,bazaarSales}=await api('mgOverview');$('setupNotice').hidden=true;[['mSales',s.netSales,true],['mPurchases',s.purchases,true],['mPurchaseExtras',s.purchaseExtras,true],['mExpenses',s.expenses,true],['mDue',s.supplierDue,true],['mProfit',s.profitComplete?s.estimatedGrossProfit:null,true],['mNetProfit',s.profitComplete?s.estimatedNetProfit:null,true],['mBazaars',s.bazaarCount,false],['mSuppliers',s.supplierCount,false]].forEach(([id,v,c])=>$(id).textContent=c?(v===null?'غير مكتمل':money(v)):v);$('bazaarSalesBody').innerHTML=bazaarSales.length?bazaarSales.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.netSales)+'</td><td>'+money(x.profit)+'</td></tr>').join(''):'<tr><td colspan="3">لا توجد مبيعات مسجلة</td></tr>'}catch(e){authError(e)}}
-let editingBazaarId=null;
-function setBazaarFormMode(editing){
- $('bazaarAdd').textContent=editing?'حفظ التعديلات':'إضافة بازار';
- $('bazaarEditControls').hidden=!editing;
- $('bazaarFormHint').textContent=editing
-  ?'أنت تعدّل بيانات البازار المحدد. غيّر التاريخ أو الديبوزت ثم اضغط حفظ التعديلات.'
-  :'يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.';
-}
-function resetBazaarForm(){
- editingBazaarId=null;$('bazaarForm').reset();$('bazaarDeposit').value='0';setBazaarFormMode(false);
-}
-function beginBazaarEdit(id){
- const b=state.bazaars.find(x=>x.id===id);if(!b)return;
- editingBazaarId=id;
- $('bazaarName').value=b.name||'';
- $('bazaarStartDate').value=b.startDate||'';
- $('bazaarEndDate').value=b.endDate||'';
- $('bazaarDeposit').value=String(Number(b.deposit)||0);
- setBazaarFormMode(true);
- $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});
- $('bazaarName').focus();
-}
-function renderBazaarNavMenu(){
- const target=$('bazaarNavOptions');
- const list=state.bazaars||[];
- target.innerHTML=list.length?list.map(b=>'<button type="button" data-nav-bazaar="'+esc(b.id)+'"><i class="fa-solid fa-store"></i><span>'+esc(b.name)+'</span><small style="margin-right:auto;color:var(--muted)">'+(b.active?'نشط':'موقوف')+'</small></button>').join(''):'<div class="nav-menu-empty">لا توجد بزارات مسجلة بعد</div>';
-}
-function closeBazaarNavMenu(){
- $('bazaarNavMenu').hidden=true;$('bazaarMenuToggle').setAttribute('aria-expanded','false');
-}
-$('bazaarMenuToggle').addEventListener('click',()=>{
- const menu=$('bazaarNavMenu');menu.hidden=!menu.hidden;
- $('bazaarMenuToggle').setAttribute('aria-expanded',String(!menu.hidden));
- if(!menu.hidden){showPanel('bazaars');renderBazaarNavMenu();}
-});
-$('bazaarMenuAdd').addEventListener('click',()=>{
- showPanel('bazaars');resetBazaarForm();closeBazaarNavMenu();
- $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});$('bazaarName').focus();
-});
-$('bazaarNavOptions').addEventListener('click',e=>{
- const item=e.target.closest('[data-nav-bazaar]');if(!item)return;
- showPanel('bazaars');beginBazaarEdit(item.dataset.navBazaar);closeBazaarNavMenu();
-});
-document.addEventListener('click',e=>{
- if(!$('bazaarNavDropdown').contains(e.target))closeBazaarNavMenu();
-});
-$('bazaarCancelEdit').addEventListener('click',resetBazaarForm);
-
 async function loadBazaars(){
  try{const data=await api('mgListBazaars');state.bazaars=data.bazaars||[];renderBazaars()}
  catch(e){authError(e)}
@@ -326,7 +261,6 @@ function bazaarDateLabel(value){return value?esc(value):'—'}
 function bazaarMoneyLabel(value){return money(Number(value)||0)}
 function renderBazaars(){
  const list=state.bazaars;
- renderBazaarNavMenu();
  if(!list.length)emptyTbody('bazaarTable',6,'لم تُضف أي بازار حتى الآن');
  else $('bazaarTable').innerHTML=list.map(b=>'<tr>'+
   '<td>'+esc(b.name)+'</td>'+
@@ -334,14 +268,12 @@ function renderBazaars(){
   '<td dir="ltr">'+bazaarDateLabel(b.endDate)+'</td>'+
   '<td>'+bazaarMoneyLabel(b.deposit)+' جنيه</td>'+
   '<td><span class="pill '+(b.active?'':'off')+'">'+(b.active?'نشط':'موقوف')+'</span></td>'+
-  '<td><div class="actions"><button type="button" class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل من الأعلى ↑</button>'+
+  '<td><div class="actions"><button type="button" class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل البيانات</button>'+
   '<button type="button" class="btn '+(b.active?'warn':'ghost')+' small" data-bz-toggle="'+esc(b.id)+'">'+(b.active?'إيقاف':'تفعيل')+'</button></div></td></tr>').join('');
 
  const selector=$('eBazaar');
  selector.innerHTML='<option value="">مصروف عام</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');
  const options='<option value="">اختر بازار اليوم...</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');
- const empSelect=$('employeeAdminBazaar'),oldEmp=empSelect.value;
- empSelect.innerHTML=options;if(list.some(b=>b.id===oldEmp&&b.active))empSelect.value=oldEmp;
  const shift=$('employeeAssignBazaar'),oldShift=shift.value;
  shift.innerHTML=options;if(list.some(b=>b.id===oldShift&&b.active))shift.value=oldShift;
 }
@@ -356,26 +288,32 @@ $('bazaarForm').addEventListener('submit',async e=>{
  if(!Number.isFinite(deposit)||deposit<0)return toast('قيمة الديبوزت يجب أن تكون صفرًا أو أكثر','warn');
  setLoading('bazaarAdd',true);
  try{
-  if(editingBazaarId){
-   const current=state.bazaars.find(b=>b.id===editingBazaarId);
-   if(!current)throw Error('البازار المحدد لم يعد موجودًا. حدّث القائمة وحاول مرة أخرى.');
-   await api('mgUpdateBazaar',{id:editingBazaarId,name,active:current.active,startDate,endDate,deposit});
-   toast('تم حفظ تعديلات البازار بنجاح');
-  }else{
-   await api('mgCreateBazaar',{id:newId('BZ'),name,startDate,endDate,deposit});
-   toast('تمت إضافة البازار بالتواريخ والديبوزت');
-  }
-  resetBazaarForm();await loadBazaars();
+  await api('mgCreateBazaar',{id:newId('BZ'),name,startDate,endDate,deposit});
+  $('bazaarForm').reset();$('bazaarDeposit').value='0';
+  toast('تمت إضافة البازار بالتواريخ والديبوزت');await loadBazaars();
  }catch(e){authError(e)}finally{setLoading('bazaarAdd',false)}
 });
 $('bazaarTable').addEventListener('click',async e=>{
  const el=e.target.closest('[data-bz-edit],[data-bz-toggle]');if(!el)return;
  const id=el.dataset.bzEdit||el.dataset.bzToggle,b=state.bazaars.find(x=>x.id===id);if(!b)return;
- if(el.dataset.bzEdit){beginBazaarEdit(id);return;}
- const payload={id,name:b.name,active:!b.active,startDate:b.startDate||'',endDate:b.endDate||'',deposit:Number(b.deposit)||0};
- if(!confirm('هل تريد '+(payload.active?'تفعيل':'إيقاف')+' بازار '+b.name+'؟'))return;
+ const edit=!!el.dataset.bzEdit;
+ let payload={id,name:b.name,active:b.active,startDate:b.startDate||'',endDate:b.endDate||'',deposit:Number(b.deposit)||0};
+ if(edit){
+  const name=prompt('اسم البازار:',b.name);if(name===null||!name.trim())return;
+  const startDate=prompt('تاريخ البداية (YYYY-MM-DD):',b.startDate||'');if(startDate===null)return;
+  const endDate=prompt('تاريخ النهاية (YYYY-MM-DD):',b.endDate||'');if(endDate===null)return;
+  const depositText=prompt('الديبوزت بالجنيه:',String(Number(b.deposit)||0));if(depositText===null)return;
+  const deposit=Number(depositText);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)||!/^\d{4}-\d{2}-\d{2}$/.test(endDate))return toast('اكتب التاريخ بصيغة YYYY-MM-DD','warn');
+  if(endDate<startDate)return toast('تاريخ النهاية لا يمكن أن يسبق البداية','warn');
+  if(!Number.isFinite(deposit)||deposit<0)return toast('الديبوزت يجب أن يكون صفرًا أو أكثر','warn');
+  payload={...payload,name:name.trim(),startDate,endDate,deposit};
+ }else{
+  payload.active=!b.active;
+  if(!confirm('هل تريد '+(payload.active?'تفعيل':'إيقاف')+' بازار '+b.name+'؟'))return;
+ }
  el.disabled=true;
- try{await api('mgUpdateBazaar',payload);toast('تم تحديث حالة البازار');await loadBazaars()}
+ try{await api('mgUpdateBazaar',payload);toast('تم تحديث بيانات البازار');await loadBazaars()}
  catch(err){authError(err)}finally{el.disabled=false}
 });
 $('loadBazaars').addEventListener('click',loadBazaars);
@@ -395,10 +333,10 @@ function renderEmployees(){
  }).join('');
 }
 $('employeeForm').addEventListener('submit',async event=>{
- event.preventDefault();const name=$('employeeAdminName').value.trim(),bazaarId=$('employeeAdminBazaar').value,password=$('employeeAdminPassword').value;
- if(!name||!bazaarId||password.length<8)return toast('اكتب الاسم وكلمة المرور واختر بازار اليوم','warn');
+ event.preventDefault();const name=$('employeeAdminName').value.trim(),password=$('employeeAdminPassword').value;
+ if(!name||password.length<8)return toast('اكتب اسم الموظف وكلمة مرور من 8 أحرف على الأقل','warn');
  setLoading('employeeAdminAdd',true);
- try{await api('mgCreateEmployee',{id:newId('EMP'),name,bazaarId,password});$('employeeAdminName').value='';$('employeeAdminPassword').value='';toast('تمت إضافة الموظف وتعيينه في بازار اليوم');await loadEmployees();}
+ try{await api('mgCreateEmployee',{id:newId('EMP'),name,password});$('employeeAdminName').value='';$('employeeAdminPassword').value='';toast('تم حفظ الموظف. لن يستطيع الدخول قبل تعيين بازار اليوم من الأدمن.');await loadEmployees();}
  catch(e){authError(e)}finally{setLoading('employeeAdminAdd',false)}
 });
 $('employeeAdminRefresh').addEventListener('click',loadEmployees);
@@ -415,7 +353,7 @@ $('employeeAssignSave').addEventListener('click',async()=>{
  const id=state.editingEmployeeId,bazaarId=$('employeeAssignBazaar').value;
  if(!id||!bazaarId)return toast('اختر الموظف والبازار أولًا','warn');
  setLoading('employeeAssignSave',true);
- try{await api('mgAssignEmployeeToday',{id,bazaarId});toast('تم تعيين الفرع لهذا اليوم؛ سيُطلب من الموظف تسجيل الدخول مجددًا');await loadEmployees();$('employeeAssignmentPanel').hidden=true;state.editingEmployeeId='';}
+ try{await api('mgAssignEmployeeToday',{id,bazaarId});toast('تم تعيين البازار لهذا اليوم؛ يمكن للموظف تحديث التعيين من شاشة الكاشير دون تسجيل دخول جديد');await loadEmployees();$('employeeAssignmentPanel').hidden=true;state.editingEmployeeId='';}
  catch(err){authError(err)}finally{setLoading('employeeAssignSave',false)}
 });
 $('employeePasswordSave').addEventListener('click',async()=>{
