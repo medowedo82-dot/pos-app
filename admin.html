@@ -42,6 +42,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 #setupNotice[hidden]{display:none}#setupNotice{border:1px solid #f3cf9d;background:#fff9ef}#setupNotice h3{margin:0 0 5px;color:#885000}#setupNotice ol{padding-right:18px;margin:7px 0}#setupNotice code{direction:ltr;display:inline-block;padding:2px 7px;background:white;border:1px solid #eed6ac;border-radius:7px;color:#85520b}
 @media(max-width:740px){.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.module-grid{grid-template-columns:1fr}.module-link{min-height:80px;padding:12px}.module-link .module-copy small{font-size:12px}}
+
+.nav-dropdown{position:relative;display:inline-flex}
+.nav-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:1000;min-width:260px;max-width:min(88vw,360px);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 14px 35px #0f172a22}
+.nav-menu button{display:flex;width:100%;align-items:center;gap:9px;text-align:right;border:0;background:transparent;color:var(--ink);padding:11px 12px;border-radius:10px;cursor:pointer;font:inherit}
+.nav-menu button:hover{background:#f0f7f3}
+.nav-menu .nav-menu-add{background:var(--brand);color:white;font-weight:800}
+.nav-menu-title{padding:12px 10px 5px;color:var(--muted);font-size:12px;font-weight:700}
+.nav-menu-empty{padding:12px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -72,7 +80,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
 <button class="nav-btn active" data-tab="dashboard"><i class="fa-solid fa-chart-simple"></i> الرئيسية</button>
 <button class="nav-btn" data-tab="products"><i class="fa-solid fa-box"></i> المنتجات</button>
 <button class="nav-btn" data-tab="purchases"><i class="fa-solid fa-file-invoice-dollar"></i> فواتير المشتريات</button>
-<button class="nav-btn" data-tab="bazaars"><i class="fa-solid fa-store"></i> إدارة البزارات</button>
+<button class="nav-btn" data-tab="transfers"><i class="fa-solid fa-truck-ramp-box"></i> تحويل البضاعة للبزارات</button>
+<div class="nav-dropdown" id="bazaarNavDropdown">
+ <button class="nav-btn" type="button" id="bazaarMenuToggle" aria-expanded="false"><i class="fa-solid fa-store"></i> إدارة البزارات <i class="fa-solid fa-chevron-down"></i></button>
+ <div class="nav-menu" id="bazaarNavMenu" hidden>
+  <button type="button" class="nav-menu-add" id="bazaarMenuAdd"><i class="fa-solid fa-plus"></i> إضافة بازار جديد</button>
+  <div class="nav-menu-title">اختيار بازار للتعديل</div>
+  <div id="bazaarNavOptions"><div class="nav-menu-empty">سجّل الدخول لتحميل البزارات</div></div>
+ </div>
+</div>
 <button class="nav-btn" data-tab="employees"><i class="fa-solid fa-users"></i> الموظفون</button>
 <button class="nav-btn" data-tab="suppliers"><i class="fa-solid fa-truck"></i> الموردون</button>
 <button class="nav-btn" data-tab="expenses"><i class="fa-solid fa-wallet"></i> المصروفات</button>
@@ -84,6 +100,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
   <div class="module-grid" aria-label="اختصارات لوحة الإدارة">
    <button type="button" class="module-link" data-tab="bazaars" id="shortcutBazaars"><span class="module-icon"><i class="fa-solid fa-store"></i></span><span class="module-copy"><strong>إدارة البزارات</strong><small>إضافة بازار، تعديل اسمه، تفعيله أو إيقافه</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
    <button type="button" class="module-link" data-tab="purchases" id="shortcutPurchases"><span class="module-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span><span class="module-copy"><strong>فاتورة شراء بضاعة</strong><small>تاجر، أصناف، تكلفة شراء، شحن ومدفوعات</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
+   <button type="button" class="module-link" data-tab="transfers" id="shortcutTransfers"><span class="module-icon"><i class="fa-solid fa-truck-ramp-box"></i></span><span class="module-copy"><strong>تحويل البضاعة للبزارات</strong><small>اختيار البازار وتحديد كميات التحويل وخصمها من المخزون الرئيسي</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
    <button type="button" class="module-link" data-tab="employees" id="shortcutEmployees"><span class="module-icon"><i class="fa-solid fa-user-gear"></i></span><span class="module-copy"><strong>إدارة الموظفين</strong><small>الأدمن فقط: إضافة، تغيير الاسم، تخصيص البازار وإيقاف الموظف</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
    <button type="button" class="module-link" data-tab="suppliers" id="shortcutSuppliers"><span class="module-icon"><i class="fa-solid fa-truck-fast"></i></span><span class="module-copy"><strong>الموردون والتجار</strong><small>أرقام التجار ورصيد المستحق لكل مورد</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
    <button type="button" class="module-link" data-tab="expenses" id="shortcutExpenses"><span class="module-icon"><i class="fa-solid fa-wallet"></i></span><span class="module-copy"><strong>مصروفات التشغيل</strong><small>إيجار، نقل، تجهيز ومصاريف كل بازار</small></span><i class="fa-solid fa-chevron-left module-arrow"></i></button>
@@ -155,6 +172,37 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">آخر فواتير المشتريات</h3><button id="loadPurchases" type="button" class="btn ghost small">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>رقم الفاتورة</th><th>التاجر</th><th>التاريخ</th><th>قيمة البضاعة</th><th>التكلفة النهائية</th><th>المتبقي</th></tr></thead><tbody id="purchaseTable"><tr><td colspan="6" class="muted">لا توجد بيانات معروضة</td></tr></tbody></table></div></div>
 </section>
+<section class="panel" id="tab-transfers">
+ <div class="heading"><h2>تحويل البضاعة للبزارات</h2><p>اختر البازار أولًا، ثم حدد كميات المنتجات التي سيتم صرفها من المخزون الرئيسي</p></div>
+ <div class="card">
+  <div class="grid">
+   <div class="field"><label for="transferBazaar">البازار المستلم *</label><select id="transferBazaar" class="input"><option value="">اختر البازار</option></select></div>
+
+  </div>
+  <div class="actions" style="margin-top:10px"><button id="reloadTransferProducts" type="button" class="btn ghost small">تحديث المنتجات والكميات</button></div>
+  <div class="alert warning show">الكميات المعروضة هي المتاح في المخزون الرئيسي فقط. اكتب الكمية المطلوبة في خانة «الكمية المحولة»، واترك الصنف صفرًا إذا لم ترغب في تحويله.</div>
+  <div class="table-scroll"><table><thead><tr><th>الباركود</th><th>اسم المنتج</th><th>الفئة</th><th>المتاح بالمخزن الرئيسي</th><th>الكمية المحولة</th></tr></thead><tbody id="transferProductsBody"><tr><td colspan="5" class="muted">اختر البازار ثم حدّث المنتجات</td></tr></tbody></table></div>
+  <div class="grid" style="margin-top:14px">
+   <div class="metric"><small>عدد الأصناف المختارة</small><b id="transferSelectedCount">0</b></div>
+   <div class="metric"><small>إجمالي القطع المحولة</small><b id="transferTotalQty">0</b></div>
+  </div>
+  <div class="field" style="margin-top:12px"><label for="transferNotes">ملاحظات التحويل (اختياري)</label><input id="transferNotes" class="input" maxlength="500" placeholder="مثلاً: تجهيز بازار نهاية الأسبوع"></div>
+  <div class="actions"><button id="confirmTransfer" type="button" class="btn primary" disabled>تأكيد التحويل للبازار</button></div>
+  <div id="transferStatus" class="alert" style="display:none" role="status"></div>
+ </div>
+ <div class="card"><div class="heading"><h3 style="margin:0">سجل تحويلات البضاعة</h3><button id="loadTransferHistory" type="button" class="btn ghost small">تحديث السجل</button></div><div class="table-scroll"><table><thead><tr><th>رقم التحويل</th><th>التاريخ</th><th>البازار المستلم</th><th>عدد الأصناف</th><th>إجمالي القطع</th></tr></thead><tbody id="transferHistoryBody"><tr><td colspan="5" class="muted">لا توجد تحويلات معروضة</td></tr></tbody></table></div></div>
+ <div class="card" style="margin-top:16px">
+  <div class="heading"><h3>استرجاع بضاعة من البازار</h3><p>حدد البازار، ثم أدخل كمية كل صنف وحالته. السليم فقط يعود للمخزن القابل للبيع.</p></div>
+  <div class="grid"><div class="field"><label for="returnBazaar">البازار المرتجع منه *</label><select id="returnBazaar" class="input"><option value="">اختر البازار</option></select></div>
+  <div class="field"><label for="returnReason">سبب التلف (اختياري)</label><input id="returnReason" class="input" maxlength="300" placeholder="وصف مختصر للتالف"></div></div>
+  <div class="actions"><button id="loadReturnProducts" type="button" class="btn ghost small">عرض أرصدة البازار</button></div>
+  <div class="table-scroll"><table><thead><tr><th>الباركود</th><th>اسم المنتج</th><th>رصيد البازار</th><th>كمية سليمة</th><th>كمية تالفة</th></tr></thead><tbody id="returnProductsBody"><tr><td colspan="5" class="muted">اختر البازار لعرض الأصناف ذات الرصيد</td></tr></tbody></table></div>
+  <div class="field" style="margin-top:12px"><label for="returnNotes">ملاحظات المرتجع</label><input id="returnNotes" class="input" maxlength="500"></div>
+  <div class="actions"><button id="confirmReturn" type="button" class="btn primary" disabled>تأكيد المرتجع</button></div>
+  <div id="returnStatus" class="alert" style="display:none" role="status"></div>
+ </div>
+ <div class="card"><div class="heading"><h3>ملخص أرصدة البزارات</h3><button id="loadBazaarBalances" type="button" class="btn ghost small">تحديث الأرصدة</button></div><div class="table-scroll"><table><thead><tr><th>البازار</th><th>الباركود</th><th>المنتج</th><th>المحول</th><th>المباع</th><th>مرتجع سليم</th><th>مرتجع تالف</th><th>الرصيد</th></tr></thead><tbody id="bazaarBalancesBody"><tr><td colspan="8" class="muted">اضغط تحديث الأرصدة</td></tr></tbody></table></div></div>
+</section>
 <section class="panel" id="tab-bazaars">
  <div class="heading"><h2>إدارة البزارات — للأدمن فقط</h2><p>الإضافة والتعديل والإيقاف من الإدارة؛ صفحة المبيعات تختار فقط</p></div>
  <div class="card">
@@ -164,8 +212,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
    <div class="field"><label for="bazaarEndDate">تاريخ النهاية *</label><input id="bazaarEndDate" class="input" type="date" required></div>
    <div class="field"><label for="bazaarDeposit">الديبوزت بالجنيه</label><input id="bazaarDeposit" class="input" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
    <div class="field"><button type="submit" id="bazaarAdd" class="btn primary full">إضافة بازار</button></div>
+  <div class="field" id="bazaarEditControls" hidden><button type="button" id="bazaarCancelEdit" class="btn ghost full">إلغاء التعديل</button></div>
   </form>
-  <p class="hint">يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.</p>
+  <p class="hint" id="bazaarFormHint">يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.</p>
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">البزارات المسجلة</h3><button id="loadBazaars" class="btn ghost small" type="button">تحديث</button></div><div class="table-scroll"><table><thead><tr><th>اسم البازار</th><th>بداية البازار</th><th>نهاية البازار</th><th>الديبوزت</th><th>الحالة</th><th>إجراءات الأدمن</th></tr></thead><tbody id="bazaarTable"><tr><td colspan="6">لا توجد بيانات</td></tr></tbody></table></div></div>
 </section>
@@ -175,9 +224,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
   <form id="employeeForm" class="grid" style="align-items:end">
    <div class="field"><label for="employeeAdminName">اسم الموظف لتسجيل الدخول *</label><input id="employeeAdminName" class="input" maxlength="100" placeholder="مثل: أحمد محمد" required></div>
    <div class="field"><label for="employeeAdminPassword">كلمة مرور الموظف * (8 أحرف فأكثر)</label><input id="employeeAdminPassword" type="password" class="input" minlength="8" autocomplete="new-password" placeholder="كلمة مرور قوية" required></div>
-   <div class="field"><button id="employeeAdminAdd" class="btn primary full" type="submit"><i class="fa-solid fa-user-plus"></i> حفظ الموظف فقط</button></div>
+   <div class="field"><label for="employeeAdminBazaar">البازار المخصص اليوم (اختياري)</label><select id="employeeAdminBazaar" class="input"><option value="">اختر فرع اليوم...</option></select></div>
+   <div class="field"><button id="employeeAdminAdd" class="btn primary full" type="submit"><i class="fa-solid fa-user-plus"></i> إضافة الموظف وتعيينه اليوم</button></div>
   </form>
-  <p class="hint">يتم حفظ الموظف وكلمة مروره فقط دون تعيين أي بازار. لن يستطيع تسجيل الدخول أو استخدام الكاشير إلا بعد أن يعيّنه الأدمن يدويًا في بازار اليوم. يتجدد التعيين كل يوم بتوقيت القاهرة. كلمة المرور تُحفظ كتجزئة مشفّرة ولا تظهر في القائمة.</p>
+  <p class="hint">عند إنشاء الموظف، يتم تعيينه في البازار المختار لليوم الحالي بتوقيت القاهرة. في اليوم التالي يجب تجديد تعيين الفرع. كلمة المرور تُحفظ كتجزئة مشفّرة بمفتاح سري في إعدادات Apps Script، ولا تظهر في القائمة.</p>
  </div>
  <div class="card"><div class="heading"><h3 style="margin:0">الموظفون المسجلون</h3><button id="employeeAdminRefresh" type="button" class="btn ghost small">تحديث الموظفين</button></div>
  <p class="hint" id="employeeTodayStatus">تاريخ التعيين اليوم (بتوقيت القاهرة): —</p>
@@ -185,7 +235,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{
  </div>
  <div class="card" id="employeeAssignmentPanel" hidden>
   <h3 id="employeeAssignmentTitle">إدارة الموظف</h3>
-  <p class="hint">بعد حفظ تعيين اليوم، يضغط الموظف «تحديث التعيين» في شاشة الكاشير. ستظل جلسة دخوله الحالية فعّالة دون الحاجة إلى تسجيل الدخول مرة أخرى.</p>
+  <p class="hint">بعد حفظ التعيين، يضغط الموظف «تحديث التعيين» في شاشة الكاشير دون تسجيل دخول جديد.</p>
   <div class="grid">
    <div class="field"><label for="employeeAssignBazaar">اختيار بازار اليوم *</label><select class="input" id="employeeAssignBazaar"><option value="">اختر بازار...</option></select></div>
    <div class="field"><label for="employeePasswordReset">كلمة مرور جديدة (اختياري)</label><input class="input" id="employeePasswordReset" type="password" minlength="8" autocomplete="new-password" placeholder="اتركها فارغة لو مش هتغيّرها"></div>
@@ -215,7 +265,7 @@ const URL_KEY='mg_admin_script_url';
 function validEndpoint(value){try{const u=new URL(String(value||'').trim());return u.protocol==='https:'&&u.hostname==='script.google.com'&&/^\/macros\/s\/[^/]+\/exec$/.test(u.pathname)&&!u.search&&!u.hash;}catch(e){return false}}
 let SCRIPT_URL=validEndpoint(localStorage.getItem(URL_KEY))?localStorage.getItem(URL_KEY):DEFAULT_SCRIPT_URL;
 const $=id=>document.getElementById(id);
-const state={session:sessionStorage.getItem('mg_admin_session')||'',activeTab:'dashboard',productMode:'',currentProduct:null,bazaars:[],employees:[],employeeToday:'',editingEmployeeId:'',suppliers:[],scanner:null,scanning:false,saving:false,purchaseId:sessionStorage.getItem('mg_purchase_id')||newId('PUR'),expenseId:sessionStorage.getItem('mg_expense_id')||newId('EXP')};
+const state={session:sessionStorage.getItem('mg_admin_session')||'',activeTab:'dashboard',productMode:'',currentProduct:null,bazaars:[],employees:[],employeeToday:'',editingEmployeeId:'',suppliers:[],scanner:null,scanning:false,saving:false,purchaseId:sessionStorage.getItem('mg_purchase_id')||newId('PUR'),expenseId:sessionStorage.getItem('mg_expense_id')||newId('EXP'),transferId:newId('TRF'),transferProducts:[]};
 function newId(prefix){return prefix+'-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2,16))}
 sessionStorage.setItem('mg_purchase_id',state.purchaseId);sessionStorage.setItem('mg_expense_id',state.expenseId);
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -245,7 +295,7 @@ function applyEndpoint(){const v=$('connectionUrl').value.trim();if(!validEndpoi
 $('connectionUrl').addEventListener('change',applyEndpoint);
 $('connTest').addEventListener('click',async()=>{if(!applyEndpoint())return;const el=$('connectionFeedback');el.textContent='جاري اختبار اتصال السيرفر…';$('connTest').disabled=true;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(SCRIPT_URL+'?action=ping',{method:'GET',signal:controller.signal,redirect:'follow'});if(!r.ok)throw Error('HTTP '+r.status);const txt=await r.text();let d;try{d=JSON.parse(txt)}catch(e){throw Error('رابط النشر يعرض HTML بدل JSON؛ تأكد من Web App Access: Anyone والرابط الصحيح')}if(!d.success)throw Error(d.message||'خدمة Apps Script لا تستجيب');const isCompatible=String(d.version||'').includes('daily-employee-login');el.textContent=(isCompatible?'✅':'⚠️')+' اتصال السيرفر يعمل. إصدار الخدمة: '+String(d.version||'غير محدد')+(isCompatible?' — يدعم إدارة الموظفين ودخول الكاشير.':' — هذا الإصدار لا يعلن دعمه لدخول الموظفين. استخدم آخر Code.gs وانشر New version في نفس Deployment.');showLoginError(isCompatible?'السيرفر متصل وإصدار الموظفين موجود.':'الاتصال ناجح لكن إصدار السيرفر غير متوافق مع إدارة الموظفين.',isCompatible?'success':'warning')}catch(e){el.textContent='❌ '+loginErrorMessage(e);showLoginError(el.textContent)}finally{clearTimeout(timer);$('connTest').disabled=false}});
 function showPanel(name){state.activeTab=name;document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));if(!state.session)return;
- const loader={dashboard:loadDashboard,bazaars:loadBazaars,employees:loadEmployees,purchases:loadPurchases,suppliers:loadSuppliers,expenses:loadExpenses};if(loader[name])loader[name]();}
+ const loader={dashboard:loadDashboard,bazaars:loadBazaars,employees:loadEmployees,purchases:loadPurchases,transfers:()=>{loadTransferProducts();loadBazaarBalances();},suppliers:loadSuppliers,expenses:loadExpenses};if(loader[name])loader[name]();}
 document.querySelectorAll('[data-tab]').forEach(x=>x.addEventListener('click',()=>{showPanel(x.dataset.tab);if(x.dataset.goto){const dest=$(x.dataset.goto);if(dest)setTimeout(()=>dest.scrollIntoView({behavior:'smooth',block:'start'}),120)}else if(x.classList.contains('module-link'))window.scrollTo({top:0,behavior:'smooth'});}));
 $('refreshBtn').addEventListener('click',()=>showPanel(state.activeTab));
 $('logoutBtn').addEventListener('click',async()=>{try{if(state.session)await api('adminLogout')}catch(e){/* session will also expire server-side */}finally{state.session='';sessionStorage.removeItem('mg_admin_session');$('adminPassword').value='';$('lock-screen').style.display='flex'}});
@@ -253,14 +303,132 @@ $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!applyE
 if(state.session){$('lock-screen').style.display='none';loadBazaars();loadEmployees();loadSuppliers();showPanel('dashboard')}
 function emptyTbody(id,colspan,msg){$(id).innerHTML='<tr><td colspan="'+colspan+'" class="muted">'+esc(msg)+'</td></tr>'}
 async function loadDashboard(){try{const {summary:s,bazaarSales}=await api('mgOverview');$('setupNotice').hidden=true;[['mSales',s.netSales,true],['mPurchases',s.purchases,true],['mPurchaseExtras',s.purchaseExtras,true],['mExpenses',s.expenses,true],['mDue',s.supplierDue,true],['mProfit',s.profitComplete?s.estimatedGrossProfit:null,true],['mNetProfit',s.profitComplete?s.estimatedNetProfit:null,true],['mBazaars',s.bazaarCount,false],['mSuppliers',s.supplierCount,false]].forEach(([id,v,c])=>$(id).textContent=c?(v===null?'غير مكتمل':money(v)):v);$('bazaarSalesBody').innerHTML=bazaarSales.length?bazaarSales.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+money(x.netSales)+'</td><td>'+money(x.profit)+'</td></tr>').join(''):'<tr><td colspan="3">لا توجد مبيعات مسجلة</td></tr>'}catch(e){authError(e)}}
+let transferProductsLoaded=false;
+function transferStatus(message,type){const el=$('transferStatus');el.textContent=message;el.className='alert show '+(type||'');el.style.display='block'}
+function renderTransferProducts(){
+ if(!$('transferBazaar').value){emptyTbody('transferProductsBody',5,'اختر البازار المستلم أولًا لعرض المنتجات والكميات المتاحة');updateTransferTotals();return;}
+ const list=state.transferProducts;
+ if(!list.length){emptyTbody('transferProductsBody',5,'لا توجد منتجات مطابقة');updateTransferTotals();return;}
+ $('transferProductsBody').innerHTML=list.map(p=>'<tr><td style="direction:ltr">'+esc(p.barcode)+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.category||'—')+'</td><td><strong>'+number(p.centralStock)+'</strong></td><td><input class="input transfer-qty" type="number" min="0" step="1" value="0" data-barcode="'+esc(p.barcode)+'" data-stock="'+number(p.centralStock)+'" style="max-width:115px" aria-label="كمية التحويل من '+esc(p.name)+'"></td></tr>').join('');
+ updateTransferTotals();
+}
+function updateTransferTotals(){
+ const inputs=[...document.querySelectorAll('.transfer-qty')];let count=0,total=0;
+ inputs.forEach(i=>{const q=Number(i.value)||0;if(q>0){count++;total+=q;}const max=Number(i.dataset.stock)||0;i.classList.toggle('invalid',q<0||!Number.isSafeInteger(q)||q>max);});
+ $('transferSelectedCount').textContent=count;$('transferTotalQty').textContent=total;
+ $('confirmTransfer').disabled=!$('transferBazaar').value||count===0||inputs.some(i=>{const q=Number(i.value)||0;return q<0||!Number.isSafeInteger(q)||q>Number(i.dataset.stock)});
+}
+async function loadTransferProducts(){
+ try{
+  const r=await api('mgTransferProducts');state.transferProducts=r.products||[];
+  const selected=$('transferBazaar').value;
+  $('transferBazaar').innerHTML='<option value="">اختر البازار</option>'+(r.bazaars||[]).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');
+  if(selected&&[...$('transferBazaar').options].some(o=>o.value===selected))$('transferBazaar').value=selected;
+  transferProductsLoaded=true;renderTransferProducts();
+  if(!r.bazaars||!r.bazaars.length)transferStatus('لا توجد بازارات نشطة. أضف أو فعّل بازارًا أولًا.','warning');
+  await loadTransferHistory();
+ }catch(e){authError(e);transferStatus(loginErrorMessage(e),'error');}
+}
+async function loadTransferHistory(){
+ try{const r=await api('mgStockTransferHistory');const rows=r.transfers||[];
+  $('transferHistoryBody').innerHTML=rows.length?rows.map(x=>'<tr><td style="direction:ltr">'+esc(x.id)+'</td><td>'+esc(x.date)+'</td><td>'+esc(x.bazaar)+'</td><td>'+number(x.items)+'</td><td>'+number(x.totalQty)+'</td></tr>').join(''):'<tr><td colspan="5" class="muted">لا توجد تحويلات مسجلة بعد</td></tr>';
+ }catch(e){transferStatus('تعذر تحميل سجل التحويلات: '+loginErrorMessage(e),'error');}
+}
+$('transferBazaar').addEventListener('change',()=>{renderTransferProducts();updateTransferTotals();});
+$('transferProductsBody').addEventListener('input',e=>{if(e.target.classList.contains('transfer-qty'))updateTransferTotals()});
+$('reloadTransferProducts').addEventListener('click',loadTransferProducts);
+$('loadTransferHistory').addEventListener('click',loadTransferHistory);
+$('confirmTransfer').addEventListener('click',async()=>{
+ const bazaarId=$('transferBazaar').value;if(!bazaarId)return transferStatus('اختر البازار المستلم أولًا.','error');
+ const items=[...document.querySelectorAll('.transfer-qty')].map(i=>({barcode:i.dataset.barcode,qty:Number(i.value)||0})).filter(x=>x.qty>0);
+ if(!items.length)return transferStatus('اكتب كمية صنف واحد على الأقل.','warning');
+ const bazaarName=$('transferBazaar').selectedOptions[0]?.textContent||'';
+ const total=items.reduce((a,x)=>a+x.qty,0);
+ if(!confirm('تأكيد تحويل '+total+' قطعة في '+items.length+' صنف إلى '+bazaarName+'؟\nسيتم خصم الكميات من المخزون الرئيسي.'))return;
+ const payload={id:state.transferId,bazaarId,items,notes:$('transferNotes').value.trim()};
+ setLoading('confirmTransfer',true);
+ try{
+  const r=await api('mgSaveStockTransfer',payload);
+  transferStatus((r.message||'تم التحويل بنجاح')+' — رقم العملية: '+r.transferId,'success');
+  state.transferId=newId('TRF');$('transferNotes').value='';
+  await loadTransferProducts();
+ }catch(e){transferStatus(loginErrorMessage(e),'error');if(e.uncertain)transferStatus('نتيجة الحفظ غير مؤكدة. لا تنشئ عملية جديدة؛ حدّث سجل التحويلات أولًا. '+loginErrorMessage(e),'warning');}
+ finally{setLoading('confirmTransfer',false);updateTransferTotals();}
+});
+
+// Bazaar returns: quantities are validated again on the server under a script lock.
+let returnProducts=[];
+function returnStatus(msg,type){const el=$('returnStatus');el.textContent=msg;el.className='alert show '+(type||'');el.style.display='block';}
+async function loadReturnProducts(){const id=$('returnBazaar').value;if(!id)return returnStatus('اختر البازار أولًا','warning');try{
+ const r=await api('mgReturnProducts',{bazaarId:id});returnProducts=r.products||[];
+ $('returnProductsBody').innerHTML=returnProducts.length?returnProducts.map(p=>'<tr><td style="direction:ltr">'+esc(p.barcode)+'</td><td>'+esc(p.name)+'</td><td><b>'+number(p.balance)+'</b></td><td><input class="input return-good" type="number" min="0" step="1" value="0" data-barcode="'+esc(p.barcode)+'" data-balance="'+number(p.balance)+'"></td><td><input class="input return-bad" type="number" min="0" step="1" value="0" data-barcode="'+esc(p.barcode)+'" data-balance="'+number(p.balance)+'"></td></tr>').join(''):'<tr><td colspan="5" class="muted">لا توجد أرصدة متاحة لهذا البازار</td></tr>';
+ $('confirmReturn').disabled=!returnProducts.length;returnStatus('تم تحميل '+returnProducts.length+' صنفًا من رصيد البازار','success');
+ }catch(e){returnStatus(loginErrorMessage(e),'error');}}
+async function loadBazaarBalances(){try{const r=await api('mgBazaarBalances');const a=r.balances||[];$('bazaarBalancesBody').innerHTML=a.length?a.map(x=>'<tr><td>'+esc(x.bazaarName)+'</td><td style="direction:ltr">'+esc(x.barcode)+'</td><td>'+esc(x.name)+'</td><td>'+number(x.transferred)+'</td><td>'+number(x.sold)+'</td><td>'+number(x.goodReturns)+'</td><td>'+number(x.damagedReturns)+'</td><td><b>'+number(x.balance)+'</b></td></tr>').join(''):'<tr><td colspan="8">لا توجد حركات بعد</td></tr>';}catch(e){toast(loginErrorMessage(e),'error')}}
+$('returnBazaar').addEventListener('change',loadReturnProducts);$('loadReturnProducts').addEventListener('click',loadReturnProducts);$('loadBazaarBalances').addEventListener('click',loadBazaarBalances);
+$('confirmReturn').addEventListener('click',async()=>{const bazaarId=$('returnBazaar').value;if(!bazaarId)return returnStatus('اختر البازار','error');const items=[];
+ document.querySelectorAll('.return-good,.return-bad').forEach(i=>{const q=Number(i.value)||0;if(q>0)items.push({barcode:i.dataset.barcode,qty:q,condition:i.classList.contains('return-good')?'سليم':'تالف'});});
+ if(!items.length)return returnStatus('أدخل كمية مرتجع واحدة على الأقل','warning');
+ const sums={};items.forEach(x=>sums[x.barcode]=(sums[x.barcode]||0)+x.qty);for(const bc in sums){const input=document.querySelector('.return-good[data-barcode="'+CSS.escape(bc)+'"]');if(sums[bc]>Number(input?.dataset.balance||0))return returnStatus('إجمالي المرتجع أكبر من رصيد البازار للباركود '+bc,'error');}
+ if(!confirm('تأكيد تسجيل '+items.length+' حركة مرتجع؟'))return;const id=newId('RET');$('confirmReturn').disabled=true;try{const r=await api('mgSaveBazaarReturn',{id,bazaarId,items,reason:$('returnReason').value.trim(),notes:$('returnNotes').value.trim()});returnStatus(r.message+' — '+r.returnId,'success');$('returnReason').value='';$('returnNotes').value='';await loadReturnProducts();await loadBazaarBalances();await loadTransferProducts();}catch(e){returnStatus(loginErrorMessage(e),'error');if(e.uncertain)returnStatus('نتيجة الحفظ غير مؤكدة؛ حدّث الأرصدة قبل إعادة المحاولة. '+loginErrorMessage(e),'warning');}finally{$('confirmReturn').disabled=false;}});
+
+let editingBazaarId=null;
+function setBazaarFormMode(editing){
+ $('bazaarAdd').textContent=editing?'حفظ التعديلات':'إضافة بازار';
+ $('bazaarEditControls').hidden=!editing;
+ $('bazaarFormHint').textContent=editing
+  ?'أنت تعدّل بيانات البازار المحدد. غيّر التاريخ أو الديبوزت ثم اضغط حفظ التعديلات.'
+  :'يجب إدخال تاريخ البداية والنهاية. الديبوزت اختياري ويبدأ من صفر جنيه.';
+}
+function resetBazaarForm(){
+ editingBazaarId=null;$('bazaarForm').reset();$('bazaarDeposit').value='0';setBazaarFormMode(false);
+}
+function beginBazaarEdit(id){
+ const b=state.bazaars.find(x=>x.id===id);if(!b)return;
+ editingBazaarId=id;
+ $('bazaarName').value=b.name||'';
+ $('bazaarStartDate').value=b.startDate||'';
+ $('bazaarEndDate').value=b.endDate||'';
+ $('bazaarDeposit').value=String(Number(b.deposit)||0);
+ setBazaarFormMode(true);
+ $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});
+ $('bazaarName').focus();
+}
+function renderBazaarNavMenu(){
+ const target=$('bazaarNavOptions');
+ const list=state.bazaars||[];
+ target.innerHTML=list.length?list.map(b=>'<button type="button" data-nav-bazaar="'+esc(b.id)+'"><i class="fa-solid fa-store"></i><span>'+esc(b.name)+'</span><small style="margin-right:auto;color:var(--muted)">'+(b.active?'نشط':'موقوف')+'</small></button>').join(''):'<div class="nav-menu-empty">لا توجد بزارات مسجلة بعد</div>';
+}
+function closeBazaarNavMenu(){
+ $('bazaarNavMenu').hidden=true;$('bazaarMenuToggle').setAttribute('aria-expanded','false');
+}
+$('bazaarMenuToggle').addEventListener('click',()=>{
+ const menu=$('bazaarNavMenu');menu.hidden=!menu.hidden;
+ $('bazaarMenuToggle').setAttribute('aria-expanded',String(!menu.hidden));
+ if(!menu.hidden){showPanel('bazaars');renderBazaarNavMenu();}
+});
+$('bazaarMenuAdd').addEventListener('click',()=>{
+ showPanel('bazaars');resetBazaarForm();closeBazaarNavMenu();
+ $('bazaarForm').scrollIntoView({behavior:'smooth',block:'center'});$('bazaarName').focus();
+});
+$('bazaarNavOptions').addEventListener('click',e=>{
+ const item=e.target.closest('[data-nav-bazaar]');if(!item)return;
+ showPanel('bazaars');beginBazaarEdit(item.dataset.navBazaar);closeBazaarNavMenu();
+});
+document.addEventListener('click',e=>{
+ if(!$('bazaarNavDropdown').contains(e.target))closeBazaarNavMenu();
+});
+$('bazaarCancelEdit').addEventListener('click',resetBazaarForm);
+
 async function loadBazaars(){
- try{const data=await api('mgListBazaars');state.bazaars=data.bazaars||[];renderBazaars()}
+ try{const data=await api('mgListBazaars');state.bazaars=data.bazaars||[];if($('returnBazaar'))$('returnBazaar').innerHTML='<option value="">اختر البازار</option>'+state.bazaars.map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');renderBazaars()}
  catch(e){authError(e)}
 }
 function bazaarDateLabel(value){return value?esc(value):'—'}
 function bazaarMoneyLabel(value){return money(Number(value)||0)}
 function renderBazaars(){
  const list=state.bazaars;
+ renderBazaarNavMenu();
  if(!list.length)emptyTbody('bazaarTable',6,'لم تُضف أي بازار حتى الآن');
  else $('bazaarTable').innerHTML=list.map(b=>'<tr>'+
   '<td>'+esc(b.name)+'</td>'+
@@ -268,12 +436,14 @@ function renderBazaars(){
   '<td dir="ltr">'+bazaarDateLabel(b.endDate)+'</td>'+
   '<td>'+bazaarMoneyLabel(b.deposit)+' جنيه</td>'+
   '<td><span class="pill '+(b.active?'':'off')+'">'+(b.active?'نشط':'موقوف')+'</span></td>'+
-  '<td><div class="actions"><button type="button" class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل البيانات</button>'+
+  '<td><div class="actions"><button type="button" class="btn ghost small" data-bz-edit="'+esc(b.id)+'">تعديل من الأعلى ↑</button>'+
   '<button type="button" class="btn '+(b.active?'warn':'ghost')+' small" data-bz-toggle="'+esc(b.id)+'">'+(b.active?'إيقاف':'تفعيل')+'</button></div></td></tr>').join('');
 
  const selector=$('eBazaar');
  selector.innerHTML='<option value="">مصروف عام</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');
  const options='<option value="">اختر بازار اليوم...</option>'+list.filter(b=>b.active).map(b=>'<option value="'+esc(b.id)+'">'+esc(b.name)+'</option>').join('');
+ const empSelect=$('employeeAdminBazaar'),oldEmp=empSelect.value;
+ empSelect.innerHTML=options;if(list.some(b=>b.id===oldEmp&&b.active))empSelect.value=oldEmp;
  const shift=$('employeeAssignBazaar'),oldShift=shift.value;
  shift.innerHTML=options;if(list.some(b=>b.id===oldShift&&b.active))shift.value=oldShift;
 }
@@ -288,32 +458,26 @@ $('bazaarForm').addEventListener('submit',async e=>{
  if(!Number.isFinite(deposit)||deposit<0)return toast('قيمة الديبوزت يجب أن تكون صفرًا أو أكثر','warn');
  setLoading('bazaarAdd',true);
  try{
-  await api('mgCreateBazaar',{id:newId('BZ'),name,startDate,endDate,deposit});
-  $('bazaarForm').reset();$('bazaarDeposit').value='0';
-  toast('تمت إضافة البازار بالتواريخ والديبوزت');await loadBazaars();
+  if(editingBazaarId){
+   const current=state.bazaars.find(b=>b.id===editingBazaarId);
+   if(!current)throw Error('البازار المحدد لم يعد موجودًا. حدّث القائمة وحاول مرة أخرى.');
+   await api('mgUpdateBazaar',{id:editingBazaarId,name,active:current.active,startDate,endDate,deposit});
+   toast('تم حفظ تعديلات البازار بنجاح');
+  }else{
+   await api('mgCreateBazaar',{id:newId('BZ'),name,startDate,endDate,deposit});
+   toast('تمت إضافة البازار بالتواريخ والديبوزت');
+  }
+  resetBazaarForm();await loadBazaars();
  }catch(e){authError(e)}finally{setLoading('bazaarAdd',false)}
 });
 $('bazaarTable').addEventListener('click',async e=>{
  const el=e.target.closest('[data-bz-edit],[data-bz-toggle]');if(!el)return;
  const id=el.dataset.bzEdit||el.dataset.bzToggle,b=state.bazaars.find(x=>x.id===id);if(!b)return;
- const edit=!!el.dataset.bzEdit;
- let payload={id,name:b.name,active:b.active,startDate:b.startDate||'',endDate:b.endDate||'',deposit:Number(b.deposit)||0};
- if(edit){
-  const name=prompt('اسم البازار:',b.name);if(name===null||!name.trim())return;
-  const startDate=prompt('تاريخ البداية (YYYY-MM-DD):',b.startDate||'');if(startDate===null)return;
-  const endDate=prompt('تاريخ النهاية (YYYY-MM-DD):',b.endDate||'');if(endDate===null)return;
-  const depositText=prompt('الديبوزت بالجنيه:',String(Number(b.deposit)||0));if(depositText===null)return;
-  const deposit=Number(depositText);
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(startDate)||!/^\d{4}-\d{2}-\d{2}$/.test(endDate))return toast('اكتب التاريخ بصيغة YYYY-MM-DD','warn');
-  if(endDate<startDate)return toast('تاريخ النهاية لا يمكن أن يسبق البداية','warn');
-  if(!Number.isFinite(deposit)||deposit<0)return toast('الديبوزت يجب أن يكون صفرًا أو أكثر','warn');
-  payload={...payload,name:name.trim(),startDate,endDate,deposit};
- }else{
-  payload.active=!b.active;
-  if(!confirm('هل تريد '+(payload.active?'تفعيل':'إيقاف')+' بازار '+b.name+'؟'))return;
- }
+ if(el.dataset.bzEdit){beginBazaarEdit(id);return;}
+ const payload={id,name:b.name,active:!b.active,startDate:b.startDate||'',endDate:b.endDate||'',deposit:Number(b.deposit)||0};
+ if(!confirm('هل تريد '+(payload.active?'تفعيل':'إيقاف')+' بازار '+b.name+'؟'))return;
  el.disabled=true;
- try{await api('mgUpdateBazaar',payload);toast('تم تحديث بيانات البازار');await loadBazaars()}
+ try{await api('mgUpdateBazaar',payload);toast('تم تحديث حالة البازار');await loadBazaars()}
  catch(err){authError(err)}finally{el.disabled=false}
 });
 $('loadBazaars').addEventListener('click',loadBazaars);
@@ -333,10 +497,10 @@ function renderEmployees(){
  }).join('');
 }
 $('employeeForm').addEventListener('submit',async event=>{
- event.preventDefault();const name=$('employeeAdminName').value.trim(),password=$('employeeAdminPassword').value;
- if(!name||password.length<8)return toast('اكتب اسم الموظف وكلمة مرور من 8 أحرف على الأقل','warn');
+ event.preventDefault();const name=$('employeeAdminName').value.trim(),bazaarId=$('employeeAdminBazaar').value,password=$('employeeAdminPassword').value;
+ if(!name||password.length<8)return toast('اكتب اسم الموظف وكلمة المرور (8 أحرف على الأقل)','warn');
  setLoading('employeeAdminAdd',true);
- try{await api('mgCreateEmployee',{id:newId('EMP'),name,password});$('employeeAdminName').value='';$('employeeAdminPassword').value='';toast('تم حفظ الموظف. لن يستطيع الدخول قبل تعيين بازار اليوم من الأدمن.');await loadEmployees();}
+ try{await api('mgCreateEmployee',{id:newId('EMP'),name,bazaarId,password});$('employeeAdminName').value='';$('employeeAdminPassword').value='';toast(bazaarId?'تمت إضافة الموظف وتعيينه في بازار اليوم':'تمت إضافة الموظف بدون تعيين بازار؛ يمكنك تعيينه لاحقًا');await loadEmployees();}
  catch(e){authError(e)}finally{setLoading('employeeAdminAdd',false)}
 });
 $('employeeAdminRefresh').addEventListener('click',loadEmployees);
@@ -353,7 +517,7 @@ $('employeeAssignSave').addEventListener('click',async()=>{
  const id=state.editingEmployeeId,bazaarId=$('employeeAssignBazaar').value;
  if(!id||!bazaarId)return toast('اختر الموظف والبازار أولًا','warn');
  setLoading('employeeAssignSave',true);
- try{await api('mgAssignEmployeeToday',{id,bazaarId});toast('تم تعيين البازار لهذا اليوم؛ يمكن للموظف تحديث التعيين من شاشة الكاشير دون تسجيل دخول جديد');await loadEmployees();$('employeeAssignmentPanel').hidden=true;state.editingEmployeeId='';}
+ try{await api('mgAssignEmployeeToday',{id,bazaarId});toast('تم تعيين الفرع لهذا اليوم؛ الموظف يضغط «تحديث التعيين» دون تسجيل دخول جديد');await loadEmployees();$('employeeAssignmentPanel').hidden=true;state.editingEmployeeId='';}
  catch(err){authError(err)}finally{setLoading('employeeAssignSave',false)}
 });
 $('employeePasswordSave').addEventListener('click',async()=>{
