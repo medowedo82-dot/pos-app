@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>نقطة البيع - الكاشير | MG ALL IN ONE</title>
+<title>نقطة البيع - الكاشير | WonderZone</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root{--green:#004d34;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;--back:#f1f5f9}
@@ -49,6 +49,24 @@
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
 <div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الباركود؛ عند ثبات القراءة سيُضاف المنتج للسلة مباشرة.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
+<div class="pad">
+<div class="card" id="fixedIdentity" hidden style="border-color:#75b8a0;background:#f0fdf4">
+  <div class="card-title"><span><i class="fa-solid fa-user-check"></i> الموظف والفرع المعيّن اليوم</span><button type="button" id="cashierLogout" class="qty-btn" title="تسجيل الخروج" style="width:auto;border-radius:12px;padding:0 12px">خروج</button></div>
+  <div style="font-weight:800" id="fixedEmployee">—</div><button type="button" id="refreshAssignmentBtn" class="submit secondary" style="margin-top:9px;padding:9px">تحديث التعيين</button>
+  <div style="color:#065f46;margin-top:5px;font-weight:700" id="fixedBazaar">—</div>
+  <small class="help">تم تحديد الفرع بواسطة الأدمن؛ لا يمكن تغييره من صفحة الكاشير.</small>
+</div>
+<div class="card"><div class="card-title"><span>قائمة الأصناف بالفاتورة</span><span id="itemsCountText" class="muted">0 صنف</span></div><div id="cartListContainer" class="empty">لم يتم إضافة منتجات في الفاتورة بعد</div></div>
+<div class="card">
+ <div class="field"><label for="discountAmount">الخصم على إجمالي الفاتورة (بالجنيه)</label><input id="discountAmount" class="input" type="text" inputmode="decimal" value="0" autocomplete="off" placeholder="مثال: 50"><small class="help">اكتب 50 لخصم خمسين جنيه؛ الخصم لا يتجاوز قيمة الفاتورة.</small></div>
+ <div class="field" id="approvalField" hidden><label for="discountApprovalPin">كود موافقة المدير (إذا كان مفعّلًا في النظام)</label><input id="discountApprovalPin" class="input" type="password" autocomplete="off" placeholder="رمز الموافقة على الخصم"></div>
+ <div class="totals"><div class="money-row"><span>قبل الخصم</span><strong id="subTotalText">0.00 جنيه</strong></div><div class="money-row"><span>قيمة الخصم</span><strong id="discountText">0.00 جنيه</strong></div><div class="money-row net"><span>الصافي المطلوب</span><strong id="netTotalText">0.00 جنيه</strong></div></div>
+ <div class="field"><label for="payMethod">طريقة السداد</label><select id="payMethod" class="input"><option value="كاش">💵 نقدي (كاش)</option><option value="فيزا">💳 شبكة / فيزا</option><option value="إنستاباي">⚡ تحويل إنستاباي</option></select></div>
+ <div id="saleStatus" role="status" class="notice" aria-live="polite"></div>
+ <button id="saveInvoiceBtn" type="button" class="submit"><i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل</button>
+ <button id="verifyBtn" type="button" class="submit secondary">التحقق من الفاتورة الحالية قبل إعادة المحاولة</button>
+</div>
+</div></div>
 <div id="cashierLoginGate" class="cashier-login" role="dialog" aria-modal="true" aria-label="تسجيل دخول الكاشير">
  <div class="login-inner"><div style="text-align:center;color:#004d34;font-weight:900;font-size:22px;margin-bottom:16px"><i class="fa-solid fa-lock"></i> دخول الكاشير</div>
   <p style="font-size:13px;line-height:1.8;margin-bottom:16px;color:#64748b">اكتب اسمك وكلمة مرورك. سيظهر لك البازار المحدد لك اليوم من الأدمن تلقائيًا.</p>
@@ -63,33 +81,29 @@
    <div class="field" style="margin-top:12px"><label for="posConnectionUrl">رابط Web App الذي ينتهي بـ /exec</label><input id="posConnectionUrl" class="input" type="url" autocomplete="off" dir="ltr" style="font-size:12px"></div>
    <button type="button" id="posSaveUrlBtn" class="submit secondary" style="padding:10px">حفظ الرابط لهذا الجهاز</button>
    <button type="button" id="posPingBtn" class="submit secondary" style="padding:10px">اختبار السيرفر والإصدار</button>
-   <p id="posConnectionFeedback" role="status" style="font-size:12px;white-space:pre-line;line-height:1.7;color:#334155"></p>
+   <p id="posConnectionFeedback" role="status" style="font-size:12px;line-height:1.7;white-space:pre-line"></p>
   </details>
  </div>
 </div>
 <style>
- .cashier-login{position:fixed;inset:0;z-index:9999;background:#e8f1ed;display:flex;align-items:center;justify-content:center;padding:18px}
- .login-inner{width:min(100%,420px);background:#fff;border:1px solid #dce6df;border-radius:20px;padding:24px;box-shadow:0 24px 60px #002c1b22}
+.cashier-login{position:fixed;inset:0;z-index:1000;background:#0f172acc;display:flex;align-items:center;justify-content:center;padding:18px}
+.login-inner{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:22px;box-shadow:0 15px 50px #0004;max-height:95vh;overflow:auto}
 </style>
 <script src="https://unpkg.com/html5-qrcode" defer></script>
 <script>
 'use strict';
-// Existing Apps Script endpoint from the live POS app.
 const DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyO5gg9hn-4uZUUtMscE5S5mkhtHnz4Zo-b1N_8Zt8juJrS9UlzQRtrDiIrW3hEAMXwiw/exec';
 const POS_ENDPOINT_KEY='mg_admin_script_url';
 const isValidPosEndpoint=u=>/^https:\/\/script\.google\.com\/macros\/s\/[^/?#]+\/exec$/.test(String(u||''));
-let SCRIPT_URL=isValidPosEndpoint(localStorage.getItem(POS_ENDPOINT_KEY))?localStorage.getItem(POS_ENDPOINT_KEY):DEFAULT_SCRIPT_URL;
+let SCRIPT_URL=DEFAULT_SCRIPT_URL;
+try{const savedEndpoint=localStorage.getItem(POS_ENDPOINT_KEY);if(isValidPosEndpoint(savedEndpoint))SCRIPT_URL=savedEndpoint;}catch(e){/* storage may be disabled */}
 const $=id=>document.getElementById(id);
-let cart=[],isSearching=false,isSaving=false,html5QrCode=null,isScanning=false,isCameraStarting=false;
+let cashierSession='',cashierIdentity=null,cart=[],invoiceId=null,isSaving=false,uncertain=false,isSearching=false;
 let barcodeQueue=[],isDrainingBarcodeQueue=false;
-// Do not convert barcodes to numbers: leading zeroes identify real products.
-function cleanBarcode(value){
- return normalizeDigits(String(value??'').replace(/[\u200B-\u200D\uFEFF\r\n\t]/g,'')).trim();
-}
-let invoiceId=null,uncertain=false,cashierSession='',cashierIdentity=null;
-const format=n=>(Math.round(n*100)/100).toFixed(2)+' جنيه';
-function normalizeDigits(value){return String(value??'').replace(/[٠-٩]/g,x=>String(x.charCodeAt(0)-0x0660)).replace(/[۰-۹]/g,x=>String(x.charCodeAt(0)-0x06F0)).replace(/٫/g,'.').replace(/٬/g,'').replace(/،/g,'.').trim();}
-function priceInput(value){const str=normalizeDigits(value);if(!/^\d+(?:\.\d{1,2})?$/.test(str))return NaN;return Number(str);}
+let html5QrCode=null,isScanning=false,isCameraStarting=false,isCameraRunning=false,lastCameraCode='',lastCameraAt=0,cameraReads=0;
+function cleanBarcode(v){return String(v??'').trim().replace(/[\r\n\t]/g,'');}
+function priceInput(v){const s=String(v??'').trim().replace(/٬/g,'').replace(/٫/g,'.').replace(/,/g,'.');if(!s)return 0;const n=Number(s);return Number.isFinite(n)?n:NaN;}
+function format(n){return (Number(n)||0).toLocaleString('en-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' جنيه';}
 function escapeHtml(value){return String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function notice(msg,kind='info'){$('saleStatus').className='notice '+kind;$('saleStatus').textContent=msg;}
 function clearNotice(){$('saleStatus').className='notice';$('saleStatus').textContent='';}
@@ -123,7 +137,7 @@ async function searchProduct(value){const q=String(value??'').trim();if(!cashier
  try{const data=await post('mgCashierFindProduct',{barcode:q});if(data&&data.success===false)throw Error(data.message||'تعذر البحث');const product=data&&data.product?data.product:data;if(!product||!product.name){notice('الباركود أو اسم المنتج غير موجود في الشيت: '+q,'error');return;}if(cleanBarcode(product.barcode)!==cleanBarcode(q)){notice('خطأ حماية: السيرفر أعاد باركود '+String(product.barcode||'غير محدد')+' بدل '+q+'. لم تتم إضافة أي صنف.','error');return;}addToCart(product);$('barcodeSearchInput').value='';}
  catch(err){notice('تعذر البحث عن المنتج: '+err.message,'error');}
  finally{isSearching=false;$('barcodeSearchInput').focus();}}
-// USB / Bluetooth "keyboard wedge" readers may end scans with Enter, Tab, or no suffix.
+  // USB / Bluetooth "keyboard wedge" readers may end scans with Enter, Tab, or no suffix.
 // A short idle timeout picks up only fast, scan-like typing; normal manual input
 // still works with the search button or Enter.
 const barcodeField=$('barcodeSearchInput');
@@ -216,6 +230,35 @@ async function post(action,payload){
  }
  return data;
 }
+
+// Cashier identity and login UI. The server remains authoritative for identity
+// and today's bazaar assignment; the browser never chooses an employee or bazaar.
+function showCashierLogin(message){
+ barcodeQueue.length=0;resetGlobalScan();resetInputScan();
+ $('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
+ $('cashierLoginFeedback').textContent=message||'';
+ renderCart();
+}
+function showCashierIdentity(data){
+ if(!data||!data.employee)throw Error('استجابة السيرفر لا تحتوي بيانات الموظف.');
+ cashierIdentity={employee:data.employee,bazaar:data.bazaar||null,assignedDate:data.assignedDate||'',assigned:!!data.assigned};
+ $('fixedIdentity').hidden=false;
+ $('fixedEmployee').textContent='الموظف: '+(data.employee.name||'');
+ $('fixedBazaar').textContent=data.assigned&&data.bazaar?'بازار اليوم: '+data.bazaar.name:'لم يتم تعيين بازار اليوم — البيع غير متاح حتى يعيّنك الأدمن';
+ $('fixedBazaar').style.color=data.assigned?'#065f46':'#b45309';
+ $('cashierLoginGate').style.display='none';$('cashierLoginPassword').value='';
+ clearNotice();renderCart();$('barcodeSearchInput').focus();
+}
+$('cashierLoginForm').addEventListener('submit',async e=>{
+ e.preventDefault();const btn=$('cashierLoginBtn');btn.disabled=true;$('cashierLoginFeedback').textContent='جاري التحقق...';
+ try{
+  const d=await post('mgCashierLogin',{name:$('cashierLoginName').value.trim(),password:$('cashierLoginPassword').value});
+  if(!d||!d.success||!d.session)throw Error(d&&d.message||'تعذر تسجيل الدخول');
+  cashierSession=d.session;localStorage.setItem('mg_cashier_session',cashierSession);showCashierIdentity(d);
+ }catch(err){$('cashierLoginFeedback').textContent=err.message||String(err);}
+ finally{btn.disabled=false;}
+});
+
 function resetSale(message){cart=[];invoiceId=null;uncertain=false;$('discountAmount').value='0';$('discountApprovalPin').value='';renderCart();notice(message,'success');$('barcodeSearchInput').focus();}
 async function verifyInvoice(){if(!invoiceId){notice('لا توجد فاتورة للتحقق','error');return;}if(isSaving)return;isSaving=true;renderCart();
  try{const d=await post('getInvoiceDetails',{id:invoiceId});if(!d||!d.success)throw Error(d&&d.message||'لم يتم التحقق');if(d.found&&Array.isArray(d.rows)&&d.rows.length){resetSale('الفاتورة محفوظة في السجل برقم: '+invoiceId+'، وتم منع إعادة خصم المخزون.');}
@@ -241,20 +284,20 @@ async function checkout(){
  else{notice('حالة الحفظ غير مؤكدة: '+(data&&data.message||'لم يصل تأكيد نهائي')+'\nاضغط التحقق من الفاتورة قبل أي إعادة إرسال.','error');}
  }catch(err){notice('انقطع الاتصال أثناء الحفظ: '+err.message+'\nلا تنشئ فاتورة جديدة. اضغط التحقق من الفاتورة.','error');}
  finally{isSaving=false;$('saveInvoiceBtn').innerHTML='<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';renderCart();}}
-$('saveInvoiceBtn').addEventListener('click',checkout);
-let cameraReadHandled=false;
+$('saveInvoiceBtn').addEventListener('click',checkout);let cameraReadHandled=false;
 let cameraCandidate='',cameraStableCount=0,cameraCandidateAt=0;
 async function addCameraBarcodeDirectly(code){
- code=cleanBarcode(code);
- if(!code)return;
- if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
- if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
- cameraReadHandled=true;
- await stopCamera();
- $('cameraHint').textContent='تمت قراءة '+code+' — جاري إضافة المنتج للسلة مباشرة...';
- await searchProduct(code);
+  code=cleanBarcode(code);
+  if(!code)return;
+  if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
+  if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
+  if(cameraReadHandled===false)cameraReadHandled=true;
+  // أوقف الكاميرا أولًا لمنع تكرار قراءة نفس الملصق، ثم استخدم
+  // نفس مسار البحث والإضافة المستخدم مع USB والبحث اليدوي، دون شاشة مراجعة.
+  await stopCamera();
+  $('cameraHint').textContent='تمت قراءة '+code+' — جاري إضافة المنتج للسلة مباشرة...';
+  await searchProduct(code);
 }
-
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
  if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}if(!cashierIdentity.bazaar){notice('لا يمكن استخدام البيع قبل تعيين بازار اليوم من الأدمن.','error');return;}
@@ -314,31 +357,6 @@ async function stopCamera(){
 }
 $('scanBtn').addEventListener('click',startCamera);
 $('stopCameraBtn').addEventListener('click',stopCamera);
-// A cashier logs in with their own password. The server derives the employee and
-// bazaar of the current Cairo date, and binds them to a short-lived session.
-// Checkout includes those IDs for consistency; the server independently verifies
-// them against the authenticated session and never trusts browser-supplied identity.
-function showCashierLogin(message){
- barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
- $('cashierLoginFeedback').textContent=message||'';renderCart();
-}
-function showCashierIdentity(data){
- cashierIdentity={employee:data.employee,bazaar:data.bazaar||null,assignedDate:data.assignedDate||''};
- $('fixedIdentity').hidden=false;$('fixedEmployee').textContent='الموظف: '+data.employee.name;
- $('fixedBazaar').textContent=data.bazaar?'بازار اليوم: '+data.bazaar.name:'لم يتم تعيين بازار اليوم — البيع متوقف حتى تعيين الفرع';
- $('cashierLoginGate').style.display='none';$('cashierLoginPassword').value='';
- $('saveInvoiceBtn').disabled=!data.bazaar;
- if(!data.bazaar)notice('تم تسجيل الدخول بنجاح، لكن لا يوجد بازار معيّن لك اليوم. اطلب من الأدمن تعيين الفرع ثم اضغط «تحديث التعيين».','info');
- else clearNotice();
- renderCart();$('barcodeSearchInput').focus();
-}
-$('cashierLoginForm').addEventListener('submit',async e=>{
- e.preventDefault();const btn=$('cashierLoginBtn');btn.disabled=true;$('cashierLoginFeedback').textContent='جاري التحقق...';
- try{const d=await post('mgCashierLogin',{name:$('cashierLoginName').value.trim(),password:$('cashierLoginPassword').value});
-  if(!d||!d.success||!d.session)throw Error(d&&d.message||'تعذر تسجيل الدخول');
-  cashierSession=d.session;localStorage.setItem('mg_cashier_session',cashierSession);showCashierIdentity(d);
- }catch(err){$('cashierLoginFeedback').textContent=err.message||String(err)}finally{btn.disabled=false;}
-});
 $('refreshAssignmentBtn').addEventListener('click',async()=>{
  if(!cashierSession)return showCashierLogin('سجّل الدخول أولًا');
  const btn=$('refreshAssignmentBtn');btn.disabled=true;
@@ -349,7 +367,6 @@ $('refreshAssignmentBtn').addEventListener('click',async()=>{
  }catch(err){notice(err.message||String(err),'error');}
  finally{btn.disabled=false;}
 });
-
 $('cashierLogout').addEventListener('click',async()=>{
  if(isSaving||uncertain){notice('تحقق أولًا من حالة الفاتورة قبل تسجيل الخروج','error');return;}
  if(!confirm('تسجيل الخروج من الكاشير؟'))return;
@@ -372,9 +389,10 @@ $('posSaveUrlBtn').addEventListener('click',()=>{
  if(!isValidPosEndpoint(newUrl)){$('posConnectionFeedback').textContent='الرابط غير صحيح. انسخ Web App /exec من نشر Apps Script.';return;}
  if(isSaving||uncertain){$('posConnectionFeedback').textContent='تحقق من حالة الفاتورة الحالية قبل تغيير السيرفر.';return;}
  if(cart.length){$('posConnectionFeedback').textContent='أفرغ السلة أولًا قبل تغيير رابط السيرفر حتى لا تختلط الفواتير.';return;}
+ try{localStorage.setItem(POS_ENDPOINT_KEY,newUrl);}catch(e){$('posConnectionFeedback').textContent='تعذر الحفظ في تخزين المتصفح: '+e.message;return;}
  if(newUrl!==SCRIPT_URL){
-  SCRIPT_URL=newUrl;localStorage.setItem(POS_ENDPOINT_KEY,newUrl);
-  cashierSession='';cashierIdentity=null;localStorage.removeItem('mg_cashier_session');
+  SCRIPT_URL=newUrl;cashierSession='';cashierIdentity=null;
+  try{localStorage.removeItem('mg_cashier_session');}catch(e){}
   showCashierLogin('تم تحديث الرابط؛ اختبر السيرفر ثم سجل الدخول من جديد.');
  }
  $('posConnectionFeedback').textContent='✅ تم حفظ رابط السيرفر في هذا المتصفح فقط.';
