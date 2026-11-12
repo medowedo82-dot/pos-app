@@ -20,11 +20,6 @@
   .search input{width:100%;border:none;outline:none;background:transparent;padding:6px;min-width:0}.search button{border:none;background:none;color:var(--green);font-size:19px}
   .scan-help{color:var(--muted);font-size:11px;line-height:1.6;margin:-8px 18px 13px;text-align:right}
   .scanner{display:none;margin:0 16px 14px;background:#000;border:2px solid var(--green);border-radius:14px;overflow:hidden}.scanner #reader{width:100%}.scanner button{width:100%;border:0;background:#b91c1c;color:#fff;padding:12px}
-  .scan-preview{margin:0 16px 14px;padding:16px;border-radius:15px;border:2px solid #b45309;background:#fffbeb;color:#78350f}
-  .scan-preview h3{margin:0 0 9px;font-size:16px}
-  .scan-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:900;font-size:27px;letter-spacing:1px;direction:ltr;text-align:center;background:#fff;border:1px solid #fcd34d;border-radius:12px;padding:10px;margin-bottom:9px}
-  .scan-product{font-size:14px;font-weight:700;margin-bottom:9px;line-height:1.7;white-space:pre-line}
-  .scan-actions{display:flex;gap:8px;flex-wrap:wrap}.scan-actions button{flex:1;min-width:110px;border-radius:12px;padding:12px;border:1px solid #d1d5db;background:white;color:#334155;font-weight:700}.scan-actions .confirm-scan{background:#004d34;color:#fff;border-color:#004d34}.scan-actions button:disabled{opacity:.5}
   .camera-hint{padding:9px 12px;background:#0f172a;color:white;font-size:13px;min-height:37px}
   .card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
   .card-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px;font-weight:700}.muted{color:var(--muted);font-size:12px;font-weight:400}
@@ -53,35 +48,7 @@
 <section class="stats"><div><small>صافي الفاتورة الحالية</small><strong id="totalAmountText">0.00 جنيه</strong></div><span class="count" id="totalQtyText">0 قطعة</span></section>
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
-<div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الخطوط، وسيتم التأكد من القراءة قبل عرض المنتج.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
-<div id="scanPreview" class="scan-preview" hidden role="region" aria-label="مراجعة الباركود قبل إضافة المنتج">
-  <h3>راجع رقم الباركود والمنتج قبل الإضافة</h3>
-  <div class="scan-code" id="scanDecodedText">—</div>
-  <div id="scanProductInfo" class="scan-product">جاري البحث عن المنتج…</div>
-  <div class="scan-actions">
-    <button id="scanConfirmBtn" class="confirm-scan" type="button" disabled>تأكيد وإضافة المنتج</button>
-    <button id="scanRetryBtn" type="button">إعادة المسح</button>
-    <button id="scanCancelBtn" type="button">إلغاء</button>
-  </div>
-</div>
-<div class="pad">
-<div class="card" id="fixedIdentity" hidden style="border-color:#75b8a0;background:#f0fdf4">
-  <div class="card-title"><span><i class="fa-solid fa-user-check"></i> الموظف والفرع المعيّن اليوم</span><button type="button" id="cashierLogout" class="qty-btn" title="تسجيل الخروج" style="width:auto;border-radius:12px;padding:0 12px">خروج</button></div>
-  <div style="font-weight:800" id="fixedEmployee">—</div><button type="button" id="refreshAssignmentBtn" class="submit secondary" style="margin-top:9px;padding:9px">تحديث التعيين</button>
-  <div style="color:#065f46;margin-top:5px;font-weight:700" id="fixedBazaar">—</div>
-  <small class="help">تم تحديد الفرع بواسطة الأدمن؛ لا يمكن تغييره من صفحة الكاشير.</small>
-</div>
-<div class="card"><div class="card-title"><span>قائمة الأصناف بالفاتورة</span><span id="itemsCountText" class="muted">0 صنف</span></div><div id="cartListContainer" class="empty">لم يتم إضافة منتجات في الفاتورة بعد</div></div>
-<div class="card">
- <div class="field"><label for="discountAmount">الخصم على إجمالي الفاتورة (بالجنيه)</label><input id="discountAmount" class="input" type="text" inputmode="decimal" value="0" autocomplete="off" placeholder="مثال: 50"><small class="help">اكتب 50 لخصم خمسين جنيه؛ الخصم لا يتجاوز قيمة الفاتورة.</small></div>
- <div class="field" id="approvalField" hidden><label for="discountApprovalPin">كود موافقة المدير (إذا كان مفعّلًا في النظام)</label><input id="discountApprovalPin" class="input" type="password" autocomplete="off" placeholder="رمز الموافقة على الخصم"></div>
- <div class="totals"><div class="money-row"><span>قبل الخصم</span><strong id="subTotalText">0.00 جنيه</strong></div><div class="money-row"><span>قيمة الخصم</span><strong id="discountText">0.00 جنيه</strong></div><div class="money-row net"><span>الصافي المطلوب</span><strong id="netTotalText">0.00 جنيه</strong></div></div>
- <div class="field"><label for="payMethod">طريقة السداد</label><select id="payMethod" class="input"><option value="كاش">💵 نقدي (كاش)</option><option value="فيزا">💳 شبكة / فيزا</option><option value="إنستاباي">⚡ تحويل إنستاباي</option></select></div>
- <div id="saleStatus" role="status" class="notice" aria-live="polite"></div>
- <button id="saveInvoiceBtn" type="button" class="submit"><i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل</button>
- <button id="verifyBtn" type="button" class="submit secondary">التحقق من الفاتورة الحالية قبل إعادة المحاولة</button>
-</div>
-</div></div>
+<div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الباركود؛ عند ثبات القراءة سيُضاف المنتج للسلة مباشرة.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
 <div id="cashierLoginGate" class="cashier-login" role="dialog" aria-modal="true" aria-label="تسجيل دخول الكاشير">
  <div class="login-inner"><div style="text-align:center;color:#004d34;font-weight:900;font-size:22px;margin-bottom:16px"><i class="fa-solid fa-lock"></i> دخول الكاشير</div>
   <p style="font-size:13px;line-height:1.8;margin-bottom:16px;color:#64748b">اكتب اسمك وكلمة مرورك. سيظهر لك البازار المحدد لك اليوم من الأدمن تلقائيًا.</p>
@@ -277,36 +244,17 @@ async function checkout(){
 $('saveInvoiceBtn').addEventListener('click',checkout);
 let cameraReadHandled=false;
 let cameraCandidate='',cameraStableCount=0,cameraCandidateAt=0;
-let pendingCameraProduct=null, pendingCameraBarcode='';
-function showScanPreview(code, message, product){
- pendingCameraBarcode=code;
- pendingCameraProduct=product||null;
- $('scanPreview').hidden=false;
- $('scanDecodedText').textContent=code||'—';
- $('scanProductInfo').textContent=message;
- $('scanConfirmBtn').disabled=!product;
- $('scanPreview').scrollIntoView({behavior:'smooth',block:'center'});
-}
-async function reviewCameraBarcode(code){
- if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
+async function addCameraBarcodeDirectly(code){
  code=cleanBarcode(code);
  if(!code)return;
- showScanPreview(code,'جاري البحث في المنتجات عن الباركود الذي قرأته الكاميرا…',null);
- // Stop the camera before reading the product; NEVER automatically put a scan in the cart.
+ if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
+ if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
+ cameraReadHandled=true;
  await stopCamera();
- try{
-  const data=await post('mgCashierFindProduct',{barcode:code});
-  if(data&&data.success===false)throw Error(data.message||'تعذر قراءة الشيت');
-  const product=data&&data.product?data.product:data;
-  if(!product||!product.name){showScanPreview(code,'الرقم غير موجود في الشيت. قارن الرقم المكتوب أسفل الباركود، ثم جرّب مرة أخرى أو اكتبه يدويًا.',null);return;}
-  if(cleanBarcode(product.barcode)!==code){showScanPreview(code,'تحذير: السيرفر رجّع باركود مختلف '+String(product.barcode||'')+'. تم منع الإضافة حتى لا نبيع صنفًا غلط.',null);return;}
-  const price=Number(product.sellingPrice??product.price??product.retailPrice);
-  const stock=Number(product.availableStock??product.remainingStock??product.stock);
-  const detail='المنتج في الشيت: '+String(product.name)+'\nسعر البيع: '+(Number.isFinite(price)?format(price):'غير معروف')+'\nالمتاح: '+(Number.isFinite(stock)?stock:'غير معروف')+' قطعة\nتأكد إن الاسم والباركود على الاستيكر مطابقين قبل الإضافة.';
-  if(!Number.isFinite(price)||price<=0||!Number.isSafeInteger(stock)||stock<=0){showScanPreview(code,detail+'\nلا يمكن إضافته بسبب السعر أو المخزون.',null);return;}
-  showScanPreview(code,detail,product);
- }catch(err){showScanPreview(code,'تعذر الاستعلام عن المنتج: '+(err?.message||String(err))+'. لا تضف صنفًا قبل نجاح التحقق.',null);}
+ $('cameraHint').textContent='تمت قراءة '+code+' — جاري إضافة المنتج للسلة مباشرة...';
+ await searchProduct(code);
 }
+
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
  if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}if(!cashierIdentity.bazaar){notice('لا يمكن استخدام البيع قبل تعيين بازار اليوم من الأدمن.','error');return;}
@@ -314,8 +262,6 @@ async function startCamera(){
   notice('تعذر تحميل مكتبة قارئ الكاميرا. تأكد من الإنترنت أو استخدم الإدخال اليدوي.','error');return;
  }
  if(isSaving||uncertain){notice('تحقق من حالة الفاتورة الحالية قبل المسح.','error');return;}
- $('scanPreview').hidden=true;
- pendingCameraBarcode='';pendingCameraProduct=null;
  isCameraStarting=true;cameraReadHandled=false;cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
  $('scannerWrapper').style.display='block';
  $('cameraHint').textContent='ثبّت الباركود داخل الإطار حتى يتم قراءته بنفس الرقم 3 مرات.';
@@ -340,7 +286,7 @@ async function startCamera(){
    $('cameraHint').textContent='قراءة '+cameraStableCount+'/3 للكود '+code+' — ثبّت الكاميرا.';
    if(cameraStableCount<3)return;
    cameraReadHandled=true;
-   void reviewCameraBarcode(code);
+   void addCameraBarcodeDirectly(code);
   };
   try{
    await html5QrCode.start({facingMode:'environment'},options,onRead);
@@ -368,20 +314,12 @@ async function stopCamera(){
 }
 $('scanBtn').addEventListener('click',startCamera);
 $('stopCameraBtn').addEventListener('click',stopCamera);
-$('scanConfirmBtn').addEventListener('click',()=>{
- if(!pendingCameraProduct||cleanBarcode(pendingCameraProduct.barcode)!==pendingCameraBarcode){notice('لم تتم الإضافة لأن الباركود غير مطابق. أعد المسح.','error');return;}
- const p=pendingCameraProduct;
- pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;
- addToCart(p);
-});
-$('scanRetryBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;void startCamera();});
-$('scanCancelBtn').addEventListener('click',()=>{pendingCameraProduct=null;pendingCameraBarcode='';$('scanPreview').hidden=true;});
 // A cashier logs in with their own password. The server derives the employee and
 // bazaar of the current Cairo date, and binds them to a short-lived session.
 // Checkout includes those IDs for consistency; the server independently verifies
 // them against the authenticated session and never trusts browser-supplied identity.
 function showCashierLogin(message){
- barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('scanPreview').hidden=true;pendingCameraProduct=null;pendingCameraBarcode='';$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
+ barcodeQueue.length=0;resetGlobalScan();resetInputScan();$('cashierLoginGate').style.display='flex';$('fixedIdentity').hidden=true;
  $('cashierLoginFeedback').textContent=message||'';renderCart();
 }
 function showCashierIdentity(data){
