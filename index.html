@@ -286,50 +286,89 @@ async function checkout(){
  finally{isSaving=false;$('saveInvoiceBtn').innerHTML='<i class="fa-solid fa-circle-check"></i> حفظ الفاتورة وتحديث الإكسل';renderCart();}}
 $('saveInvoiceBtn').addEventListener('click',checkout);let cameraReadHandled=false;
 let cameraCandidate='',cameraStableCount=0,cameraCandidateAt=0;
+let cameraLastAcceptedCode='',cameraLastAcceptedAt=0;
+
 async function addCameraBarcodeDirectly(code){
   code=cleanBarcode(code);
-  if(!code)return;
+  if(!code || cameraReadHandled)return;
   if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
   if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
-  if(cameraReadHandled===false)cameraReadHandled=true;
-  // أوقف الكاميرا أولًا لمنع تكرار قراءة نفس الملصق، ثم استخدم
-  // نفس مسار البحث والإضافة المستخدم مع USB والبحث اليدوي، دون شاشة مراجعة.
-  await stopCamera();
-  $('cameraHint').textContent='تمت قراءة '+code+' — جاري إضافة المنتج للسلة مباشرة...';
-  await searchProduct(code);
+  const now=Date.now();
+  // Ignore the same label while it remains in view; allow it again after a short
+  // pause so scanning a second unit of the same product remains possible.
+  if(code===cameraLastAcceptedCode && now-cameraLastAcceptedAt<1800){
+    cameraStableCount=0;cameraCandidate='';
+    $('cameraHint').textContent='تمت قراءة '+code+' بالفعل. حرّك المنتج قليلًا ثم امسحه مرة أخرى.';
+    return;
+  }
+  cameraReadHandled=true;
+  cameraLastAcceptedCode=code;
+  cameraLastAcceptedAt=now;
+  $('cameraHint').textContent='قراءة مؤكدة: '+code+' — جاري إضافة المنتج للسلة...';
+  try{
+    await searchProduct(code);
+  } finally {
+    // Keep the camera open for the next item instead of stopping it after one scan.
+    cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
+    cameraReadHandled=false;
+    if(isScanning && $('scannerWrapper').style.display!=='none'){
+      $('cameraHint').textContent='جاهز للباركود التالي. وجّه الكاميرا إلى الملصق التالي.';
+    }
+  }
 }
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
- if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}if(!cashierIdentity.bazaar){notice('لا يمكن استخدام البيع قبل تعيين بازار اليوم من الأدمن.','error');return;}
+ if(!cashierIdentity){showCashierLogin('سجّل دخول الكاشير أولًا قبل فتح الكاميرا.');return;}
+ if(!cashierIdentity.bazaar){notice('لا يمكن استخدام البيع قبل تعيين بازار اليوم من الأدمن.','error');return;}
  if(typeof Html5Qrcode==='undefined'){
   notice('تعذر تحميل مكتبة قارئ الكاميرا. تأكد من الإنترنت أو استخدم الإدخال اليدوي.','error');return;
  }
  if(isSaving||uncertain){notice('تحقق من حالة الفاتورة الحالية قبل المسح.','error');return;}
  isCameraStarting=true;cameraReadHandled=false;cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
+ cameraLastAcceptedCode='';cameraLastAcceptedAt=0;
  $('scannerWrapper').style.display='block';
- $('cameraHint').textContent='ثبّت الباركود داخل الإطار حتى يتم قراءته بنفس الرقم 3 مرات.';
+ $('cameraHint').textContent='وجّه الكاميرا إلى الباركود وثبّته حتى تتأكد القراءة.';
  try{
   const F=typeof Html5QrcodeSupportedFormats!=='undefined'?Html5QrcodeSupportedFormats:null;
-  // MG 5-digit internal labels should be CODE_128 or CODE_39.
-  // Restrict supported formats to avoid false positives from ITF/QR/UPC guesses.
-  const formats=F?[F.CODE_128,F.CODE_39,F.EAN_13,F.EAN_8].filter(v=>v!==undefined):undefined;
+  // WonderZone labels use short numeric internal codes. Prefer CODE_128 to avoid
+  // ambiguous decoding across unrelated retail formats.
+  const formats=F?[F.CODE_128].filter(v=>v!==undefined):undefined;
   html5QrCode=new Html5Qrcode('reader',formats?{formatsToSupport:formats,verbose:false}:{verbose:false});
-  const options={fps:15,qrbox:{width:260,height:140}};
-  const onRead=(raw,decodedResult)=>{
-   if(cameraReadHandled)return;
+  const options={
+    fps:12,
+    qrbox:(viewfinderWidth,viewfinderHeight)=>{
+      const width=Math.min(viewfinderWidth-24,420);
+      const height=Math.min(150,Math.max(90,Math.round(width/3)));
+      return {width,height};
+    },
+    aspectRatio:1.7777778,
+    disableFlip:true,
+    videoConstraints:{
+      facingMode:{ideal:'environment'},
+      width:{ideal:1920},
+      height:{ideal:1080}
+    }
+  };
+  const onRead=(raw)=>{
+   if(cameraReadHandled||isSaving||uncertain)return;
    const code=cleanBarcode(raw);
+   // Only numeric internal product labels are accepted. Preserve leading zeroes.
    if(!/^\d{4,20}$/.test(code)){
-    $('cameraHint').textContent='تم تجاهل قراءة غير رقمية؛ جرّب تثبيت الكاميرا على الباركود.';
+    cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
+    $('cameraHint').textContent='قراءة غير مطابقة لباركود المنتجات؛ قرّب الكاميرا وحاول مرة أخرى.';
     return;
    }
    const now=Date.now();
-   if(code!==cameraCandidate||now-cameraCandidateAt>2000){cameraCandidate=code;cameraStableCount=1;}
-   else cameraStableCount++;
+   if(code!==cameraCandidate || now-cameraCandidateAt>900){
+     cameraCandidate=code;cameraStableCount=1;
+   } else {
+     cameraStableCount++;
+   }
    cameraCandidateAt=now;
-   $('cameraHint').textContent='قراءة '+cameraStableCount+'/3 للكود '+code+' — ثبّت الكاميرا.';
-   if(cameraStableCount<3)return;
-   cameraReadHandled=true;
-   void addCameraBarcodeDirectly(code);
+   $('cameraHint').textContent='تأكيد القراءة '+Math.min(cameraStableCount,4)+'/4 — '+code;
+   if(cameraStableCount>=4){
+     void addCameraBarcodeDirectly(code);
+   }
   };
   try{
    await html5QrCode.start({facingMode:'environment'},options,onRead);
@@ -340,6 +379,7 @@ async function startCamera(){
    await html5QrCode.start(camera.id,options,onRead);
   }
   isScanning=true;
+  $('cameraHint').textContent='الكاميرا جاهزة. وجّهها إلى الباركود.';
  }catch(err){
   isScanning=false;$('scannerWrapper').style.display='none';
   notice('تعذر تشغيل كاميرا الباركود: '+(err?.message||String(err))+' — راجع الأذونات والإضاءة.','error');
@@ -351,9 +391,11 @@ async function stopCamera(){
  $('scannerWrapper').style.display='none';
  const cam=html5QrCode;
  html5QrCode=null;
- try{if(cam)await cam.stop();}catch(e){}
- try{cam?.clear();}catch(e){}
  isScanning=false;
+ cameraReadHandled=true;
+ try{if(cam && cam.isScanning)await cam.stop();}catch(e){}
+ try{cam?.clear();}catch(e){}
+ cameraReadHandled=false;
 }
 $('scanBtn').addEventListener('click',startCamera);
 $('stopCameraBtn').addEventListener('click',stopCamera);
