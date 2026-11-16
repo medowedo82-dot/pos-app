@@ -325,24 +325,12 @@ async function startCamera(){
   const onRead=(raw)=>{
    if(cameraReadHandled||isSaving||uncertain)return;
    const code=cleanBarcode(raw);
-   // Only numeric internal product labels are accepted. Preserve leading zeroes.
+   // Accept one valid numeric product barcode, preserving leading zeroes.
    if(!/^\d{4,20}$/.test(code)){
-    cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
     $('cameraHint').textContent='قراءة غير مطابقة لباركود المنتجات؛ قرّب الكاميرا وحاول مرة أخرى.';
     return;
    }
-   // One successful decode is enough; do not wait for three repeated reads.
-   cameraCandidate=code;
-   cameraStableCount=1;
-   cameraCandidateAt=Date.now();
-   void addCameraBarcodeDirectly(code); else {
-     cameraStableCount++;
-   }
-   cameraCandidateAt=now;
-   $('cameraHint').textContent='قراءة '+cameraStableCount+'/3 للكود '+code+' — ثبّت الكاميرا.';
-   if(cameraStableCount>=3){
-     void addCameraBarcodeDirectly(code);
-   }
+   void addCameraBarcodeDirectly(code);
   };
   try{
    await html5QrCode.start({facingMode:'environment'},options,onRead);
