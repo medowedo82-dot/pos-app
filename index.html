@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Wonder Zone | نقطة البيع والكاشير</title>
+<title>WonderZone | وندر زون — الكاشير</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  :root{--green:#004d34;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;--back:#f1f5f9}
+  :root{--green:#123B7A;--teal:#0F8B9D;--orange:#F28C28;--ink:#1e293b;--muted:#64748b;--line:#dce6f0;--back:#f3f7fb}
   *{box-sizing:border-box}body{margin:0;background:var(--back);color:var(--ink);font-family:Tahoma,Arial,sans-serif;display:flex;justify-content:center;min-height:100vh}
   button,input,select{font:inherit}button{cursor:pointer}
   .app{width:100%;max-width:480px;min-height:100vh;background:white;box-shadow:0 4px 24px #0001}
   header{background:var(--green);padding:20px 18px;color:white;display:flex;align-items:center;justify-content:space-between}
   header h1{font-size:19px;margin:0}header i{font-size:21px}
   .pad{padding:0 16px 24px}
-  .stats{display:flex;justify-content:space-between;align-items:center;gap:16px;background:var(--green);color:white;border-radius:18px;margin:16px 16px 12px;padding:22px 18px;box-shadow:0 4px 12px #004d3425}
-  .stats small{display:block;color:#d4eee1;margin-bottom:7px;font-size:13px}.stats strong{font-size:27px;display:block;font-variant-numeric:tabular-nums}
+  .stats{display:flex;justify-content:space-between;align-items:center;gap:16px;background:var(--green);color:white;border-radius:18px;margin:16px 16px 12px;padding:22px 18px;box-shadow:0 4px 12px #123B7A25}
+  .stats small{display:block;color:#d9eef2;margin-bottom:7px;font-size:13px}.stats strong{font-size:27px;display:block;font-variant-numeric:tabular-nums}
   .stats .count{background:#ffffff30;border-radius:28px;padding:9px 16px;white-space:nowrap;font-size:13px}
-  .search{display:flex;gap:10px;align-items:center;background:#f8fafc;border:1.5px solid var(--green);border-radius:40px;padding:8px 15px;margin:0 16px 14px}
+  .product-thumb{width:54px;height:54px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff;flex:none}.search-result{display:flex;align-items:center;gap:10px}.search-result-info{flex:1;min-width:0}.search-result img{width:58px;height:58px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff}.cart-thumb{width:48px;height:48px;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff;flex:none}.search{display:flex;gap:10px;align-items:center;background:#f8fafc;border:1.5px solid var(--green);border-radius:40px;padding:8px 15px;margin:0 16px 14px}
   .search input{width:100%;border:none;outline:none;background:transparent;padding:6px;min-width:0}.search button{border:none;background:none;color:var(--green);font-size:19px}
   .scan-help{color:var(--muted);font-size:11px;line-height:1.6;margin:-8px 18px 13px;text-align:right}
   .scanner{display:none;margin:0 16px 14px;background:#000;border:2px solid var(--green);border-radius:14px;overflow:hidden}.scanner #reader{width:100%}.scanner button{width:100%;border:0;background:#b91c1c;color:#fff;padding:12px}
@@ -24,7 +24,7 @@
   .scan-preview h3{margin:0 0 9px;font-size:16px}
   .scan-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:900;font-size:27px;letter-spacing:1px;direction:ltr;text-align:center;background:#fff;border:1px solid #fcd34d;border-radius:12px;padding:10px;margin-bottom:9px}
   .scan-product{font-size:14px;font-weight:700;margin-bottom:9px;line-height:1.7;white-space:pre-line}
-  .scan-actions{display:flex;gap:8px;flex-wrap:wrap}.scan-actions button{flex:1;min-width:110px;border-radius:12px;padding:12px;border:1px solid #d1d5db;background:white;color:#334155;font-weight:700}.scan-actions .confirm-scan{background:#004d34;color:#fff;border-color:#004d34}.scan-actions button:disabled{opacity:.5}
+  .scan-actions{display:flex;gap:8px;flex-wrap:wrap}.scan-actions button{flex:1;min-width:110px;border-radius:12px;padding:12px;border:1px solid #d1d5db;background:white;color:#334155;font-weight:700}.scan-actions .confirm-scan{background:#123B7A;color:#fff;border-color:#123B7A}.scan-actions button:disabled{opacity:.5}
   .camera-hint{padding:9px 12px;background:#0f172a;color:white;font-size:13px;min-height:37px}
   .card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
   .card-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px;font-weight:700}.muted{color:var(--muted);font-size:12px;font-weight:400}
@@ -33,12 +33,12 @@
   .qty-btn{width:31px;height:31px;border-radius:50%;border:1px solid #cbd5e1;background:#f8fafc}.qty{display:flex;align-items:center;gap:8px}
   .field{margin-bottom:14px}.field label{display:block;font-weight:700;font-size:13px;color:#475569;margin-bottom:7px}
   .input{width:100%;border:1px solid #cbd5e1;background:white;border-radius:14px;padding:12px 14px;outline:none;min-height:45px}
-  .input:focus{border-color:var(--green);box-shadow:0 0 0 3px #004d3418}
+  .input:focus{border-color:var(--green);box-shadow:0 0 0 3px #123B7A18}
   .required{color:#c2410c}.help{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.6}
   .totals{background:#f8fafc;border:1px solid var(--line);border-radius:13px;padding:12px 15px;margin-bottom:14px}
   .money-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px}.money-row.net{font-weight:800;color:var(--green);font-size:18px;border-top:1px solid #e2e8f0;margin-top:5px;padding-top:12px}
   .submit{width:100%;border:0;border-radius:28px;background:var(--green);color:white;padding:15px;font-size:15px;font-weight:700}
-  .submit:disabled{opacity:.5;cursor:not-allowed}.secondary{background:white;border:1px solid #004d34;color:var(--green);margin-top:9px}
+  .submit:disabled{opacity:.5;cursor:not-allowed}.secondary{background:white;border:1px solid #123B7A;color:var(--green);margin-top:9px}
   .notice{display:none;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:14px;white-space:pre-line;overflow-wrap:anywhere}
   .notice.info{display:block;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
   .notice.error{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
@@ -54,7 +54,7 @@
 </head>
 <body>
 <div class="app">
-<header><i class="fa-solid fa-cash-register" aria-hidden="true"></i><h1>Wonder Zone | نقطة البيع والكاشير</h1><span></span></header>
+<header><i class="fa-solid fa-cash-register" aria-hidden="true"></i><h1>WonderZone | وندر زون — نقطة البيع والكاشير</h1><span></span></header>
 <section class="stats"><div><small>صافي الفاتورة الحالية</small><strong id="totalAmountText">0.00 جنيه</strong></div><span class="count" id="totalQtyText">0 قطعة</span></section>
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
@@ -89,7 +89,7 @@
 </div>
 </div></div>
 <div id="cashierLoginGate" class="cashier-login" role="dialog" aria-modal="true" aria-label="تسجيل دخول الكاشير">
- <div class="login-inner"><div style="text-align:center;color:#004d34;font-weight:900;font-size:22px;margin-bottom:16px"><i class="fa-solid fa-lock"></i> دخول الكاشير</div>
+ <div class="login-inner"><div style="text-align:center;color:#123B7A;font-weight:900;font-size:22px;margin-bottom:16px"><i class="fa-solid fa-lock"></i> دخول الكاشير</div>
   <p style="font-size:13px;line-height:1.8;margin-bottom:16px;color:#64748b">اكتب اسمك وكلمة مرورك. سيظهر لك البازار المحدد لك اليوم من الأدمن تلقائيًا.</p>
   <form id="cashierLoginForm">
    <div class="field"><label for="cashierLoginName">اسم الموظف</label><input id="cashierLoginName" class="input" autocomplete="username" required placeholder="اسمك المسجل عند الأدمن"></div>
@@ -98,7 +98,7 @@
   </form>
   <p id="cashierLoginFeedback" role="status" style="font-size:13px;margin-top:14px;color:#991b1b;white-space:pre-line"></p>
   <details id="posConnectionSettings" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:13px">
-   <summary style="cursor:pointer;color:#004d34;font-size:13px;font-weight:700">إعداد رابط Apps Script وفحص إصدار السيرفر</summary>
+   <summary style="cursor:pointer;color:#123B7A;font-size:13px;font-weight:700">إعداد رابط Apps Script وفحص إصدار السيرفر</summary>
    <div class="field" style="margin-top:12px"><label for="posConnectionUrl">رابط Web App الذي ينتهي بـ /exec</label><input id="posConnectionUrl" class="input" type="url" autocomplete="off" dir="ltr" style="font-size:12px"></div>
    <button type="button" id="posSaveUrlBtn" class="submit secondary" style="padding:10px">حفظ الرابط لهذا الجهاز</button>
    <button type="button" id="posPingBtn" class="submit secondary" style="padding:10px">اختبار السيرفر والإصدار</button>
@@ -138,7 +138,7 @@ function numbers(){const before=gross(),d=discount(),ok=Number.isFinite(d)&&d>=0
 function renderCart(){
  const target=$('cartListContainer');
  if(!cart.length){target.className='empty';target.textContent='لم يتم إضافة منتجات في الفاتورة بعد';}
- else{target.className='';target.innerHTML=cart.map((x,i)=>'<div class="cart-item"><div><div class="item-name">'+escapeHtml(x.name)+'</div><div class="item-desc">باركود: <b dir="ltr">'+escapeHtml(x.barcode)+'</b><br>'+format(x.price)+' × '+x.qty+' = '+format(x.price*x.qty)+'<br>المتبقي في البازار: '+x.stock+'</div></div><div class="qty"><button class="qty-btn" data-idx="'+i+'" data-delta="-1" type="button" title="نقص قطعة">−</button><b>'+x.qty+'</b><button class="qty-btn" data-idx="'+i+'" data-delta="1" type="button" title="زيادة قطعة">+</button></div></div>').join('');}
+ else{target.className='';target.innerHTML=cart.map((x,i)=>'<div class="cart-item">'+(x.imageUrl?'<img class="cart-thumb" src="'+escapeHtml(x.imageUrl)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'<div><div class="item-name">'+escapeHtml(x.name)+'</div><div class="item-desc">باركود: <b dir="ltr">'+escapeHtml(x.barcode)+'</b><br>'+format(x.price)+' × '+x.qty+' = '+format(x.price*x.qty)+'<br>المتبقي في البازار: '+x.stock+'</div></div><div class="qty"><button class="qty-btn" data-idx="'+i+'" data-delta="-1" type="button" title="نقص قطعة">−</button><b>'+x.qty+'</b><button class="qty-btn" data-idx="'+i+'" data-delta="1" type="button" title="زيادة قطعة">+</button></div></div>').join('');}
  $('itemsCountText').textContent=cart.length+' صنف';$('totalQtyText').textContent=cart.reduce((s,x)=>s+x.qty,0)+' قطعة';
  const n=numbers();$('subTotalText').textContent=format(n.before);$('discountText').textContent=Number.isFinite(n.d)?format(n.d):'غير صحيح';$('netTotalText').textContent=n.ok?format(n.net):'تحقق من الخصم';$('totalAmountText').textContent=n.ok?format(n.net):'—';$('approvalField').hidden=!(n.ok&&n.d>0);
  $('saveInvoiceBtn').disabled=isSaving||uncertain||cart.length===0||!n.ok||!cashierIdentity||!cashierIdentity.assigned;
@@ -158,12 +158,13 @@ function addToCart(p){
   existing.transferredStock=Number(p.transferredStock)||0;
   existing.bazaarSold=Number(p.bazaarSold)||0;
   existing.bazaarReturned=Number(p.bazaarReturned)||0;
+  existing.imageUrl=String(p.imageUrl||existing.imageUrl||'');
   if(existing.qty>=stock){notice('المتبقي في البازار من '+existing.name+': '+stock,'error');return;}
   existing.qty++;
  }
  else cart.push({barcode,name:String(p.name||barcode),price,stock,qty:1,
   transferredStock:Number(p.transferredStock)||0,bazaarSold:Number(p.bazaarSold)||0,
-  bazaarReturned:Number(p.bazaarReturned)||0});
+  bazaarReturned:Number(p.bazaarReturned)||0,imageUrl:String(p.imageUrl||'')});
  clearNotice();renderCart();
 }
 async function cashierFindProduct(barcode){
@@ -184,7 +185,7 @@ function renderProductSearchResults(products,query){
   const stock=Number(p.availableStock??p.stock)||0,central=Number(p.centralAvailable)||0;
   const disabled=stock<=0?'disabled':'';
   const status=stock>0?('متاح في البازار: '+stock):('غير متاح في البازار — المخزن الرئيسي: '+central);
-  return '<div class="search-result"><div class="search-result-info"><div class="search-result-name">'+escapeHtml(p.name)+'</div><div class="search-result-meta">باركود: <b dir="ltr">'+escapeHtml(p.barcode)+'</b><br>'+escapeHtml(status)+'</div></div><button type="button" data-search-index="'+i+'" '+disabled+'>'+(stock>0?'إضافة':'غير متاح')+'</button></div>';
+  return '<div class="search-result">'+(p.imageUrl?'<img src="'+escapeHtml(p.imageUrl)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'<div class="search-result-info"><div class="search-result-name">'+escapeHtml(p.name)+'</div><div class="search-result-meta">باركود: <b dir="ltr">'+escapeHtml(p.barcode)+'</b><br>'+escapeHtml(status)+'</div></div><button type="button" data-search-index="'+i+'" '+disabled+'>'+(stock>0?'إضافة':'غير متاح')+'</button></div>';
  }).join('');
  box._products=products;
 }
