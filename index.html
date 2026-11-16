@@ -293,28 +293,16 @@ async function addCameraBarcodeDirectly(code){
   if(!code || cameraReadHandled)return;
   if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
   if(!cashierIdentity.bazaar){notice('لا يوجد بازار معيّن لك اليوم. اضغط «تحديث التعيين» بعد تعيينك من الأدمن.','error');return;}
-  const now=Date.now();
-  // Ignore the same label while it remains in view; allow it again after a short
-  // pause so scanning a second unit of the same product remains possible.
-  if(code===cameraLastAcceptedCode && now-cameraLastAcceptedAt<1800){
-    cameraStableCount=0;cameraCandidate='';
-    $('cameraHint').textContent='تمت قراءة '+code+' بالفعل. حرّك المنتج قليلًا ثم امسحه مرة أخرى.';
-    return;
-  }
+
+  // Accept the first valid camera decode only, then close the camera.
   cameraReadHandled=true;
   cameraLastAcceptedCode=code;
-  cameraLastAcceptedAt=now;
-  $('cameraHint').textContent='قراءة مؤكدة: '+code+' — جاري إضافة المنتج للسلة...';
-  try{
-    await searchProduct(code);
-  } finally {
-    // Keep the camera open for the next item instead of stopping it after one scan.
-    cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
-    cameraReadHandled=false;
-    if(isScanning && $('scannerWrapper').style.display!=='none'){
-      $('cameraHint').textContent='جاهز للباركود التالي. وجّه الكاميرا إلى الملصق التالي.';
-    }
-  }
+  cameraLastAcceptedAt=Date.now();
+  cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
+  $('cameraHint').textContent='تمت قراءة '+code+' — جاري إغلاق الكاميرا وإضافة المنتج...';
+
+  await stopCamera();
+  await searchProduct(code);
 }
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
@@ -343,10 +331,11 @@ async function startCamera(){
     $('cameraHint').textContent='قراءة غير مطابقة لباركود المنتجات؛ قرّب الكاميرا وحاول مرة أخرى.';
     return;
    }
-   const now=Date.now();
-   if(code!==cameraCandidate || now-cameraCandidateAt>2000){
-     cameraCandidate=code;cameraStableCount=1;
-   } else {
+   // One successful decode is enough; do not wait for three repeated reads.
+   cameraCandidate=code;
+   cameraStableCount=1;
+   cameraCandidateAt=Date.now();
+   void addCameraBarcodeDirectly(code); else {
      cameraStableCount++;
    }
    cameraCandidateAt=now;
@@ -363,6 +352,7 @@ async function startCamera(){
    const camera=available.find(c=>/back|rear|environment|خلف/i.test(c.label||''))||available[0];
    await html5QrCode.start(camera.id,options,onRead);
   }
+  if(cameraReadHandled || !html5QrCode)return;
   isScanning=true;
   $('cameraHint').textContent='الكاميرا جاهزة. وجّهها إلى الباركود.';
  }catch(err){
@@ -380,7 +370,7 @@ async function stopCamera(){
  cameraReadHandled=true;
  try{if(cam && cam.isScanning)await cam.stop();}catch(e){}
  try{cam?.clear();}catch(e){}
- cameraReadHandled=false;
+ // Keep the read lock until the next explicit camera start.
 }
 $('scanBtn').addEventListener('click',startCamera);
 $('stopCameraBtn').addEventListener('click',stopCamera);
