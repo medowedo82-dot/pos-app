@@ -44,6 +44,11 @@
   .notice.error{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
   .notice.success{display:block;background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
   #verifyBtn{display:none}.empty{text-align:center;color:#94a3b8;font-size:13px;padding:22px 5px}
+
+  .search-results{margin:-4px 16px 14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .search-result{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+  .search-result:last-child{border-bottom:0}.search-result-info{min-width:0}.search-result-name{font-size:13px;font-weight:800}.search-result-meta{font-size:11px;color:var(--muted);line-height:1.7;margin-top:3px}
+  .search-result button{border:0;border-radius:10px;background:var(--green);color:#fff;padding:9px 12px;font-weight:700;white-space:nowrap}.search-result button:disabled{background:#94a3b8}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -53,6 +58,7 @@
 <section class="stats"><div><small>صافي الفاتورة الحالية</small><strong id="totalAmountText">0.00 جنيه</strong></div><span class="count" id="totalQtyText">0 قطعة</span></section>
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
+<div id="productSearchResults" class="search-results" hidden aria-live="polite"></div>
 <div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الخطوط، وسيتم التأكد من القراءة قبل عرض المنتج.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
 <div id="scanPreview" class="scan-preview" hidden role="region" aria-label="مراجعة الباركود قبل إضافة المنتج">
   <h3>راجع رقم الباركود والمنتج قبل الإضافة</h3>
@@ -165,19 +171,50 @@ async function cashierFindProduct(barcode){
  if(!data||data.success!==true)throw Error(data&&data.message||'تعذر قراءة رصيد البازار');
  return data.product||null;
 }
+async function cashierSearchProducts(query){
+ const data=await post('mgCashierSearchProducts',{query:String(query||'').trim()});
+ if(!data||data.success!==true)throw Error(data&&data.message||'تعذر البحث عن المنتجات');
+ return Array.isArray(data.products)?data.products:[];
+}
+function renderProductSearchResults(products,query){
+ const box=$('productSearchResults');
+ if(!products.length){box.hidden=true;box.innerHTML='';notice('لا توجد منتجات مطابقة للبحث: '+query,'error');return;}
+ box.hidden=false;
+ box.innerHTML=products.map((p,i)=>{
+  const stock=Number(p.availableStock??p.stock)||0,central=Number(p.centralAvailable)||0;
+  const disabled=stock<=0?'disabled':'';
+  const status=stock>0?('متاح في البازار: '+stock):('غير متاح في البازار — المخزن الرئيسي: '+central);
+  return '<div class="search-result"><div class="search-result-info"><div class="search-result-name">'+escapeHtml(p.name)+'</div><div class="search-result-meta">باركود: <b dir="ltr">'+escapeHtml(p.barcode)+'</b><br>'+escapeHtml(status)+'</div></div><button type="button" data-search-index="'+i+'" '+disabled+'>'+(stock>0?'إضافة':'غير متاح')+'</button></div>';
+ }).join('');
+ box._products=products;
+}
+$('productSearchResults').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-search-index]');if(!b)return;
+ const p=$('productSearchResults')._products?.[Number(b.dataset.searchIndex)];if(!p)return;
+ if(Number(p.availableStock??p.stock)<=0){notice('المنتج موجود، لكن رصيده في بازارك صفر. رصيد المخزن الرئيسي: '+(Number(p.centralAvailable)||0)+' قطعة. اطلب من الأدمن تحويل كمية إلى البازار أولًا.','error');return;}
+ addToCart(p);$('productSearchResults').hidden=true;$('productSearchResults').innerHTML='';$('barcodeSearchInput').value='';
+});
 async function searchProduct(value){
  const q=String(value??'').trim();
  if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
  if(!q||isSearching)return;
  if(uncertain){notice('تحقق من الفاتورة السابقة أولًا','error');return;}
- isSearching=true;
+ isSearching=true;$('productSearchResults').hidden=true;
  try{
-  const product=await cashierFindProduct(q);
-  if(!product||!product.name){notice('الباركود أو اسم المنتج غير موجود في الشيت: '+q,'error');return;}
-  if(cleanBarcode(product.barcode)!==cleanBarcode(q)){
-   notice('خطأ حماية: السيرفر أعاد باركود '+String(product.barcode||'غير محدد')+' بدل '+q+'. لم تتم إضافة أي صنف.','error');return;
+  // Numeric scan/barcode: exact lookup. Text query: return matching product choices.
+  if(/^\d+$/.test(cleanBarcode(q))){
+   const product=await cashierFindProduct(q);
+   if(!product||!product.name){notice('الباركود غير مسجل في قاعدة المنتجات: '+q,'error');return;}
+   if(cleanBarcode(product.barcode)!==cleanBarcode(q)){
+    notice('خطأ حماية: السيرفر أعاد باركود مختلفًا. لم تتم إضافة أي صنف.','error');return;
+   }
+   const stock=Number(product.availableStock??product.stock)||0;
+   if(stock<=0){notice('المنتج موجود: '+product.name+'، لكن رصيده في هذا البازار صفر. رصيد المخزن الرئيسي: '+(Number(product.centralAvailable)||0)+' قطعة. يلزم تحويل كمية إلى البازار من الأدمن.','error');return;}
+   addToCart(product);$('barcodeSearchInput').value='';
+  }else{
+   const products=await cashierSearchProducts(q);
+   renderProductSearchResults(products,q);
   }
-  addToCart(product);$('barcodeSearchInput').value='';
  }catch(err){notice('تعذر البحث عن المنتج أو قراءة رصيد البازار: '+err.message,'error');}
  finally{isSearching=false;$('barcodeSearchInput').focus();}
 }
@@ -274,7 +311,7 @@ async function post(action,payload){
  }
  return data;
 }
-function resetSale(message){cart=[];invoiceId=null;uncertain=false;$('discountAmount').value='0';$('discountApprovalPin').value='';renderCart();notice(message,'success');$('barcodeSearchInput').focus();}
+function resetSale(message){cart=[];invoiceId=null;uncertain=false;$('productSearchResults').hidden=true;$('discountAmount').value='0';$('discountApprovalPin').value='';renderCart();notice(message,'success');$('barcodeSearchInput').focus();}
 async function verifyInvoice(){if(!invoiceId){notice('لا توجد فاتورة للتحقق','error');return;}if(isSaving)return;isSaving=true;renderCart();
  try{const d=await post('getInvoiceDetails',{id:invoiceId});if(!d||!d.success)throw Error(d&&d.message||'لم يتم التحقق');if(d.found&&Array.isArray(d.rows)&&d.rows.length){resetSale('الفاتورة محفوظة في السجل برقم: '+invoiceId+'، وتم منع إعادة خصم المخزون.');}
  else if(d.found){notice('ظهر رقم الفاتورة بالسجل لكن تفاصيلها غير مكتملة. راجع الإدارة قبل إعادة الإرسال.','error');}
