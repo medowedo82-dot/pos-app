@@ -59,9 +59,9 @@
 <div class="search"><button type="button" id="scanBtn" title="تشغيل قارئ الباركود"><i class="fa-solid fa-barcode"></i></button><input id="barcodeSearchInput" placeholder="امسح الباركود أو ابحث هنا..." autocomplete="off" aria-label="باركود المنتج"><button type="button" id="searchBtn" title="البحث"><i class="fa-solid fa-magnifying-glass"></i></button></div>
 <p id="scanHelp" class="scan-help">قارئ USB: وجّه المؤشر لخانة الباركود وامسح الصنف، أو استخدم زر الكاميرا. يدعم إدخال Enter وTab والقراءة السريعة بدون زر إنهاء.</p>
 <div id="productSearchResults" class="search-results" hidden aria-live="polite"></div>
-<div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا نحو الخطوط، وسيتم التأكد من القراءة قبل عرض المنتج.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
+<div id="scannerWrapper" class="scanner"><div id="reader"></div><div id="cameraHint" class="camera-hint" role="status">وجّه الكاميرا إلى الباركود؛ ستتم إضافته مباشرة بعد التحقق من رصيد البازار.</div><button type="button" id="stopCameraBtn">إغلاق الكاميرا ✕</button></div>
 <div id="scanPreview" class="scan-preview" hidden role="region" aria-label="مراجعة الباركود قبل إضافة المنتج">
-  <h3>راجع رقم الباركود والمنتج قبل الإضافة</h3>
+  <h3>مراجعة الباركود</h3>
   <div class="scan-code" id="scanDecodedText">—</div>
   <div id="scanProductInfo" class="scan-product">جاري البحث عن المنتج…</div>
   <div class="scan-actions">
@@ -355,23 +355,28 @@ async function reviewCameraBarcode(code){
  if(!cashierIdentity){showCashierLogin('سجّل الدخول أولًا');return;}
  code=cleanBarcode(code);
  if(!code)return;
- showScanPreview(code,'جاري البحث في المنتجات عن الباركود الذي قرأته الكاميرا…',null);
- // Stop the camera before reading the product; NEVER automatically put a scan in the cart.
+ // Camera scans now add directly after the same server-side bazaar-stock checks
+ // used by manual barcode entry. No preview or confirmation step.
  await stopCamera();
  try{
   const product=await cashierFindProduct(code);
-  if(!product||!product.name){showScanPreview(code,'الرقم غير موجود في الشيت. قارن الرقم المكتوب أسفل الباركود، ثم جرّب مرة أخرى أو اكتبه يدويًا.',null);return;}
-  if(cleanBarcode(product.barcode)!==code){showScanPreview(code,'تحذير: السيرفر رجّع باركود مختلف '+String(product.barcode||'')+'. تم منع الإضافة حتى لا نبيع صنفًا غلط.',null);return;}
-  const price=Number(product.sellingPrice??product.price??product.retailPrice);
-  const stock=Number(product.availableStock??product.remainingStock??product.stock);
-  const detail='المنتج: '+String(product.name)+'\nسعر البيع: '+(Number.isFinite(price)?format(price):'غير معروف')+
-   '\nالمحوّل لهذا البازار: '+(Number(product.transferredStock)||0)+
-   '\nالمباع من البازار: '+(Number(product.bazaarSold)||0)+
-   '\nالمرتجع المسجل: '+(Number(product.bazaarReturned)||0)+
-   '\nالمتبقي حاليًا في البازار: '+(Number.isFinite(stock)?stock:'غير معروف')+' قطعة';
-  if(!Number.isFinite(price)||price<=0||!Number.isSafeInteger(stock)||stock<=0){showScanPreview(code,detail+'\nلا يمكن إضافته بسبب السعر أو المخزون.',null);return;}
-  showScanPreview(code,detail,product);
- }catch(err){showScanPreview(code,'تعذر الاستعلام عن المنتج: '+(err?.message||String(err))+'. لا تضف صنفًا قبل نجاح التحقق.',null);}
+  if(!product||!product.name){notice('الباركود غير مسجل في قاعدة المنتجات: '+code,'error');return;}
+  if(cleanBarcode(product.barcode)!==code){
+   notice('خطأ حماية: السيرفر أعاد باركودًا مختلفًا. لم تتم إضافة أي صنف.','error');return;
+  }
+  const stock=Number(product.availableStock??product.stock)||0;
+  if(stock<=0){
+   notice('المنتج موجود: '+product.name+'، لكن رصيده في هذا البازار صفر. رصيد المخزن الرئيسي: '+(Number(product.centralAvailable)||0)+' قطعة.','error');return;
+  }
+  const before=cart.reduce((n,x)=>n+x.qty,0);
+  addToCart(product);
+  const after=cart.reduce((n,x)=>n+x.qty,0);
+  if(after>before){
+   $('scanPreview').hidden=true;
+   pendingCameraProduct=null;pendingCameraBarcode='';
+   notice('تمت إضافة '+product.name+' مباشرة إلى الفاتورة.','success');
+  }
+ }catch(err){notice('تعذر الاستعلام عن المنتج أو قراءة رصيد البازار: '+(err?.message||String(err)),'error');}
 }
 async function startCamera(){
  if(isScanning||isCameraStarting)return;
@@ -384,7 +389,7 @@ async function startCamera(){
  pendingCameraBarcode='';pendingCameraProduct=null;
  isCameraStarting=true;cameraReadHandled=false;cameraCandidate='';cameraStableCount=0;cameraCandidateAt=0;
  $('scannerWrapper').style.display='block';
- $('cameraHint').textContent='وجّه الكاميرا إلى الباركود؛ سيتم اعتماد أول قراءة صحيحة ثم إغلاق الكاميرا.';
+ $('cameraHint').textContent='وجّه الكاميرا إلى الباركود؛ ستتم إضافة أول قراءة صحيحة مباشرة.';
  try{
   const F=typeof Html5QrcodeSupportedFormats!=='undefined'?Html5QrcodeSupportedFormats:null;
   // MG 5-digit internal labels should be CODE_128 or CODE_39.
